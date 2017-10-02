@@ -15,7 +15,20 @@ var backgroundImage = new Image();
 backgroundImage.src = 'images/background.png';
 
 var pokemons = ["bulbasaur", "charmander", "squirtle", "pikachu", "jigglypuff", "meowth", "mankey", "pidgey", "ekans", "geodude", "sandshrew", "drowzee", "gastly", "butterfree", "dratini"]
+var types = {}
+types["water"] = "63B8FF"
+types["electric"] = "#CDCD00"
+types["fire"] = "#B22222"
+types["grass"] = "#228B22"
+types["ghost"] = "#5D478B"
+types["psychic"] = "#CD6090"
+types["normal"] = "#6C7B8B"
+types["fighting"] = "#8B4513"
 var pokemon_images = {}
+
+String.prototype.toProperCase = function () {
+    return this.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+};
 
 for (var i = 0; i < pokemons.length; i++) {
 	var pkmn = pokemons[i];
@@ -32,12 +45,12 @@ function drawBackground(c, backgroundImage, x, y, width, height) {
 	c.drawImage(backgroundImage, x, y, width, height);
 }
 
-function drawHealthBar(c, x, y, percentage, name) {
+function drawHealthBar(c, x, y, percentage, name, type) {
 	c.font = "bold " + HEALTHBAR_FONTSIZE + "px Calibri";
-	var size = c.measureText("HP");
 
+	var size = c.measureText("HP");
 	c.fillStyle = "#1C472B"
-	c.fillText("HP", x - size.width - 2, y + HEALTHBAR_FONTSIZE / 4);
+	c.fillText("HP", x - size.width - 5, y + HEALTHBAR_FONTSIZE / 4);
 
 	// first draw the background of the health bar
 	var grd = c.createLinearGradient(x, y - HEALTHBAR_HEIGHT / 2, x, y + HEALTHBAR_HEIGHT / 2);
@@ -61,21 +74,25 @@ function drawHealthBar(c, x, y, percentage, name) {
 	c.strokeStyle = "#000000";
 	c.strokeRect(x, y - HEALTHBAR_HEIGHT / 2, HEALTHBAR_WIDTH * percentage, HEALTHBAR_HEIGHT);
 
+	var size = c.measureText(name)
 	c.fillStyle = "#000000"
-	c.fillText(name, x, y - HEALTHBAR_FONTSIZE / 2);
+	c.fillText(name, x + (HEALTHBAR_WIDTH - size.width) / 2, y - HEALTHBAR_FONTSIZE / 2);
 
-	// c.fillStyle = "#63B8FF"
-	// c.fillRect(x + HEALTHBAR_WIDTH, y - HEALTHBAR_FONTSIZE, 50, 10);
+	c.font = "bold " + (HEALTHBAR_FONTSIZE - 2) + "px Calibri";
 
-	// c.strokeStyle = "#000000"
-	// c.strokeRect(x + HEALTHBAR_WIDTH, y - HEALTHBAR_FONTSIZE, 50, 10);
+	c.fillStyle = types[type];
+	c.fillRect(x, y + HEALTHBAR_HEIGHT, HEALTHBAR_WIDTH / 2, 10);
 
-	// c.fillStyle = "#FFFFFF"
-	// c.fillText("Water", x + HEALTHBAR_WIDTH + 4, y - HEALTHBAR_HEIGHT + 2)
+	c.strokeStyle = "#000000"
+	c.strokeRect(x, y + HEALTHBAR_HEIGHT, HEALTHBAR_WIDTH / 2, 10);
+
+	var size = c.measureText(type.toProperCase());
+	c.fillStyle = "#FFFFFF"
+	c.fillText(type.toProperCase(), x + (HEALTHBAR_WIDTH / 2 - size.width) / 2, y + HEALTHBAR_HEIGHT + 3 + (HEALTHBAR_FONTSIZE - 2) / 2)
 
 }
 
-function drawPokemon(c, name, isFront) {
+function drawPokemon(c, name, type, isFront) {
 	var image;
 	if (isFront) {
 		image = pokemon_images[name.toLowerCase()].front;
@@ -90,13 +107,15 @@ function drawPokemon(c, name, isFront) {
 		y = canvas.height - 100;
 	}
 	c.drawImage(image, x, y);
+	if (isFront) {
+		drawHealthBar(c, 50, 30, 0.75, name, type);
+	} else {
+		drawHealthBar(c, canvas.width - 40 - HEALTHBAR_WIDTH, canvas.height - 40, 0.75, name, type);
+	}
 }
 
 drawBackground(c, backgroundImage, 0, 0, canvas.width, canvas.height);
-drawHealthBar(c, 40, 20, 0.75, "Bulbasaur");
-drawHealthBar(c, canvas.width - 40 - HEALTHBAR_WIDTH, canvas.height - 20, 0.75, "Pikachu");
-
-drawPokemon(c, "Pikachu", false)
-drawPokemon(c, "Bulbasaur", true)
+drawPokemon(c, "Pikachu", "electric", false)
+drawPokemon(c, "Bulbasaur", "grass", true)
 
 </script>
