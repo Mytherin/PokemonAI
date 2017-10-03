@@ -56,6 +56,7 @@ function get_pokemon_info(pokemon) {
 	var obj = new Object();
 	obj.id = pokemon;
 	obj.name = capitalizeFirstLetter(response.name);
+	var sc_name = response.name;
 
 	response.stats.forEach(function(x) {
 		if (x.stat.name == "speed") {
@@ -85,11 +86,11 @@ function get_pokemon_info(pokemon) {
 
 	var vsprintf = require('sprintf-js').vsprintf;
 
-	img_file = vsprintf('images/%d_front.gif', [pokemon]);
+	img_file = vsprintf('images/%s-front.gif', [sc_name]);
 	download_file(img_file, get_pokemon_image(pokemon, PokemonSide.FRONT), function() {});
 	obj.img_front = img_file;
 		
-	img_file = vsprintf('images/%d_back.gif', [pokemon]);
+	img_file = vsprintf('images/%s-back.gif', [sc_name]);
 	download_file(img_file, get_pokemon_image(pokemon, PokemonSide.BACK), function() {});
 	obj.img_back = img_file;	
 
