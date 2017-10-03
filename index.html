@@ -37,10 +37,12 @@ var active_pokemon_p2 = {};
 active_pokemon_p1.name = "bulbasaur";
 active_pokemon_p1.health = 1;
 active_pokemon_p1.display_health = 1;
+active_pokemon_p1.frame = 0;
 
 active_pokemon_p2.name = "pikachu";
 active_pokemon_p2.health = 1;
 active_pokemon_p2.display_health = 1;
+active_pokemon_p2.frame = 0;
 
 var HEALTH_ANIMATION_SPEED = 0.01;
 
@@ -52,10 +54,10 @@ for (var i = 0; i < pokemons.length; i++) {
 	var pkmn = pokemons[i];
 	pokemon_images[pkmn] = {};
 	var image = new Image();
-	image.src = 'images/' + pkmn + '-front.gif'
+	image.src = 'images/' + pkmn + '-front.png'
 	pokemon_images[pkmn].front = image;
 	var image = new Image();
-	image.src = 'images/' + pkmn + '-back.gif'
+	image.src = 'images/' + pkmn + '-back.png'
 	pokemon_images[pkmn].back = image;
 }
 
@@ -129,13 +131,30 @@ function drawPokemon(c, pkmn, isFront) {
 		image = pokemon_images[name.toLowerCase()].back;
 	}
 	if (isFront) {
-		x = canvas.width - 130;
-		y = 5;
+		x = canvas.width - 80 - image.height / 2;
+		y = 10 + image.height / 2;
 	} else {
-		x = 20;
-		y = canvas.height - 100;
+		x = 20 + image.height / 2;
+		y = canvas.height - 60 - image.height / 2;
 	}
-	c.drawImage(image, x, y);
+	current_frame = Math.round(pkmn.frame);
+	total_frames = Math.round(image.width / image.height);
+	c.drawImage(image,
+		current_frame * image.height,
+		0,
+		image.height,
+		image.height,
+		x,
+		y,
+		image.height,
+		image.height);
+	// move to the next frame
+	if (pkmn.frame + 1 >= total_frames) {
+		pkmn.frame = 0;
+	} else {
+		pkmn.frame += 0.3;
+	}
+
 	if (isFront) {
 		drawHealthBar(c, 50, 30, health, name, type);
 	} else {
