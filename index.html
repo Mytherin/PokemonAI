@@ -11,6 +11,11 @@ var HEALTHBAR_HEIGHT = 6;
 var HEALTHBAR_WIDTH = 80;
 var HEALTHBAR_FONTSIZE = "12";
 
+battle_width = 800;
+battle_height = 450;
+
+
+
 var backgroundImage = new Image();
 backgroundImage.src = 'images/background.png';
 
@@ -25,6 +30,19 @@ types["psychic"] = "#CD6090"
 types["normal"] = "#6C7B8B"
 types["fighting"] = "#8B4513"
 var pokemon_images = {}
+
+var active_pokemon_p1 = {};
+var active_pokemon_p2 = {};
+
+active_pokemon_p1.name = "bulbasaur";
+active_pokemon_p1.health = 1;
+active_pokemon_p1.display_health = 1;
+
+active_pokemon_p2.name = "pikachu";
+active_pokemon_p2.health = 1;
+active_pokemon_p2.display_health = 1;
+
+var HEALTH_ANIMATION_SPEED = 0.01;
 
 String.prototype.toProperCase = function () {
     return this.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
@@ -49,7 +67,7 @@ function drawHealthBar(c, x, y, percentage, name, type) {
 	c.font = "bold " + HEALTHBAR_FONTSIZE + "px Calibri";
 
 	var size = c.measureText("HP");
-	c.fillStyle = "#1C472B"
+	c.fillStyle = "#222222"
 	c.fillText("HP", x - size.width - 5, y + HEALTHBAR_FONTSIZE / 4);
 
 	// first draw the background of the health bar
@@ -60,19 +78,27 @@ function drawHealthBar(c, x, y, percentage, name, type) {
 
 	c.fillStyle = grd;
 	c.fillRect(x, y - HEALTHBAR_HEIGHT / 2, HEALTHBAR_WIDTH, HEALTHBAR_HEIGHT);
-	c.strokeStyle = "#000000";
-	c.strokeRect(x, y - HEALTHBAR_HEIGHT / 2, HEALTHBAR_WIDTH, HEALTHBAR_HEIGHT);
 
 	// now draw the foreground
 	var grd = c.createLinearGradient(x, y - HEALTHBAR_HEIGHT / 2, x, y + HEALTHBAR_HEIGHT / 2);
-	grd.addColorStop(0.0, "#1C472B");
-	grd.addColorStop(0.5, "#2BC741");
-	grd.addColorStop(1.0, "#1C472B");
+	if (percentage > 0.5) {
+		c1 = "#1C472B";
+		c2 = "#2BC741";
+	} else if (percentage > 0.25) {
+		c1 = "#8F3F00";
+		c2 = "#FF7F00";
+	} else {
+		c1 = "#811111";
+		c2 = "#B22222";
+	}
+	grd.addColorStop(0.0, c1);
+	grd.addColorStop(0.5, c2);
+	grd.addColorStop(1.0, c1);
 
 	c.fillStyle = grd;
 	c.fillRect(x, y - HEALTHBAR_HEIGHT / 2, HEALTHBAR_WIDTH * percentage, HEALTHBAR_HEIGHT);
 	c.strokeStyle = "#000000";
-	c.strokeRect(x, y - HEALTHBAR_HEIGHT / 2, HEALTHBAR_WIDTH * percentage, HEALTHBAR_HEIGHT);
+	c.strokeRect(x, y - HEALTHBAR_HEIGHT / 2, HEALTHBAR_WIDTH, HEALTHBAR_HEIGHT);
 
 	var size = c.measureText(name)
 	c.fillStyle = "#000000"
@@ -92,8 +118,11 @@ function drawHealthBar(c, x, y, percentage, name, type) {
 
 }
 
-function drawPokemon(c, name, type, isFront) {
+function drawPokemon(c, pkmn, isFront) {
 	var image;
+	var name = pkmn.name.toProperCase();
+	var health = pkmn.display_health;
+	var type = "electric"
 	if (isFront) {
 		image = pokemon_images[name.toLowerCase()].front;
 	} else {
@@ -108,14 +137,58 @@ function drawPokemon(c, name, type, isFront) {
 	}
 	c.drawImage(image, x, y);
 	if (isFront) {
-		drawHealthBar(c, 50, 30, 0.75, name, type);
+		drawHealthBar(c, 50, 30, health, name, type);
 	} else {
-		drawHealthBar(c, canvas.width - 40 - HEALTHBAR_WIDTH, canvas.height - 40, 0.75, name, type);
+		drawHealthBar(c, canvas.width - 40 - HEALTHBAR_WIDTH, canvas.height - 40, health, name, type);
 	}
 }
 
-drawBackground(c, backgroundImage, 0, 0, canvas.width, canvas.height);
-drawPokemon(c, "Pikachu", "electric", false)
-drawPokemon(c, "Bulbasaur", "grass", true)
+function update_health(pkmn) {
+	if (Math.abs(pkmn.display_health - pkmn.health) <= HEALTH_ANIMATION_SPEED) {
+		pkmn.display_health = pkmn.health;
+	} else if (pkmn.display_health < pkmn.health) {
+		pkmn.display_health += HEALTH_ANIMATION_SPEED;
+	} else if (pkmn.display_health > pkmn.health) {
+		pkmn.display_health -= HEALTH_ANIMATION_SPEED;
+	}
+}
+
+function update() {
+	update_health(active_pokemon_p1);
+	update_health(active_pokemon_p2);
+}
+
+function render() {
+	drawBackground(c, backgroundImage, 0, 0, canvas.width, canvas.height);
+	drawPokemon(c, active_pokemon_p2, false)
+	drawPokemon(c, active_pokemon_p1, true)
+}
+
+function loop(timestamp) {
+	var t = timestamp - lastRender
+
+	update();
+	render();
+
+	lastRender = timestamp
+	window.requestAnimationFrame(loop)
+}
+
+document.onkeydown = function(evt) {
+    evt = evt || window.event;
+
+	if (evt.keyCode == 40) {
+		// down arrow
+	} else if (evt.keyCode == 37) {
+		// left arrow
+	}  else if (evt.keyCode == 39) {
+		// right arrow
+	}  else if (evt.keyCode == 38) {
+		// up arrow
+	}
+};
+
+var lastRender = 0
+window.requestAnimationFrame(loop);
 
 </script>
