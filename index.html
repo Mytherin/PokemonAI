@@ -24,7 +24,7 @@ backgroundImage.src = 'images/background.png';
 
 var pokemons = [{"id":1,"name":"Bulbasaur","speed":45,"special_defense":65,"special_attack":65,"defense":49,"attack":49,"hp":45,"types":["poison","grass"],"img_front":"images/bulbasaur-front.gif","img_back":"images/bulbasaur-back.gif"},{"id":4,"name":"Charmander","speed":65,"special_defense":50,"special_attack":60,"defense":43,"attack":52,"hp":39,"types":["fire"],"img_front":"images/charmander-front.gif","img_back":"images/charmander-back.gif"},{"id":7,"name":"Squirtle","speed":43,"special_defense":64,"special_attack":50,"defense":65,"attack":48,"hp":44,"types":["water"],"img_front":"images/squirtle-front.gif","img_back":"images/squirtle-back.gif"},{"id":25,"name":"Pikachu","speed":90,"special_defense":50,"special_attack":50,"defense":40,"attack":55,"hp":35,"types":["electric"],"img_front":"images/pikachu-front.gif","img_back":"images/pikachu-back.gif", "attacks": ["thunderbolt", "quick attack", "thunder wave", "thunder shock"]},{"id":39,"name":"Jigglypuff","speed":20,"special_defense":25,"special_attack":45,"defense":20,"attack":45,"hp":115,"types":["fairy","normal"],"img_front":"images/jigglypuff-front.gif","img_back":"images/jigglypuff-back.gif"},{"id":52,"name":"Meowth","speed":90,"special_defense":40,"special_attack":40,"defense":35,"attack":45,"hp":40,"types":["normal"],"img_front":"images/meowth-front.gif","img_back":"images/meowth-back.gif"},{"id":56,"name":"Mankey","speed":70,"special_defense":45,"special_attack":35,"defense":35,"attack":80,"hp":40,"types":["fighting"],"img_front":"images/mankey-front.gif","img_back":"images/mankey-back.gif"},{"id":16,"name":"Pidgey","speed":56,"special_defense":35,"special_attack":35,"defense":40,"attack":45,"hp":40,"types":["flying","normal"],"img_front":"images/pidgey-front.gif","img_back":"images/pidgey-back.gif", "attacks": ["tackle", "air slash", "gust", "steel wing"]},{"id":23,"name":"Ekans","speed":55,"special_defense":54,"special_attack":40,"defense":44,"attack":60,"hp":35,"types":["poison"],"img_front":"images/ekans-front.gif","img_back":"images/ekans-back.gif"},{"id":74,"name":"Geodude","speed":20,"special_defense":30,"special_attack":30,"defense":100,"attack":80,"hp":40,"types":["ground","rock"],"img_front":"images/geodude-front.gif","img_back":"images/geodude-back.gif"},{"id":27,"name":"Sandshrew","speed":40,"special_defense":30,"special_attack":20,"defense":85,"attack":75,"hp":50,"types":["ground"],"img_front":"images/sandshrew-front.gif","img_back":"images/sandshrew-back.gif"},{"id":96,"name":"Drowzee","speed":42,"special_defense":90,"special_attack":43,"defense":45,"attack":48,"hp":60,"types":["psychic"],"img_front":"images/drowzee-front.gif","img_back":"images/drowzee-back.gif"},{"id":92,"name":"Gastly","speed":80,"special_defense":35,"special_attack":100,"defense":30,"attack":35,"hp":30,"types":["poison","ghost"],"img_front":"images/gastly-front.gif","img_back":"images/gastly-back.gif"},{"id":12,"name":"Butterfree","speed":70,"special_defense":80,"special_attack":90,"defense":50,"attack":45,"hp":60,"types":["flying","bug"],"img_front":"images/butterfree-front.gif","img_back":"images/butterfree-back.gif"},{"id":147,"name":"Dratini","speed":50,"special_defense":50,"special_attack":50,"defense":45,"attack":64,"hp":41,"types":["dragon"],"img_front":"images/dratini-front.gif","img_back":"images/dratini-back.gif"}]
 
-var attacks = [{"name": "tackle", "power": 40, "type": "normal", "status": "none"}, {"name": "air slash", "power": 75, "type": "flying", "status": "none"}, {"name": "gust", "power": 40, "type": "flying", "status": "none"}, {"name": "steel wing", "power": 70, "type": "steel", "status": "none"}, {"name": "thunderbolt", "power": 90, "type": "electric", "status": "none"}, {"name": "quick attack", "power": 40, "type": "normal", "status": "none", "priority": 1}, {"name": "thunder wave", "power": 0, "type": "electric", "status": "paralysis"}, {"name": "thunder shock", "power": 40, "type": "electric", "status": "none"}]
+var attacks = [{"name": "tackle", "power": 40, "type": "normal", "status": "none", "special": false}, {"name": "air slash", "power": 75, "type": "flying", "status": "none", "special": true}, {"name": "gust", "power": 40, "type": "flying", "status": "none", "special": true}, {"name": "steel wing", "power": 70, "type": "steel", "status": "none", "special": false}, {"name": "thunderbolt", "power": 90, "type": "electric", "status": "none", "special": true}, {"name": "quick attack", "power": 40, "type": "normal", "status": "none", "priority": 1, "special": false}, {"name": "thunder wave", "power": 0, "type": "electric", "status": "paralysis", "special": true}, {"name": "thunder shock", "power": 40, "type": "electric", "status": "none", "special": true}]
 
 function getAttackInfo(attackName) {
 	for (var i = 0; i < attacks.length; i++) {
@@ -54,22 +54,40 @@ type_colors["psychic"] = "#f85888"
 type_colors["ice"] = "#98d8d8"
 type_colors["steel"] = "#b8b8d0"
 
-types = ["Normal", "Fighting", "Flying", "Poison", "Ground", "Rock", "Bug", "Ghost", "Steel", "Fire", "Water", "Grass", "Electric", "Psychic", "Ice", "Dragon", "Dark", "Fairy"]
+type_array = ["Normal", "Fighting", "Flying", "Poison", "Ground", "Rock", "Bug", "Ghost", "Steel", "Fire", "Water", "Grass", "Electric", "Psychic", "Ice", "Dragon", "Dark", "Fairy"]
 weaknesses = [[1, 1, 1, 1, 1, 0.5, 1, 0, 0.5, 1, 1, 1, 1, 1, 1, 1, 1, 1], [2, 1, 0.5, 0.5, 1, 2, 0.5, 0, 2, 1, 1, 1, 1, 0.5, 2, 1, 2, 0.5], [1, 2, 1, 1, 1, 0.5, 2, 1, 0.5, 1, 1, 2, 0.5, 1, 1, 1, 1, 1], [1, 1, 1, 0.5, 0.5, 0.5, 1, 0.5, 0, 1, 1, 2, 1, 1, 1, 1, 1, 2], [1, 1, 0, 2, 1, 2, 0.5, 1, 2, 2, 1, 0.5, 2, 1, 1, 1, 1, 1], [1, 0.5, 2, 1, 0.5, 1, 2, 1, 0.5, 2, 1, 1, 1, 1, 2, 1, 1, 1], [1, 0.5, 0.5, 0.5, 1, 1, 1, 0.5, 0.5, 0.5, 1, 2, 1, 2, 1, 1, 2, 0.5], [0, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 0.5, 1], [1, 1, 1, 1, 1, 2, 1, 1, 0.5, 0.5, 0.5, 1, 0.5, 1, 2, 1, 1, 2], [1, 1, 1, 1, 1, 0.5, 2, 1, 2, 0.5, 0.5, 2, 1, 1, 2, 0.5, 1, 1], [1, 1, 1, 1, 2, 2, 1, 1, 1, 2, 0.5, 0.5, 1, 1, 1, 0.5, 1, 1], [1, 1, 0.5, 0.5, 2, 2, 0.5, 1, 0.5, 0.5, 2, 0.5, 1, 1, 1, 0.5, 1, 1], [1, 1, 2, 1, 0, 1, 1, 1, 1, 1, 2, 0.5, 0.5, 1, 1, 0.5, 1, 1], [1, 2, 1, 2, 1, 1, 1, 1, 0.5, 1, 1, 1, 1, 0.5, 1, 1, 0, 1], [1, 1, 2, 1, 2, 1, 1, 1, 0.5, 0.5, 0.5, 2, 1, 1, 0.5, 2, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 0.5, 1, 1, 1, 1, 1, 1, 2, 1, 0], [1, 0.5, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 0.5, 0.5], [1, 2, 1, 0.5, 1, 1, 1, 1, 0.5, 0.5, 1, 1, 1, 1, 1, 2, 2, 1]]
+
+function getTypeIndex(type) {
+	for (var i = 0; i < type_array.length; i++) {
+		if (type_array[i].toLowerCase() == type.toLowerCase()) {
+			return i
+		}
+	}
+	return 0
+}
 
 var pokemon_images = {}
 
 var active_pokemon_p1 = {};
 var active_pokemon_p2 = {};
 
+STATUS_NONE = 1;
+STATUS_PARALYZED = 2;
+STATUS_SLEEP = 3;
+STATUS_POISON = 4;
+STATUS_BURN = 5;
+STATUS_TOXIC = 6;
+
 active_pokemon_p1.index = 3;
 active_pokemon_p1.health = 1;
 active_pokemon_p1.display_health = 1;
+active_pokemon_p1.status = STATUS_NONE;
 active_pokemon_p1.frame = 0;
 
 active_pokemon_p2.index = 7;
 active_pokemon_p2.health = 1;
 active_pokemon_p2.display_health = 1;
+active_pokemon_p2.status = STATUS_NONE;
 active_pokemon_p2.frame = 0;
 
 var HEALTH_ANIMATION_SPEED = 0.01;
@@ -215,12 +233,117 @@ INTERFACE_SELECT_MOVE = 1
 INTERFACE_DISPLAY_TEXT = 2
 INTERFACE_SELECT_POKEMON = 3
 
+text_stack = []
+
 active_move = 0
 flicker = 0;
 interface_state = INTERFACE_SELECT_MOVE
 
-function updateInterface() {
+function computeEffectiveness(pkmn, move) {
+	var effectiveness = 1;
+	attack_type = getTypeIndex(move.type);
+	for (var i = 0; i < pkmn.types.length; i++) {
+		defending_type = getTypeIndex(pkmn.types[i]);
+		effectiveness = effectiveness * weaknesses[attack_type][defending_type]
+	}
+	return effectiveness;
+}
 
+function computeMultiplier(pkmn1, pkmn2, move) {
+	var stab_multiplier = 1;
+	for (var i = 0; i < pkmn1.types.length; i++) {
+		if (pkmn1.types[i].toLowerCase() == move.type.toLowerCase())
+			stab_multiplier = 1.3;
+	}
+	return stab_multiplier * computeEffectiveness(pkmn2, move);
+}
+
+function performMove(pkmn1, pkmn2, move) {
+	p1 = pokemons[pkmn1.index]
+	p2 = pokemons[pkmn2.index]
+
+	text_stack.push({"text": p1.name.toProperCase() + " used " + move.name.toProperCase() + ".", "effect": 
+	function(params) { 
+		var pkmn1 = params[0];
+		var pkmn2 = params[1];
+		var move = params[2];
+		var p1 = pokemons[pkmn1.index]
+		var p2 = pokemons[pkmn2.index]
+		var multiplier = computeMultiplier(p1, p2, move);
+		if (move.special) {
+			var attack = p1.special_attack;
+			var defense = p2.special_defense;
+		} else {
+			var attack = p1.attack;
+			var defense = p2.defense;
+		}
+		var current_health = pkmn2.health * p2.hp;
+		var damage = ((((10 / 5 + 2) * (move.power * (attack / defense))) / 50) + 2) * multiplier;
+		var new_health = current_health - damage;
+		if (new_health <= 0) {
+			// FIXME: pokemon has fainted
+			console.log("Pokemon has fainted!!!");
+		} else {
+			pkmn2.health = new_health / p2.hp;
+		}
+	}, "parameters": [pkmn1, pkmn2, move]});
+	if (move.power > 0) {
+		var effectiveness = computeEffectiveness(p2, move);
+		if (effectiveness < 1) {
+			text_stack.push({"text": "It's not very effective."});
+		} else if (effectiveness > 1) {
+			text_stack.push({"text":  "It's super effective!"});
+		}
+	}
+}
+
+function selectMove() {
+	if (interface_state != INTERFACE_SELECT_MOVE) return;
+	// FIXME: other pokemon uses AI to select a move
+	var p1_attack = getAttackInfo(pokemons[active_pokemon_p1.index].attacks[0])
+	var p2_attack = getAttackInfo(pokemons[active_pokemon_p2.index].attacks[active_move])
+
+	// speed resolution
+	p1_goes_first = true;
+	if (typeof(p1_attack.priority) === undefined && typeof(p2_attack.priority) !== undefined) {
+		// player 2 uses a priority move
+		p1_goes_first = false;
+	} else {
+		// speed resolution
+		if (pokemons[active_pokemon_p2.index].speed > pokemons[active_pokemon_p1.index].speed) {
+			p1_goes_first = false;
+		} else if (pokemons[active_pokemon_p2.index].speed == pokemons[active_pokemon_p1.index].speed) {
+			// speed tie, select randomly
+			p1_goes_first = Math.random() < 0.5;
+		}
+	}
+
+
+	interface_state = INTERFACE_DISPLAY_TEXT;
+	text_stack = [""]
+	if (p1_goes_first) {
+		performMove(active_pokemon_p1, active_pokemon_p2, p1_attack);
+		performMove(active_pokemon_p2, active_pokemon_p1, p2_attack);
+	} else {
+		performMove(active_pokemon_p2, active_pokemon_p1, p2_attack);
+		performMove(active_pokemon_p1, active_pokemon_p2, p1_attack);
+	}
+	nextText();
+}
+
+function nextText() {
+	text_stack.shift();
+	if (text_stack.length == 0) {
+		// FIXME: state transition
+		return;
+	}
+	if (typeof(text_stack[0].effect) !== undefined) {
+		text_stack[0].effect(text_stack[0].parameters);
+	}
+}
+
+function updateInterface() {
+	flicker += 1;
 }
 
 function drawInterface() {
@@ -229,10 +352,9 @@ function drawInterface() {
 	c.strokeStyle = "#000000";
 	c.strokeRect(0, battle_height, battle_width, interface_height);
 
+	c.font = "bold " + INTERFACE_FONTSIZE + "px Calibri";
+	c.fillStyle = "#000000";
 	if (interface_state == INTERFACE_SELECT_MOVE) {
-		c.font = "bold " + INTERFACE_FONTSIZE + "px Calibri";
-		c.fillStyle = "#000000";
-
 		var TYPE_OFFSET = 275
 		var TYPE_WIDTH = 100
 
@@ -240,7 +362,7 @@ function drawInterface() {
 		c.fillText(attacks[0].toProperCase(), 60, battle_height + 20 + INTERFACE_FONTSIZE);
 		drawType(getAttackInfo(attacks[0]).type, TYPE_OFFSET, battle_height + 35, TYPE_WIDTH, HEALTHBAR_FONTSIZE, HEALTHBAR_FONTSIZE);
 		c.strokeRect(10, battle_height + 20, TYPE_OFFSET + TYPE_WIDTH, 50)
-		
+
 		c.fillText(attacks[1].toProperCase(), 60, battle_height + 80 + INTERFACE_FONTSIZE);
 		drawType(getAttackInfo(attacks[1]).type, TYPE_OFFSET, battle_height + 95, TYPE_WIDTH, HEALTHBAR_FONTSIZE, HEALTHBAR_FONTSIZE);
 		c.strokeRect(10, battle_height + 80, TYPE_OFFSET + TYPE_WIDTH, 50)
@@ -291,6 +413,23 @@ function drawInterface() {
 	    c.lineTo(x2, y2);
 	    c.lineTo(x3, y3);
 	    c.fill();
+	} else if (interface_state == INTERFACE_DISPLAY_TEXT) {
+		c.fillText(text_stack[0].text, 60, battle_height + 20 + INTERFACE_FONTSIZE);
+
+		if ((flicker % 60) < 30) {
+			x1 = battle_width - 60;
+			x2 = battle_width - 20;
+			x3 = battle_width - 40;
+			y1 = battle_height + interface_height - 40;
+			y2 = y1;
+			y3 = y2 + 20;
+
+			c.beginPath();
+		    c.moveTo(x1, y1);
+		    c.lineTo(x2, y2);
+		    c.lineTo(x3, y3);
+		    c.fill();
+		}
 	}
 }
 
@@ -331,7 +470,6 @@ document.onkeydown = function(evt) {
     evt = evt || window.event;
 
     if (interface_state == INTERFACE_SELECT_MOVE) {
-    	console.log(evt.keyCode)
 		if (evt.keyCode == 40 || evt.keyCode == 38) {
 			// down arrow or up arrow
 			if (active_move == 0) {
@@ -354,6 +492,13 @@ document.onkeydown = function(evt) {
 			} else if (active_move == 3) {
 				active_move = 1;
 			}
+		} else if (evt.keyCode == 13) {
+			// enter, select move
+			selectMove();
+		}
+    } else if (interface_state == INTERFACE_DISPLAY_TEXT) {
+		if (evt.keyCode == 13) {
+			nextText();
 		}
     }
 };
