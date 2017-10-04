@@ -131,7 +131,7 @@ pk.forEach(function(x){
 
 var fs = require('fs');
 fs.writeFile("pokemon.json", JSON.stringify(db_pokemon), function(err) {
-	if(err) {
+	if (err) {
 		return console.log(err);
 	}
 

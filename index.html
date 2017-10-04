@@ -1,7 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>Pokemon AI</title>
+    <!-- stylesheets -->
+    <link rel="stylesheet" href="Treant.css" type="text/css"/>
+</head>
+<body>
+
+
 
 <canvas id="pokemoncanvas" width="800" height="600" style="margin-left:auto;margin-right:auto;">
 
 </canvas>
+
+<div class="chart" id="basic-example"></div>
+
+<script src="third_party/raphael.js"></script>
+<script src="third_party/Treant.js"></script>
 
 <script>
 var canvas = document.getElementById("pokemoncanvas");
@@ -108,7 +124,7 @@ for (var i = 0; i < pokemons.length; i++) {
 }
 
 function drawBackground(c, backgroundImage, x, y, width, height) {
-	c.drawImage(backgroundImage, x, y, width, height);
+	// c.drawImage(backgroundImage, x, y, width, height);
 }
 
 function drawType(type, x, y, width, fontsize) {
@@ -206,6 +222,7 @@ function drawPokemon(c, pkmn, isFront) {
 	}
 	current_frame = Math.round(pkmn.frame);
 	total_frames = Math.round(image.width / image.height);
+	/*
 	c.drawImage(image,
 		current_frame * image.height,
 		0,
@@ -214,7 +231,7 @@ function drawPokemon(c, pkmn, isFront) {
 		x,
 		y,
 		image.height*SCALE,
-		image.height*SCALE);
+		image.height*SCALE); */
 	// move to the next frame
 	if (pkmn.frame + 1 >= total_frames) {
 		pkmn.frame = 0;
@@ -258,7 +275,151 @@ function computeMultiplier(pkmn1, pkmn2, move) {
 	return stab_multiplier * computeEffectiveness(pkmn2, move);
 }
 
-function performMove(pkmn1, pkmn2, move) {
+decision_tree = {};
+
+String.prototype.format = function () {
+	// from https://stackoverflow.com/questions/25227119/javascript-strings-format-is-not-defined
+	var args = [].slice.call(arguments);
+	return this.replace(/(\{\d+\})/g, function (a){
+		return args[+(a.substr(1,a.length-2))||0];
+	});
+};
+
+function isEmpty(obj) {
+	// from https://stackoverflow.com/questions/6072590/how-to-match-an-empty-dictionary-in-javascript
+	return Object.keys(obj).length === 0;
+}
+
+function mkNode(name) {
+	var node = new Object();
+	node.text = new Object();
+	node.text.name = name;
+	node.children = [];
+
+	return node;
+}
+
+function build_tree1(tbl) {
+	var res = [];
+	var damages = {};
+
+	for (var i = 0; i < tbl.length; i++) {
+		damages[tbl[i].damage] = tbl[i].attack;
+	}
+
+	for (var dmg in damages) {
+		var part = tbl.filter(function(item) { 
+			return dmg !== item.damage;
+		});
+
+		var n = mkNode("health < {0}".format(dmg.toString()));
+		n.children.push(mkNode(damages[dmg]));
+
+		res.push(n);
+	}
+
+	var els = mkNode('else');
+	els.children.push(mkNode("random"));
+
+	if (res.length === 0) {
+		els = mkNode("random");
+	}
+
+	res.push(els);
+
+	return res;
+}
+
+function build_tree(matrix) {
+	var table = [];
+	var types = {};
+
+	var res = [];
+
+	if (isEmpty(matrix)) {
+		res.push(mkNode("random"));
+		return res;
+	}
+
+	for (var key in matrix) {
+		keys = key.split('/');
+		var type = keys[0];
+		var attack = keys[1];
+		var state = keys[2];
+
+		var row = {type: type, attack: attack, state: state, damage : matrix[key].damage};
+
+		table.push(row);
+		types[type] = 'yes';
+	}
+
+
+	var node = mkNode('Root');
+
+	for (var tpe in types) {
+		var part = table.filter(function(item) { 
+			return tpe.localeCompare(item.type) === 0;
+		});
+
+		if (part.length < 1) {
+			console.log("Less than one entry? Doesn't make sense");
+		}
+
+		var nde = mkNode("type = {0}".format(tpe));
+		nde.children = build_tree1(part);
+		res.push(nde);
+	}
+
+	var els = mkNode("else");
+	els.children.push(mkNode("random"));
+
+	if (res.length === 0) {
+		els = mkNode("random");
+	}
+
+	res.push(els);
+
+	// console.log(JSON.stringify(node));
+
+	return res;
+}
+
+function updateDecisionTree(responseText) {
+	console.log("dec tree: %s", responseText);
+	matrix = JSON.parse(responseText);
+
+	decision_tree = {
+        chart: {
+            container: "#basic-example",
+            
+            connectors: {
+                type: 'step'
+            },
+            node: {
+                HTMLclass: 'nodeExample1'
+            }
+        },
+        nodeStructure: {
+        	text: {
+        		name : "Root"
+        	},
+
+        	children : []
+        }
+    };
+
+    decision_tree.nodeStructure.children = build_tree(matrix);
+
+    console.log(build_tree(matrix));
+
+    drawDecisionTree();
+}
+
+function drawDecisionTree() {
+	new Treant( decision_tree );
+}
+
+function performMove(pkmn1, pkmn2, move, update_matrix) {
 	p1 = pokemons[pkmn1.index]
 	p2 = pokemons[pkmn2.index]
 
@@ -285,6 +446,29 @@ function performMove(pkmn1, pkmn2, move) {
 			console.log("Pokemon has fainted!!!");
 		} else {
 			pkmn2.health = new_health / p2.hp;
+		}
+
+		if (update_matrix) {
+			// update matrix and async draw decision tree
+			var upd = new Object();
+			upd.pokemon = pokemons[pkmn1.index].name;
+			upd.attack = move.name;
+			upd.status = move.status;
+			upd.damage = Math.floor(damage);
+
+			var xmlHttp = new XMLHttpRequest();
+			xmlHttp.onreadystatechange = function() { 
+				if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+					updateDecisionTree(xmlHttp.responseText);
+				}
+
+			var body = JSON.stringify(upd);
+			var url = "update_matrix?json=";
+			url = url.concat(encodeURIComponent(body));
+
+			xmlHttp.open("POST", url, true);
+			xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+			xmlHttp.send(null);
 		}
 	}, "parameters": [pkmn1, pkmn2, move]});
 	if (move.power > 0) {
@@ -322,11 +506,11 @@ function selectMove() {
 	interface_state = INTERFACE_DISPLAY_TEXT;
 	text_stack = [""]
 	if (p1_goes_first) {
-		performMove(active_pokemon_p1, active_pokemon_p2, p1_attack);
-		performMove(active_pokemon_p2, active_pokemon_p1, p2_attack);
+		performMove(active_pokemon_p1, active_pokemon_p2, p1_attack, true);
+		performMove(active_pokemon_p2, active_pokemon_p1, p2_attack, false);
 	} else {
-		performMove(active_pokemon_p2, active_pokemon_p1, p2_attack);
-		performMove(active_pokemon_p1, active_pokemon_p2, p1_attack);
+		performMove(active_pokemon_p2, active_pokemon_p1, p2_attack, false);
+		performMove(active_pokemon_p1, active_pokemon_p2, p1_attack, true);
 	}
 	nextText();
 }
@@ -454,6 +638,7 @@ function render() {
 	drawPokemon(c, active_pokemon_p2, false)
 	drawPokemon(c, active_pokemon_p1, true)
 	drawInterface();
+	// drawDecisionTree();
 }
 
 function loop(timestamp) {
@@ -507,3 +692,6 @@ var lastRender = 0
 window.requestAnimationFrame(loop);
 
 </script>
+
+</body>
+</html>
