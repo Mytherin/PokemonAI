@@ -94,6 +94,8 @@ STATUS_POISON = 4;
 STATUS_BURN = 5;
 STATUS_TOXIC = 6;
 
+status_array = ["???", "none", "paralyzed", 'sleep', 'poison', 'burn', 'toxic'];
+
 active_pokemon_p1.index = 3;
 active_pokemon_p1.health = 1;
 active_pokemon_p1.display_health = 1;
@@ -299,7 +301,85 @@ function mkNode(name) {
 	return node;
 }
 
-function build_tree1(tbl) {
+function mkAttack(name) {
+	return mkNode(name);
+}
+
+function mkRandAtt() {
+	return mkAttack("random");
+}
+
+function build_tree_prob_attack(tbl) {
+	var res = [];
+
+	var attacks = {};
+	for (var i = 0; i < tbl.length; i++) {
+		attacks[tbl[i].attack] = 'yes';
+	}
+
+	var num_att = Object.keys(attacks).length;
+	if (num_att < 0 || num_att > 4) {
+		console.log("weird number of remaining attacks {0}".format(num_att));
+	}
+
+	if (num_att === 0) {
+		return [mkRandAtt()];
+	}
+
+	var share = 25;
+
+	for (var att in attacks) {
+		var rnd = mkNode("{0}% chance".format(share));
+		rnd.children.push(mkAttack(att));
+		res.push(rnd);
+	}
+
+	if (num_att < 4) {
+		var rem = 100 - tbl.length * share;
+		var rnd = mkNode("{0}% chance".format(rem));
+
+		rnd.children.push(mkRandAtt());
+		res.push(rnd);
+	}
+
+	return res;
+}
+
+function build_tree_branch_nohealth(tbl) {
+	var res = [];
+
+	var opp_status = {};
+	for (var i = 0; i < tbl.length; i++) {
+		opp_status[tbl[i].state] = 'yes';
+	}
+
+
+	// FIXME opponent has a status -> only use attacks getAttackInfo(name) that do not involve a status change
+	// FIXME: and other way around
+	for (var ost in opp_status) {
+		// partition by oppoent status
+		var part = tbl.filter(function(item) { 
+			return ost == item.state;
+		});
+
+		var nde = mkNode("opp_status = {0}".format(status_array[ost]));
+		nde.children = build_tree_prob_attack(part);
+		res.push(nde);
+	}
+
+	var els = mkNode("else");
+	els.children.push(mkRandAtt());
+
+	if (res.length === 0) {
+		els = mkNode(mkRandAtt());
+	}
+
+	res.push(els);
+
+	return res;
+}
+
+function build_tree_branch_health(tbl) {
 	var res = [];
 	var damages = {};
 
@@ -322,23 +402,24 @@ function build_tree1(tbl) {
 		var att = row[1];
 
 		var part = tbl.filter(function(item) { 
-			return dmg !== item.damage;
+			return dmg === item.damage;
 		});
 
 		var prefix = i > 0 ? "{0} < ".format(damagelist[i-1][0]) : "";
-		var name = "{1}health <= {0}".format(dmg.toString(), prefix);
+		var name = "{1}opp_health <= {0}".format(dmg.toString(), prefix);
 
 		var n = mkNode(name);
-		n.children.push(mkNode(damages[dmg]));
+		n.children.push(mkAttack(damages[dmg]));
 
 		res.push(n);
 	}
 
 	var els = mkNode('else');
-	els.children.push(mkNode("random"));
+	var else_path = build_tree_branch_nohealth(tbl);
+	els.children = else_path;
 
 	if (res.length === 0) {
-		els = mkNode("random");
+		return else_path;
 	}
 
 	res.push(els);
@@ -353,8 +434,7 @@ function build_tree(matrix) {
 	var res = [];
 
 	if (isEmpty(matrix)) {
-		res.push(mkNode("random"));
-		return res;
+		return [mkRandAtt()];
 	}
 
 	for (var key in matrix) {
@@ -365,12 +445,16 @@ function build_tree(matrix) {
 
 		var row = {type: type, attack: attack, state: state, damage : matrix[key].damage};
 
+		console.log(JSON.stringify(row));
+
 		table.push(row);
 		types[type] = 'yes';
 	}
 
 
 	var node = mkNode('Root');
+
+	console.log(types);
 
 	for (var tpe in types) {
 		var part = table.filter(function(item) { 
@@ -382,15 +466,15 @@ function build_tree(matrix) {
 		}
 
 		var nde = mkNode("type = {0}".format(tpe));
-		nde.children = build_tree1(part);
+		nde.children = build_tree_branch_health(part);
 		res.push(nde);
 	}
 
 	var els = mkNode("else");
-	els.children.push(mkNode("random"));
+	els.children.push(mkRandAtt());
 
 	if (res.length === 0) {
-		els = mkNode("random");
+		els = mkRandAtt();
 	}
 
 	res.push(els);

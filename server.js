@@ -54,7 +54,7 @@ function update_matrix(req, res, next) {
 	var team = 'your_mother';
 	var pokemon = update.pokemon;
 	var attack = update.attack;
-	var state = 'none';
+	var opp_state = update.opp_status;
 	var attack_damage = update.damage;
 	var attack_cond = Condition.None;
 	var opp_pokemon = update.opp_pokemon;
@@ -73,8 +73,6 @@ function update_matrix(req, res, next) {
 	}
 
 	var poke_type = figure_out_type(poke_entry);
-	var poke_attack = attack;
-	var poke_state = state;
 
 
 	var fs = require('fs');
@@ -88,7 +86,8 @@ function update_matrix(req, res, next) {
 		JSON.parse(fs.readFileSync(filename)) :
 		{};
 
-	var mkey = poke_type + '/' + poke_attack + '/' + poke_state;
+	var mkey = poke_type + '/' + attack + '/' + opp_state;
+	console.log(mkey);
 
 	var mval = matrix[mkey];
 	var newval = new Object();
