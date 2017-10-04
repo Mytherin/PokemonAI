@@ -4,7 +4,7 @@
     <meta charset="utf-8"/>
     <title>Pokemon AI</title>
     <!-- stylesheets -->
-    <link rel="stylesheet" href="Treant.css" type="text/css"/>
+    <link rel="stylesheet" href="third_party/Treant.css" type="text/css"/>
 </head>
 <body>
 
@@ -14,7 +14,7 @@
 
 </canvas>
 
-<div class="chart" id="basic-example"></div>
+<div class="chart" id="decision-tree"></div>
 
 <script src="third_party/raphael.js"></script>
 <script src="third_party/Treant.js"></script>
@@ -379,8 +379,6 @@ function build_tree(matrix) {
 
 	res.push(els);
 
-	// console.log(JSON.stringify(node));
-
 	return res;
 }
 
@@ -390,7 +388,7 @@ function updateDecisionTree(responseText) {
 
 	decision_tree = {
         chart: {
-            container: "#basic-example",
+            container: "#decision-tree",
             
             connectors: {
                 type: 'step'
@@ -409,8 +407,6 @@ function updateDecisionTree(responseText) {
     };
 
     decision_tree.nodeStructure.children = build_tree(matrix);
-
-    console.log(build_tree(matrix));
 
     drawDecisionTree();
 }
