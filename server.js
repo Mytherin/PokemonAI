@@ -57,11 +57,18 @@ function update_matrix(req, res, next) {
 	var state = 'none';
 	var attack_damage = update.damage;
 	var attack_cond = Condition.None;
+	var opp_pokemon = update.opp_pokemon;
 
 	// figure out pokemon type
 	var poke_entry = lookup_pokemon(pokemon);
 	if (!poke_entry) {
 		console.log("Pokemon '%s' not found", pokemon);
+		return;
+	}
+
+	var poke_entry = lookup_pokemon(opp_pokemon);
+	if (!poke_entry) {
+		console.log("Pokemon '%s' not found", opp_pokemon);
 		return;
 	}
 
@@ -88,16 +95,24 @@ function update_matrix(req, res, next) {
 	newval.damage = attack_damage;
 	newval.cond = attack_cond;
 
+	var write_back = true;
 	if (!mval) {
 		mval = newval;
 	} else {
 		if (mval.damage > attack_damage) {
 			mval = newval;
+		} else {
+			write_back = false;
 		}
 	}
 
 	matrix[mkey] = mval;
-	fs.writeFileSync(filename, JSON.stringify(matrix));
+
+	if (write_back) {
+		// hopefully saves me SSD cycles :)
+		console.log("write matrix to %s", filename);
+		fs.writeFileSync(filename, JSON.stringify(matrix));
+	}
 
 	res.setHeader('Content-Type', 'application/json');
 	console.log(JSON.stringify(matrix));

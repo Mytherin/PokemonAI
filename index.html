@@ -307,12 +307,28 @@ function build_tree1(tbl) {
 		damages[tbl[i].damage] = tbl[i].attack;
 	}
 
-	for (var dmg in damages) {
+	// create sorted list
+	var damagelist = Object.keys(damages).map(function(key) {
+		return [key, damages[key]];
+	});
+	damagelist.sort(function(a, b) {
+    	return a[0] - b[0];
+    });
+
+
+	for (var i = 0; i < damagelist.length; i++) {
+		var row = damagelist[i];
+		var dmg = row[0];
+		var att = row[1];
+
 		var part = tbl.filter(function(item) { 
 			return dmg !== item.damage;
 		});
 
-		var n = mkNode("health < {0}".format(dmg.toString()));
+		var prefix = i > 0 ? "{0} < ".format(damagelist[i-1][0]) : "";
+		var name = "{1}health <= {0}".format(dmg.toString(), prefix);
+
+		var n = mkNode(name);
 		n.children.push(mkNode(damages[dmg]));
 
 		res.push(n);
@@ -448,8 +464,10 @@ function performMove(pkmn1, pkmn2, move, update_matrix) {
 			// update matrix and async draw decision tree
 			var upd = new Object();
 			upd.pokemon = pokemons[pkmn1.index].name;
+			upd.opp_pokemon = pokemons[pkmn2.index].name;
 			upd.attack = move.name;
-			upd.status = move.status;
+			upd.attack_status = move.status;
+			upd.opp_status = pkmn2.status;
 			upd.damage = Math.floor(damage);
 
 			var xmlHttp = new XMLHttpRequest();
