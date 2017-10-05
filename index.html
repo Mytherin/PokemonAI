@@ -29,7 +29,7 @@ var HEALTHBAR_HEIGHT = 6*SCALE;
 var HEALTHBAR_WIDTH = 80*SCALE;
 var HEALTHBAR_FONTSIZE = 10*SCALE;
 
-var INTERFACE_FONTSIZE = 15*SCALE
+var INTERFACE_FONTSIZE = 12*SCALE
 
 battle_width = 800;
 battle_height = 450;
@@ -99,8 +99,8 @@ var active_pokemon_p2 = 0
 status_array = ["???", "none", "paralyzed", 'sleep', 'poison', 'burn', 'toxic'];
 
 for(var i = 0; i < 3; i++) {
-	p1pokemon.push({'index': 3, 'health': 1, 'display_health': 1, 'status': STATUS_NONE, 'frame': 0, 'table': []})
-	p2pokemon.push({'index': 7, 'health': 1, 'display_health': 1, 'status': STATUS_NONE, 'frame': 0, 'table': []})
+	p1pokemon.push({'index': 7, 'health': 1, 'display_health': 1, 'status': STATUS_NONE, 'frame': 0, 'table': []})
+	p2pokemon.push({'index': 3, 'health': 1, 'display_health': 1, 'status': STATUS_NONE, 'frame': 0, 'table': []})
 }
 p1pokemon[1].index = 4;
 p1pokemon[2].index = 0
@@ -259,8 +259,7 @@ function drawPokemon(c, pkmn, isFront) {
 INTERFACE_SELECT_MOVE = 1
 INTERFACE_DISPLAY_TEXT = 2
 INTERFACE_SELECT_POKEMON = 3
-INTERFACE_FINISHED_BATTLE_WON = 4
-INTERFACE_FINISHED_BATTLE_LOST = 5
+INTERFACE_BATTLE_OVER = 4
 
 text_stack = []
 
@@ -548,7 +547,10 @@ function performMove(pkmn1, pkmn2, move, update_matrix) {
 			var defense = p2.defense;
 		}
 		var current_health = pkmn2.health * p2.hp;
-		var damage = ((((10 / 5 + 2) * (move.power * (attack / defense))) / 50) + 2) * multiplier;
+		var damage = 0;
+		if (move.power > 0) {
+			damage = ((((10 / 5 + 2) * (move.power * (attack / defense))) / 50) + 2) * multiplier;
+		}
 		var new_health = current_health - damage;
 		if (new_health <= 0) {
 			pkmn2.health = 0;
@@ -570,18 +572,34 @@ function performMove(pkmn1, pkmn2, move, update_matrix) {
 				}
 				if (selected_pokemon < 0) {
 					// player has no Pokémon left
-					next_interface = INTERFACE_FINISHED_BATTLE_LOST;
+					next_interface = INTERFACE_BATTLE_OVER;
+					text_stack = [{"text": "You have no Pokemon left! You have lost the battle!"}]
 				}
 			} else {
 				// AI pokemon has fainted
+				var no_pokemon_left = true;
 				for(var i = 0; i < 3; i++) {
 					if (p1pokemon[i].health > 0) {
-						next_interface = INTERFACE_FINISHED_BATTLE_WON;
+						no_pokemon_left = false;
 						break;
 					}
 				}
-				if (next_interface != INTERFACE_FINISHED_BATTLE_WON) {
-					// FIXME: switch pokemon for AI
+				if (no_pokemon_left) {
+					next_interface = INTERFACE_BATTLE_OVER;
+					text_stack = [{"text": "Your opponent is out of Pokemon! You win!"}]
+				} else {
+					// FIXME: switch pokemon for AI based on max damage against current pokemon
+					new_active_pokemon = -1;
+					for(var i = 0; i < 3; i++) {
+						if (p1pokemon[i].health > 0) {
+							new_active_pokemon = i
+							break;
+						}
+					}
+					next_interface = INTERFACE_SELECT_MOVE
+					text_stack.push({"text": "The AI send out " + pokemons[p1pokemon[new_active_pokemon].index].name.toProperCase() + ".", "effect": 
+						function(params) { active_pokemon_p1 = params[0]; }, "parameters": [new_active_pokemon]})
+					console.log(text_stack)
 				}
 			}
 		} else {
