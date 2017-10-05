@@ -86,31 +86,33 @@ function update_matrix(req, res, next) {
 		JSON.parse(fs.readFileSync(filename)) :
 		{};
 
-	var mkey = poke_type + '/' + attack + '/' + opp_state;
-	console.log(mkey);
+	if (attack) { // hack for initial loading
+		var mkey = poke_type + '/' + attack + '/' + opp_state;
+		console.log(mkey);
 
-	var mval = matrix[mkey];
-	var newval = new Object();
-	newval.damage = attack_damage;
-	newval.cond = attack_cond;
+		var mval = matrix[mkey];
+		var newval = new Object();
+		newval.damage = attack_damage;
+		newval.cond = attack_cond;
 
-	var write_back = true;
-	if (!mval) {
-		mval = newval;
-	} else {
-		if (mval.damage > attack_damage) {
+		var write_back = true;
+		if (!mval) {
 			mval = newval;
 		} else {
-			write_back = false;
+			if (mval.damage > attack_damage) {
+				mval = newval;
+			} else {
+				write_back = false;
+			}
 		}
-	}
 
-	matrix[mkey] = mval;
+		matrix[mkey] = mval;
 
-	if (write_back) {
-		// hopefully saves me SSD cycles :)
-		console.log("write matrix to %s", filename);
-		fs.writeFileSync(filename, JSON.stringify(matrix));
+		if (write_back) {
+			// hopefully saves me SSD cycles :)
+			console.log("write matrix to %s", filename);
+			fs.writeFileSync(filename, JSON.stringify(matrix));
+		}
 	}
 
 	res.setHeader('Content-Type', 'application/json');
