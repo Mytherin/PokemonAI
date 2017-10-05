@@ -647,6 +647,7 @@ function aiChooseAttack(thisPkm, oppPkm) {
 
 	var opp_info = pokemons[oppPkm.index];
 	var opp_type = figure_out_type(opp_info);
+	var opp_status = oppPkm.status;
 
 	var randAttack = () => { return randBetween(0, 4); };
 
@@ -656,18 +657,20 @@ function aiChooseAttack(thisPkm, oppPkm) {
 	console.log(proper_health);
 
 	if (tbl.length === 0) {
+		console.log("aiChooseAttack: no matrix");
 		return randAttack(); // No matrix
 	}
 
-/*
 	console.log(tbl);
 
 	// 1. Have we encountered the opponent's type before?
 	var tbl = tbl.filter(function(row) {
+		console.log("aiChooseAttack: comapre types {0} with {1}".format(opp_type, row.type));
 		return str_eq(opp_type, row.type);
 	});
 
 	if (tbl.length === 0) {
+		console.log("aiChooseAttack: not seen type");
 		return randAttack(); // not seen type before
 	}
 
@@ -682,19 +685,65 @@ function aiChooseAttack(thisPkm, oppPkm) {
 		}
 	});
 
+	var attacks = pokemons[thisPkm.index].attacks;
+
 	if (strongest_move && max_damage && max_damage >= proper_health) {
-		console.log(strongest_move);
+		console.log("aiChooseAttack: Instakill {0}".format(strongest_move));
 
 		// match this strongest move
-		for (var i = 0; i < pokemons[thisPkm].attacks.length; i++) {
-			if (str_eq(row, strongest_move)) {
-				// return i;
+		for (var i = 0; i < attacks.length; i++) {
+			if (str_eq(attacks[i], strongest_move)) {
+				return i;
 			}
 		}
 	}
 
 	// no short-cut by killing our dear opponent
-*/
+
+	var good_attack = randBetween(0, 10);
+
+	// does he have a status?
+	if (opp_status != STATUS_NONE) {
+		if (strongest_move && good_attack >= 4) {
+			// match this strongest move
+			for (var i = 0; i < attacks.length; i++) {
+				if (str_eq(attacks[i], strongest_move)) {
+					return i;
+				}
+			}
+		}
+	} else {
+		// try to get some status on opponent
+		if (good_attack >= 4) {
+			strongest_move = null;
+			max_damage = null;
+
+			var no_status = status_array[STATUS_NONE];
+
+			attacks.forEach(function(row) {
+				var info = getAttackInfo(attacks[i]);
+				if (!info.status) {
+					console.log("aiChooseAttack: attack info not found for attack {0}".format(item.attack));
+				}
+
+				if (no_status.localeCompare(info.status) !== 0 && !max_damage || row.damage >= max_damage) {
+					max_damage = row.damage;
+					strongest_move = row.attack;
+				}
+			});
+
+			if (strongest_move) {
+				for (var i = 0; i < attacks.length; i++) {
+					if (str_eq(attacks[i], strongest_move)) {
+						return i;
+					}
+				}
+			}
+		}	
+	}
+
+
+	console.log("aiChooseAttack: fallback");
 	return randAttack();
 }
 
@@ -702,7 +751,7 @@ function selectMove() {
 	if (interface_state != INTERFACE_SELECT_MOVE) return;
 	// FIXME: other pokemon uses AI to select a move
 	var p1_attack = getAttackInfo(pokemons[p1pokemon[active_pokemon_p1].index].attacks[
-		aiChooseAttack(p1pokemon[active_pokemon_p1], p1pokemon[active_pokemon_p2])
+		aiChooseAttack(p1pokemon[active_pokemon_p1], p2pokemon[active_pokemon_p2])
 		// randBetween(0,4)
 		]);
 	var p2_attack = getAttackInfo(pokemons[p2pokemon[active_pokemon_p2].index].attacks[active_move])
