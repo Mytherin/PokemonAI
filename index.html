@@ -309,10 +309,12 @@ function mkRandAtt() {
 	return mkAttack("random");
 }
 
+// find stongest attack on 'tbl' and choose between
+// exploiting strongest attack and exploring a random attack
 function build_tree_prob_attack(tbl) {
 	var res = [];
 	var max_damage = null;
-	var max_attack = null;
+	var max_attack = null
 
 	for (var i = 0; i < tbl.length; i++) {
 		if (!max_damage || tbl[i].damage >= max_damage) {
@@ -345,28 +347,31 @@ function build_tree_branch_nohealth(tbl) {
 		opp_status[tbl[i].state] = 'yes';
 	}
 
+	var no_status = status_array[STATUS_NONE];
+
 	for (var ost in opp_status) {
 		// partition by oppoent status
 		var part = tbl.filter(function(item) { 	
 			return ost == item.state;
 		});
 
-		// filter out status change when opponent's status != NONE
-		if (ost !== STATUS_NONE) {
-			var no_status = status_array[STATUS_NONE];
-			var newp = part.filter(function(item) {
-				var info = getAttackInfo(item.attack);
-				if (!info.status) {
-					console.log("build_tree_branch_nohealth: attack info not found for attack {0}".format(item.attack));
-					// whatever, just print it
-					return true;
-				}
+		part = part.filter(function(item) {
+			var info = getAttackInfo(item.attack);
+			if (!info.status) {
+				console.log("build_tree_branch_nohealth: attack info not found for attack {0}".format(item.attack));
+				// whatever, just print it
+				return true;
+			}
+
+			if (ost == STATUS_NONE) {
+				// try to change status
+				return no_status.localeCompare(info.status) !== 0;	
+			} else {
 				// if we already have a status we only choose attacks that do not change the status
 				return no_status.localeCompare(info.status) === 0;
-			});
-
-			part = newp
-		}
+			}
+			
+		});
 
 		var nde = mkNode("opp_status = {0}".format(status_array[ost]));
 		nde.children = build_tree_prob_attack(part);
@@ -374,13 +379,15 @@ function build_tree_branch_nohealth(tbl) {
 	}
 
 	var els = mkNode("else");
-	els.children.push(mkRandAtt());
+	var els_atts = build_tree_prob_attack(tbl);
+	els.children = els_atts;
 
 	if (res.length === 0) {
-		els = mkNode(mkRandAtt());
+		res = els_atts;
+	} else {
+		res.push(els);
 	}
 
-	res.push(els);
 
 	return res;
 }
@@ -398,9 +405,7 @@ function build_tree_branch_health(tbl) {
 	}
 
 	if (max_damage) {
-		var name = "opp_health ≤ {0}".format(max_damage.toString());
-
-		var n = mkNode(name);
+		var n = mkNode("opp_health ≤ {0}".format(max_damage.toString()));
 		n.children.push(mkAttack(max_attack));
 
 		res.push(n);
@@ -572,11 +577,15 @@ function performMove(pkmn1, pkmn2, move, update_matrix) {
 	}
 }
 
+function randBetween(min, max) {
+	return Math.floor((Math.random() * (max-min))) + min;
+}
+
 function selectMove() {
 	if (interface_state != INTERFACE_SELECT_MOVE) return;
 	// FIXME: other pokemon uses AI to select a move
-	var p1_attack = getAttackInfo(pokemons[active_pokemon_p1.index].attacks[0])
-	var p2_attack = getAttackInfo(pokemons[active_pokemon_p2.index].attacks[active_move])
+	var p1_attack = getAttackInfo(pokemons[active_pokemon_p1.index].attacks[randBetween(0, 4)]);
+	var p2_attack = getAttackInfo(pokemons[active_pokemon_p2.index].attacks[active_move]);
 
 	// speed resolution
 	p1_goes_first = true;
