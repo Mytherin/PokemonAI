@@ -80,7 +80,7 @@ function update_matrix(req, res, next) {
 	var sanitize = require("sanitize-filename");
 
 	// update our matrix
-	var filename = vsprintf('training/train_%s.json', [sanitize(team)]);
+	var filename = vsprintf('training/train_%s_%s.json', [sanitize(pokemon), sanitize(team)]);
 
 	var matrix = fs.existsSync(filename) ?
 		JSON.parse(fs.readFileSync(filename)) :

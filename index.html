@@ -720,10 +720,11 @@ function aiChooseAttack(thisPkm, oppPkm) {
 
 			var no_status = status_array[STATUS_NONE];
 
-			attacks.forEach(function(row) {
-				var info = getAttackInfo(attacks[i]);
+			tbl.forEach(function(row) {
+				console.log(row.attack);
+				var info = getAttackInfo(row.attack);
 				if (!info.status) {
-					console.log("aiChooseAttack: attack info not found for attack {0}".format(item.attack));
+					console.log("aiChooseAttack: attack info not found for attack {0}".format(row.attack));
 				}
 
 				if (no_status.localeCompare(info.status) !== 0 && !max_damage || row.damage >= max_damage) {
