@@ -610,6 +610,7 @@ function performMove(pkmn1, pkmn2, move, update_matrix) {
 			// update matrix and async draw decision tree
 			var upd = new Object();
 			upd.pokemon = pokemons[pkmn1.index].name;
+			console.log(upd.pokemon);
 			upd.opp_pokemon = pokemons[pkmn2.index].name;
 			upd.attack = move.name;
 			upd.attack_status = move.status;
@@ -794,11 +795,11 @@ function selectMove() {
 	next_interface = INTERFACE_SELECT_MOVE;
 	text_stack = [""]
 	if (p1_goes_first) {
-		performMove(p1pokemon[active_pokemon_p1], p2pokemon[active_pokemon_p2], p1_attack, true);
-		performMove(p2pokemon[active_pokemon_p2], p1pokemon[active_pokemon_p1], p2_attack, false);
-	} else {
-		performMove(p2pokemon[active_pokemon_p2], p1pokemon[active_pokemon_p1], p2_attack, true);
 		performMove(p1pokemon[active_pokemon_p1], p2pokemon[active_pokemon_p2], p1_attack, false);
+		performMove(p2pokemon[active_pokemon_p2], p1pokemon[active_pokemon_p1], p2_attack, true);
+	} else {
+		performMove(p2pokemon[active_pokemon_p2], p1pokemon[active_pokemon_p1], p2_attack, false);
+		performMove(p1pokemon[active_pokemon_p1], p2pokemon[active_pokemon_p2], p1_attack, true);
 	}
 	nextText();
 }
