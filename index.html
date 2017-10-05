@@ -108,6 +108,8 @@ p1pokemon[2].index = 0
 p2pokemon[1].index = 5
 p2pokemon[2].index = 6
 
+callWheneverActualPokemonChanges(p1pokemon[active_pokemon_p1]);
+
 var HEALTH_ANIMATION_SPEED = 0.01;
 
 String.prototype.toProperCase = function () {
@@ -321,6 +323,33 @@ String.prototype.format = function () {
 		return args[+(a.substr(1,a.length-2))||0];
 	});
 };
+
+function callWheneverActualPokemonChanges(pkmn1) {
+	// update matrix and async draw decision tree
+	var upd = new Object();
+	upd.pokemon = pokemons[pkmn1.index].name;
+	console.log(upd.pokemon);
+	upd.opp_pokemon = "Pikachu";
+	upd.attack = null;
+	upd.attack_status = 0;
+	upd.opp_status = 0;
+	upd.damage = 0;
+	upd.team = 'your/mother@bla.xyz';
+
+	var xmlHttp = new XMLHttpRequest();
+	xmlHttp.onreadystatechange = function() { 
+		if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+			updateAI(pkmn1, xmlHttp.responseText);
+		}
+
+	var body = JSON.stringify(upd);
+	var url = "update_matrix?json=";
+	url = url.concat(encodeURIComponent(body));
+
+	xmlHttp.open("POST", url, true);
+	xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xmlHttp.send(null);
+}
 
 function isEmpty(obj) {
 	// from https://stackoverflow.com/questions/6072590/how-to-match-an-empty-dictionary-in-javascript
@@ -546,7 +575,9 @@ function updateDecisionTree(pkm) {
         }
     };
 
-    decision_tree.nodeStructure.children = build_tree(pkm.table);
+    if (pkm.table.length > 0) {
+    	decision_tree.nodeStructure.children = build_tree(pkm.table);
+    }
 
     // and draw it
     new Treant(decision_tree);
@@ -622,8 +653,7 @@ function dealDamageToPokemon(params) {
 				}
 				next_interface = INTERFACE_SELECT_MOVE
 				text_stack.push({"text": "The AI send out " + pokemons[p1pokemon[new_active_pokemon].index].name.toProperCase() + ".", "effect": 
-					function(params) { active_pokemon_p1 = params[0]; }, "parameters": [new_active_pokemon]})
-				console.log(text_stack)
+					function(params) { active_pokemon_p1 = params[0]; callWheneverActualPokemonChanges(p1pokemon[active_pokemon_p1]); }, "parameters": [new_active_pokemon]})
 			}
 		}
 	} else {
@@ -726,6 +756,7 @@ function aiChooseAttack(thisPkm, oppPkm) {
 
 	var opp_info = pokemons[oppPkm.index];
 	var opp_type = figure_out_type(opp_info);
+	var opp_status = oppPkm.status;
 
 	var randAttack = () => { return randBetween(0, 4); };
 
@@ -735,18 +766,20 @@ function aiChooseAttack(thisPkm, oppPkm) {
 	console.log(proper_health);
 
 	if (tbl.length === 0) {
+		console.log("aiChooseAttack: no matrix");
 		return randAttack(); // No matrix
 	}
 
-/*
 	console.log(tbl);
 
 	// 1. Have we encountered the opponent's type before?
 	var tbl = tbl.filter(function(row) {
+		console.log("aiChooseAttack: comapre types {0} with {1}".format(opp_type, row.type));
 		return str_eq(opp_type, row.type);
 	});
 
 	if (tbl.length === 0) {
+		console.log("aiChooseAttack: not seen type");
 		return randAttack(); // not seen type before
 	}
 
@@ -761,19 +794,66 @@ function aiChooseAttack(thisPkm, oppPkm) {
 		}
 	});
 
+	var attacks = pokemons[thisPkm.index].attacks;
+
 	if (strongest_move && max_damage && max_damage >= proper_health) {
-		console.log(strongest_move);
+		console.log("aiChooseAttack: Instakill {0}".format(strongest_move));
 
 		// match this strongest move
-		for (var i = 0; i < pokemons[thisPkm].attacks.length; i++) {
-			if (str_eq(row, strongest_move)) {
-				// return i;
+		for (var i = 0; i < attacks.length; i++) {
+			if (str_eq(attacks[i], strongest_move)) {
+				return i;
 			}
 		}
 	}
 
 	// no short-cut by killing our dear opponent
-*/
+
+	var good_attack = randBetween(0, 10);
+
+	// does he have a status?
+	if (opp_status != STATUS_NONE) {
+		if (strongest_move && good_attack >= 4) {
+			// match this strongest move
+			for (var i = 0; i < attacks.length; i++) {
+				if (str_eq(attacks[i], strongest_move)) {
+					return i;
+				}
+			}
+		}
+	} else {
+		// try to get some status on opponent
+		if (good_attack >= 4) {
+			strongest_move = null;
+			max_damage = null;
+
+			var no_status = status_array[STATUS_NONE];
+
+			tbl.forEach(function(row) {
+				console.log(row.attack);
+				var info = getAttackInfo(row.attack);
+				if (!info.status) {
+					console.log("aiChooseAttack: attack info not found for attack {0}".format(row.attack));
+				}
+
+				if (no_status.localeCompare(info.status) !== 0 && !max_damage || row.damage >= max_damage) {
+					max_damage = row.damage;
+					strongest_move = row.attack;
+				}
+			});
+
+			if (strongest_move) {
+				for (var i = 0; i < attacks.length; i++) {
+					if (str_eq(attacks[i], strongest_move)) {
+						return i;
+					}
+				}
+			}
+		}	
+	}
+
+
+	console.log("aiChooseAttack: fallback");
 	return randAttack();
 }
 
@@ -781,7 +861,7 @@ function selectMove() {
 	if (interface_state != INTERFACE_SELECT_MOVE) return;
 	// FIXME: other pokemon uses AI to select a move
 	var p1_attack = getAttackInfo(pokemons[p1pokemon[active_pokemon_p1].index].attacks[
-		aiChooseAttack(p1pokemon[active_pokemon_p1], p1pokemon[active_pokemon_p2])
+		aiChooseAttack(p1pokemon[active_pokemon_p1], p2pokemon[active_pokemon_p2])
 		// randBetween(0,4)
 		]);
 	var p2_attack = getAttackInfo(pokemons[p2pokemon[active_pokemon_p2].index].attacks[active_move])
@@ -812,11 +892,11 @@ function selectMove() {
 	next_interface = INTERFACE_SELECT_MOVE;
 	text_stack = [""]
 	if (p1_goes_first) {
-		performMove(p1pokemon[active_pokemon_p1], p2pokemon[active_pokemon_p2], p1_attack, true);
-		performMove(p2pokemon[active_pokemon_p2], p1pokemon[active_pokemon_p1], p2_attack, false);
-	} else {
-		performMove(p2pokemon[active_pokemon_p2], p1pokemon[active_pokemon_p1], p2_attack, true);
 		performMove(p1pokemon[active_pokemon_p1], p2pokemon[active_pokemon_p2], p1_attack, false);
+		performMove(p2pokemon[active_pokemon_p2], p1pokemon[active_pokemon_p1], p2_attack, true);
+	} else {
+		performMove(p2pokemon[active_pokemon_p2], p1pokemon[active_pokemon_p1], p2_attack, false);
+		performMove(p1pokemon[active_pokemon_p1], p2pokemon[active_pokemon_p2], p1_attack, true);
 	}
 	nextText();
 }
