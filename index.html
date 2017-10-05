@@ -322,38 +322,32 @@ function mkRandAtt() {
 	return mkAttack("random");
 }
 
+// find stongest attack on 'tbl' and choose between
+// exploiting strongest attack and exploring a random attack
 function build_tree_prob_attack(tbl) {
 	var res = [];
+	var max_damage = null;
+	var max_attack = null
 
-	var attacks = {};
 	for (var i = 0; i < tbl.length; i++) {
-		attacks[tbl[i].attack] = 'yes';
+		if (!max_damage || tbl[i].damage >= max_damage) {
+			max_damage = tbl[i].damage;
+			max_attack = tbl[i].attack;
+		}
 	}
 
-	var num_att = Object.keys(attacks).length;
-	if (num_att < 0 || num_att > 4) {
-		console.log("weird number of remaining attacks {0}".format(num_att));
-	}
-
-	if (num_att === 0) {
+	if (!max_damage) {
 		return [mkRandAtt()];
 	}
 
-	var share = 25;
+	var prob = 50;
+	var rnd = mkNode("{0}% chance".format(prob));
+	rnd.children.push(mkAttack(max_attack));
+	res.push(rnd);
 
-	for (var att in attacks) {
-		var rnd = mkNode("{0}% chance".format(share));
-		rnd.children.push(mkAttack(att));
-		res.push(rnd);
-	}
-
-	if (num_att < 4) {
-		var rem = 100 - tbl.length * share;
-		var rnd = mkNode("{0}% chance".format(rem));
-
-		rnd.children.push(mkRandAtt());
-		res.push(rnd);
-	}
+	var rnd = mkNode("{0}% chance".format(100 - prob));
+	rnd.children.push(mkRandAtt());
+	res.push(rnd);
 
 	return res;
 }
@@ -366,22 +360,31 @@ function build_tree_branch_nohealth(tbl) {
 		opp_status[tbl[i].state] = 'yes';
 	}
 
+	var no_status = status_array[STATUS_NONE];
+
 	for (var ost in opp_status) {
 		// partition by oppoent status
 		var part = tbl.filter(function(item) { 	
 			return ost == item.state;
 		});
 
-		// filter out status change when opponent's status != NONE
-		if (ost !== STATUS_NONE) {
-			var no_status = status_array[STATUS_NONE];
+		part = part.filter(function(item) {
+			var info = getAttackInfo(item.attack);
+			if (!info.status) {
+				console.log("build_tree_branch_nohealth: attack info not found for attack {0}".format(item.attack));
+				// whatever, just print it
+				return true;
+			}
 
-			part = part.filter(function(item) {
-				var info = getAttackInfo(item.attack);
+			if (ost == STATUS_NONE) {
+				// try to change status
+				return no_status.localeCompare(info.status) !== 0;	
+			} else {
 				// if we already have a status we only choose attacks that do not change the status
-				return no_status.localeCompare(info.status) !== 0;
-			});
-		}
+				return no_status.localeCompare(info.status) === 0;
+			}
+			
+		});
 
 		var nde = mkNode("opp_status = {0}".format(status_array[ost]));
 		nde.children = build_tree_prob_attack(part);
@@ -389,48 +392,34 @@ function build_tree_branch_nohealth(tbl) {
 	}
 
 	var els = mkNode("else");
-	els.children.push(mkRandAtt());
+	var els_atts = build_tree_prob_attack(tbl);
+	els.children = els_atts;
 
 	if (res.length === 0) {
-		els = mkNode(mkRandAtt());
+		res = els_atts;
+	} else {
+		res.push(els);
 	}
 
-	res.push(els);
 
 	return res;
 }
 
 function build_tree_branch_health(tbl) {
 	var res = [];
-	var damages = {};
+	var max_attack = null;
+	var max_damage = null;
 
 	for (var i = 0; i < tbl.length; i++) {
-		damages[tbl[i].damage] = tbl[i].attack;
+		if (!max_damage || tbl[i].damage >= max_damage) {
+			max_damage = tbl[i].damage;
+			max_attack = tbl[i].attack;	
+		}
 	}
 
-	// create sorted list
-	var damagelist = Object.keys(damages).map(function(key) {
-		return [key, damages[key]];
-	});
-	damagelist.sort(function(a, b) {
-    	return a[0] - b[0];
-    });
-
-
-	for (var i = 0; i < damagelist.length; i++) {
-		var row = damagelist[i];
-		var dmg = row[0];
-		var att = row[1];
-
-		var part = tbl.filter(function(item) { 
-			return dmg === item.damage;
-		});
-
-		var prefix = i > 0 ? "{0} < ".format(damagelist[i-1][0]) : "";
-		var name = "{1}opp_health <= {0}".format(dmg.toString(), prefix);
-
-		var n = mkNode(name);
-		n.children.push(mkAttack(damages[dmg]));
+	if (max_damage) {
+		var n = mkNode("opp_health ≤ {0}".format(max_damage.toString()));
+		n.children.push(mkAttack(max_attack));
 
 		res.push(n);
 	}
@@ -486,7 +475,7 @@ function build_tree(matrix) {
 			console.log("Less than one entry? Doesn't make sense");
 		}
 
-		var nde = mkNode("type = {0}".format(tpe));
+		var nde = mkNode("opp_type = {0}".format(tpe));
 		nde.children = build_tree_branch_health(part);
 		res.push(nde);
 	}
@@ -605,6 +594,7 @@ function performMove(pkmn1, pkmn2, move, update_matrix) {
 			upd.attack_status = move.status;
 			upd.opp_status = pkmn2.status;
 			upd.damage = Math.floor(damage);
+			upd.team = 'your/mother@bla.xyz';
 
 			var xmlHttp = new XMLHttpRequest();
 			xmlHttp.onreadystatechange = function() { 
@@ -631,10 +621,14 @@ function performMove(pkmn1, pkmn2, move, update_matrix) {
 	}
 }
 
+function randBetween(min, max) {
+	return Math.floor((Math.random() * (max-min))) + min;
+}
+
 function selectMove() {
 	if (interface_state != INTERFACE_SELECT_MOVE) return;
 	// FIXME: other pokemon uses AI to select a move
-	var p1_attack = getAttackInfo(pokemons[p1pokemon[active_pokemon_p1].index].attacks[0])
+	var p1_attack = getAttackInfo(pokemons[p1pokemon[active_pokemon_p1].index].attacks[randBetween(0, 4)])
 	var p2_attack = getAttackInfo(pokemons[p2pokemon[active_pokemon_p2].index].attacks[active_move])
 
 	// speed resolution
