@@ -101,12 +101,14 @@ active_pokemon_p1.health = 1;
 active_pokemon_p1.display_health = 1;
 active_pokemon_p1.status = STATUS_NONE;
 active_pokemon_p1.frame = 0;
+active_pokemon_p1.table = [];
 
 active_pokemon_p2.index = 7;
 active_pokemon_p2.health = 1;
 active_pokemon_p2.display_health = 1;
 active_pokemon_p2.status = STATUS_NONE;
 active_pokemon_p2.frame = 0;
+active_pokemon_p1.table = [];
 
 var HEALTH_ANIMATION_SPEED = 0.01;
 
@@ -277,8 +279,6 @@ function computeMultiplier(pkmn1, pkmn2, move) {
 	return stab_multiplier * computeEffectiveness(pkmn2, move);
 }
 
-decision_tree = {};
-
 String.prototype.format = function () {
 	// from https://stackoverflow.com/questions/25227119/javascript-strings-format-is-not-defined
 	var args = [].slice.call(arguments);
@@ -424,37 +424,24 @@ function build_tree_branch_health(tbl) {
 	return res;
 }
 
-function build_tree(matrix) {
-	var table = [];
+function build_tree(tbl) {
 	var types = {};
-
 	var res = [];
 
-	if (isEmpty(matrix)) {
+	if (tbl.length === 0) {
 		return [mkRandAtt()];
 	}
 
-	for (var key in matrix) {
-		keys = key.split('/');
-		var type = keys[0];
-		var attack = keys[1];
-		var state = keys[2];
-
-		var row = {type: type, attack: attack, state: state, damage : matrix[key].damage};
-
-		console.log(JSON.stringify(row));
-
-		table.push(row);
-		types[type] = 'yes';
+	for (var i = 0; i < tbl.length; i++) {
+		types[tbl[i].type] = 'yes';
 	}
-
 
 	var node = mkNode('Root');
 
 	console.log(types);
 
 	for (var tpe in types) {
-		var part = table.filter(function(item) { 
+		var part = tbl.filter(function(item) { 
 			return tpe.localeCompare(item.type) === 0;
 		});
 
@@ -479,11 +466,32 @@ function build_tree(matrix) {
 	return res;
 }
 
-function updateDecisionTree(responseText) {
-	console.log("dec tree: %s", responseText);
-	matrix = JSON.parse(responseText);
+function updateAI(pkm, responseText) {
+	console.log("matrix: %s", responseText);
+	var matrix = JSON.parse(responseText);
 
-	decision_tree = {
+	// build table from matrix
+	var table = [];
+	for (var key in matrix) {
+		keys = key.split('/');
+		var type = keys[0];
+		var attack = keys[1];
+		var state = keys[2];
+
+		var row = {type: type, attack: attack, state: state, damage : matrix[key].damage};
+
+		console.log(JSON.stringify(row));
+
+		table.push(row);
+	}
+
+	pkm.table = table;
+
+	updateDecisionTree(pkm);
+}
+
+function updateDecisionTree(pkm) {
+	var decision_tree = {
         chart: {
             container: "#decision-tree",
             
@@ -503,13 +511,10 @@ function updateDecisionTree(responseText) {
         }
     };
 
-    decision_tree.nodeStructure.children = build_tree(matrix);
+    decision_tree.nodeStructure.children = build_tree(pkm.table);
 
-    drawDecisionTree();
-}
-
-function drawDecisionTree() {
-	new Treant( decision_tree );
+    // and draw it
+    new Treant(decision_tree);
 }
 
 function performMove(pkmn1, pkmn2, move, update_matrix) {
@@ -555,7 +560,7 @@ function performMove(pkmn1, pkmn2, move, update_matrix) {
 			var xmlHttp = new XMLHttpRequest();
 			xmlHttp.onreadystatechange = function() { 
 				if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
-					updateDecisionTree(xmlHttp.responseText);
+					updateAI(pkmn1, xmlHttp.responseText);
 				}
 
 			var body = JSON.stringify(upd);
@@ -581,10 +586,81 @@ function randBetween(min, max) {
 	return Math.floor((Math.random() * (max-min))) + min;
 }
 
+// from server.js
+function figure_out_type(poke_entry) {
+	var types = poke_entry.types;
+	types.sort();
+	return types.join("");
+}
+
+function str_eq(a, b) {
+	return a.toUpperCase().localeCompare(b.toUpperCase()) === 0;
+}
+
+function aiChooseAttack(thisPkm, oppPkm) {
+	// FIXME: Thanks to async updates this has a race condition.
+	// But since our AI is kinda randomized, this shouldn't be a
+	// big problem.
+	var tbl = thisPkm.table;
+
+	var opp_info = pokemons[oppPkm.index];
+	var opp_type = figure_out_type(opp_info);
+
+	console.log(oppPkm);
+
+	var randAttack = () => { return randBetween(0, 4); };
+
+	console.log(opp_type);
+	console.log(oppPkm);
+	var proper_health = oppPkm.health * pokemons[oppPkm.index].hp;
+	console.log(proper_health);
+
+	if (tbl.length === 0) {
+		return randAttack(); // No matrix
+	}
+
+	console.log(tbl);
+
+	// 1. Have we encountered the opponent's type before?
+	var tbl = tbl.filter(function(row) {
+		return str_eq(opp_type, row.type);
+	});
+
+	if (tbl.length === 0) {
+		return randAttack(); // not seen type before
+	}
+
+	// 2. Can we kill the opponent using our strongest move?
+	var strongest_move = null;
+	var max_damage = null;
+
+	tbl.forEach(function(row) {
+		if (!max_damage || row.damage >= max_damage) {
+			max_damage = row.damage;
+			strongest_move = row.attack;
+		}
+	});
+
+	if (max_damage && max_damage >= proper_health) {
+		console.log(strongest_move);
+
+		// match this strongest move
+		for (var i = 0; i < pokemons[thisPkm].attacks.length; i++) {
+			if (str_eq(row, strongest_move)) {
+				return i;
+			}
+		}
+	}
+
+	// no short-cut by killing our dear opponent
+
+	return randAttack();
+}
+
 function selectMove() {
 	if (interface_state != INTERFACE_SELECT_MOVE) return;
 	// FIXME: other pokemon uses AI to select a move
-	var p1_attack = getAttackInfo(pokemons[active_pokemon_p1.index].attacks[randBetween(0, 4)]);
+	var p1_attack = getAttackInfo(pokemons[active_pokemon_p1.index].attacks[aiChooseAttack(active_pokemon_p1, active_pokemon_p2)]);
 	var p2_attack = getAttackInfo(pokemons[active_pokemon_p2.index].attacks[active_move]);
 
 	// speed resolution
