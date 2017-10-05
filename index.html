@@ -69,6 +69,7 @@ type_colors["bug"] = "#a8b820"
 type_colors["psychic"] = "#f85888"
 type_colors["ice"] = "#98d8d8"
 type_colors["steel"] = "#b8b8d0"
+type_colors["fairy"] = "#CD1076"
 
 type_array = ["Normal", "Fighting", "Flying", "Poison", "Ground", "Rock", "Bug", "Ghost", "Steel", "Fire", "Water", "Grass", "Electric", "Psychic", "Ice", "Dragon", "Dark", "Fairy"]
 weaknesses = [[1, 1, 1, 1, 1, 0.5, 1, 0, 0.5, 1, 1, 1, 1, 1, 1, 1, 1, 1], [2, 1, 0.5, 0.5, 1, 2, 0.5, 0, 2, 1, 1, 1, 1, 0.5, 2, 1, 2, 0.5], [1, 2, 1, 1, 1, 0.5, 2, 1, 0.5, 1, 1, 2, 0.5, 1, 1, 1, 1, 1], [1, 1, 1, 0.5, 0.5, 0.5, 1, 0.5, 0, 1, 1, 2, 1, 1, 1, 1, 1, 2], [1, 1, 0, 2, 1, 2, 0.5, 1, 2, 2, 1, 0.5, 2, 1, 1, 1, 1, 1], [1, 0.5, 2, 1, 0.5, 1, 2, 1, 0.5, 2, 1, 1, 1, 1, 2, 1, 1, 1], [1, 0.5, 0.5, 0.5, 1, 1, 1, 0.5, 0.5, 0.5, 1, 2, 1, 2, 1, 1, 2, 0.5], [0, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 0.5, 1], [1, 1, 1, 1, 1, 2, 1, 1, 0.5, 0.5, 0.5, 1, 0.5, 1, 2, 1, 1, 2], [1, 1, 1, 1, 1, 0.5, 2, 1, 2, 0.5, 0.5, 2, 1, 1, 2, 0.5, 1, 1], [1, 1, 1, 1, 2, 2, 1, 1, 1, 2, 0.5, 0.5, 1, 1, 1, 0.5, 1, 1], [1, 1, 0.5, 0.5, 2, 2, 0.5, 1, 0.5, 0.5, 2, 0.5, 1, 1, 1, 0.5, 1, 1], [1, 1, 2, 1, 0, 1, 1, 1, 1, 1, 2, 0.5, 0.5, 1, 1, 0.5, 1, 1], [1, 2, 1, 2, 1, 1, 1, 1, 0.5, 1, 1, 1, 1, 0.5, 1, 1, 0, 1], [1, 1, 2, 1, 2, 1, 1, 1, 0.5, 0.5, 0.5, 2, 1, 1, 0.5, 2, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 0.5, 1, 1, 1, 1, 1, 1, 2, 1, 0], [1, 0.5, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 0.5, 0.5], [1, 2, 1, 0.5, 1, 1, 1, 1, 0.5, 0.5, 1, 1, 1, 1, 1, 2, 2, 1]]
@@ -100,7 +101,7 @@ status_array = ["???", "none", "paralyzed", 'sleep', 'poison', 'burn', 'toxic'];
 
 for(var i = 0; i < 3; i++) {
 	p1pokemon.push({'index': 7, 'health': 1, 'display_health': 1, 'status': STATUS_NONE, 'frame': 0, 'table': []})
-	p2pokemon.push({'index': 3, 'health': 1, 'display_health': 1, 'status': STATUS_NONE, 'frame': 0, 'table': []})
+	p2pokemon.push({'index': 12, 'health': 1, 'display_health': 1, 'status': STATUS_NONE, 'frame': 0, 'table': []})
 }
 p1pokemon[1].index = 4;
 p1pokemon[2].index = 0
@@ -146,7 +147,7 @@ function drawType(type, x, y, width, fontsize) {
 	c.font = old_font;
 }
 
-function drawHealthBar(c, x, y, percentage, name, types) {
+function drawHealthBar(c, x, y, percentage, name, types, pkmn) {
 	c.font = "bold " + HEALTHBAR_FONTSIZE + "px Calibri";
 
 	var size = c.measureText("HP");
@@ -202,6 +203,30 @@ function drawHealthBar(c, x, y, percentage, name, types) {
 		c.fillText(type.toProperCase(), x + (HEALTHBAR_WIDTH / 2 - size.width) / 2 + i * (HEALTHBAR_WIDTH / 2), y + HEALTHBAR_HEIGHT + 4*SCALE + (HEALTHBAR_FONTSIZE - 2*SCALE) / 2)
 	}
 
+	if (pkmn.status != STATUS_NONE) {
+		var type = "";
+		var name = "";
+		if (pkmn.status == STATUS_SLEEP) {
+			type = "psychic"
+			name = "SLP"
+		} else if (pkmn.status == STATUS_PARALYZED) {
+			type = "electric"
+			name = "PAR"
+		} else if (pkmn.status == STATUS_POISON) {
+			type = "poison"
+			name = "POI"
+		}
+		c.fillStyle = type_colors[type];
+		c.fillRect(x + HEALTHBAR_WIDTH, y, HEALTHBAR_WIDTH / 3, 10*SCALE);
+
+		c.strokeStyle = "#000000"
+		c.strokeRect(x + HEALTHBAR_WIDTH, y, HEALTHBAR_WIDTH / 3, 10*SCALE);
+
+		var size = c.measureText(name);
+		c.fillStyle = "#FFFFFF"
+		c.fillText(name, x + HEALTHBAR_WIDTH + size.width / 4, y + 4*SCALE + (HEALTHBAR_FONTSIZE - 2*SCALE) / 2)
+	}
+
 }
 
 function getPokemonImage(pkmn, isFront) {
@@ -250,9 +275,9 @@ function drawPokemon(c, pkmn, isFront) {
 		drawPokemonImage(c, pkmn, image, isFront, x, y);
 	}
 	if (isFront) {
-		drawHealthBar(c, 50*SCALE, 30*SCALE, health, name, types);
+		drawHealthBar(c, 50*SCALE, 30*SCALE, health, name, types, pkmn);
 	} else {
-		drawHealthBar(c, battle_width - 40*SCALE - HEALTHBAR_WIDTH, battle_height - 40*SCALE, health, name, types);
+		drawHealthBar(c, battle_width - 40*SCALE - HEALTHBAR_WIDTH, battle_height - 40*SCALE, health, name, types, pkmn);
 	}
 }
 
@@ -527,111 +552,144 @@ function updateDecisionTree(pkm) {
     new Treant(decision_tree);
 }
 
+function dealDamageToPokemon(params) { 
+	var pkmn1 = params[0];
+	var pkmn2 = params[1];
+	var move = params[2];
+	var damage = params[3];
+	var update_matrix = params[4];
+	var p1 = pokemons[pkmn1.index]
+	var p2 = pokemons[pkmn2.index]
+	if (move !== undefined && move.status != "none") {
+		if (move.status == "paralyzed") {
+			pkmn2.status = STATUS_PARALYZED;
+			text_stack.splice(1, 0, {"text": p2.name + " is paralyzed!"});
+		}
+		if (move.status == "sleep") {
+			pkmn2.status = STATUS_SLEEP;
+			text_stack.splice(1, 0, {"text": p2.name + " fell asleep!"});
+		}
+		if (move.status == "poison" || move.status == "toxic") {
+			pkmn2.status = STATUS_POISON;
+			text_stack.splice(1, 0, {"text": p2.name + " is poisoned!"});
+		}
+	}
+	var current_health = pkmn2.health * p2.hp;
+	var new_health = current_health - damage;
+	if (new_health <= 0) {
+		pkmn2.health = 0;
+		is_player = false;
+		for(var i = 0; i < 3; i++) {
+			if (pkmn2 == p2pokemon[i]) {
+				is_player = true;
+			}
+		}
+		text_stack = [text_stack[0], {"text": p2.name.toProperCase() + " has fainted!"}];
+		if (is_player) {
+			next_interface = INTERFACE_SELECT_POKEMON;
+			selected_pokemon = -1;
+			for(var i = 0; i < 3; i++) {
+				if (p2pokemon[i].health > 0) {
+					selected_pokemon = i;
+					break;
+				}
+			}
+			if (selected_pokemon < 0) {
+				// player has no Pokémon left
+				next_interface = INTERFACE_BATTLE_OVER;
+				text_stack = [{"text": "You have no Pokemon left! You have lost the battle!"}]
+			}
+		} else {
+			// AI pokemon has fainted
+			var no_pokemon_left = true;
+			for(var i = 0; i < 3; i++) {
+				if (p1pokemon[i].health > 0) {
+					no_pokemon_left = false;
+					break;
+				}
+			}
+			if (no_pokemon_left) {
+				next_interface = INTERFACE_BATTLE_OVER;
+				text_stack = [{"text": "Your opponent is out of Pokemon! You win!"}]
+			} else {
+				// FIXME: switch pokemon for AI based on max damage against current pokemon
+				new_active_pokemon = -1;
+				for(var i = 0; i < 3; i++) {
+					if (p1pokemon[i].health > 0) {
+						new_active_pokemon = i
+						break;
+					}
+				}
+				next_interface = INTERFACE_SELECT_MOVE
+				text_stack.push({"text": "The AI send out " + pokemons[p1pokemon[new_active_pokemon].index].name.toProperCase() + ".", "effect": 
+					function(params) { active_pokemon_p1 = params[0]; }, "parameters": [new_active_pokemon]})
+				console.log(text_stack)
+			}
+		}
+	} else {
+		pkmn2.health = new_health / p2.hp;
+	}
+
+	if (move !== undefined && update_matrix !== undefined) {
+		return;
+		// update matrix and async draw decision tree
+		var upd = new Object();
+		upd.pokemon = pokemons[pkmn1.index].name;
+		upd.opp_pokemon = pokemons[pkmn2.index].name;
+		upd.attack = move.name;
+		upd.attack_status = move.status;
+		upd.opp_status = pkmn2.status;
+		upd.damage = Math.floor(damage);
+		upd.team = 'your/mother@bla.xyz';
+
+		var xmlHttp = new XMLHttpRequest();
+		xmlHttp.onreadystatechange = function() { 
+			if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+				updateAI(pkmn1, xmlHttp.responseText);
+			}
+
+		var body = JSON.stringify(upd);
+		var url = "update_matrix?json=";
+		url = url.concat(encodeURIComponent(body));
+
+		xmlHttp.open("POST", url, true);
+		xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		xmlHttp.send(null);
+	}
+}
+
 function performMove(pkmn1, pkmn2, move, update_matrix) {
 	p1 = pokemons[pkmn1.index]
 	p2 = pokemons[pkmn2.index]
 
-	text_stack.push({"text": p1.name.toProperCase() + " used " + move.name.toProperCase() + ".", "effect": 
-	function(params) { 
-		var pkmn1 = params[0];
-		var pkmn2 = params[1];
-		var move = params[2];
-		var p1 = pokemons[pkmn1.index]
-		var p2 = pokemons[pkmn2.index]
-		var multiplier = computeMultiplier(p1, p2, move);
-		if (move.special) {
-			var attack = p1.special_attack;
-			var defense = p2.special_defense;
+	if (pkmn1.status == STATUS_SLEEP) {
+		if (Math.random() < 0.6) {
+			text_stack.push({"text": p1.name.toProperCase() + " woke up!.", "effect": function(params) { params[0].status = STATUS_NONE }, "parameters": [pkmn1]})
 		} else {
-			var attack = p1.attack;
-			var defense = p2.defense;
+			text_stack.push({"text": p1.name.toProperCase() + " is fast asleep!"})
+			return;
 		}
-		var current_health = pkmn2.health * p2.hp;
-		var damage = 0;
-		if (move.power > 0) {
-			damage = ((((10 / 5 + 2) * (move.power * (attack / defense))) / 50) + 2) * multiplier;
-		}
-		var new_health = current_health - damage;
-		if (new_health <= 0) {
-			pkmn2.health = 0;
-			is_player = false;
-			for(var i = 0; i < 3; i++) {
-				if (pkmn2 == p2pokemon[i]) {
-					is_player = true;
-				}
-			}
-			text_stack = [text_stack[0], {"text": p2.name.toProperCase() + " has fainted!"}];
-			if (is_player) {
-				next_interface = INTERFACE_SELECT_POKEMON;
-				selected_pokemon = -1;
-				for(var i = 0; i < 3; i++) {
-					if (p2pokemon[i].health > 0) {
-						selected_pokemon = i;
-						break;
-					}
-				}
-				if (selected_pokemon < 0) {
-					// player has no Pokémon left
-					next_interface = INTERFACE_BATTLE_OVER;
-					text_stack = [{"text": "You have no Pokemon left! You have lost the battle!"}]
-				}
-			} else {
-				// AI pokemon has fainted
-				var no_pokemon_left = true;
-				for(var i = 0; i < 3; i++) {
-					if (p1pokemon[i].health > 0) {
-						no_pokemon_left = false;
-						break;
-					}
-				}
-				if (no_pokemon_left) {
-					next_interface = INTERFACE_BATTLE_OVER;
-					text_stack = [{"text": "Your opponent is out of Pokemon! You win!"}]
-				} else {
-					// FIXME: switch pokemon for AI based on max damage against current pokemon
-					new_active_pokemon = -1;
-					for(var i = 0; i < 3; i++) {
-						if (p1pokemon[i].health > 0) {
-							new_active_pokemon = i
-							break;
-						}
-					}
-					next_interface = INTERFACE_SELECT_MOVE
-					text_stack.push({"text": "The AI send out " + pokemons[p1pokemon[new_active_pokemon].index].name.toProperCase() + ".", "effect": 
-						function(params) { active_pokemon_p1 = params[0]; }, "parameters": [new_active_pokemon]})
-					console.log(text_stack)
-				}
-			}
-		} else {
-			pkmn2.health = new_health / p2.hp;
-		}
+	}
 
-		if (update_matrix) {
-			// update matrix and async draw decision tree
-			var upd = new Object();
-			upd.pokemon = pokemons[pkmn1.index].name;
-			upd.opp_pokemon = pokemons[pkmn2.index].name;
-			upd.attack = move.name;
-			upd.attack_status = move.status;
-			upd.opp_status = pkmn2.status;
-			upd.damage = Math.floor(damage);
-			upd.team = 'your/mother@bla.xyz';
+	if (pkmn1.status == STATUS_PARALYZED && Math.random() < 0.25) {
+		text_stack.push({"text": p1.name.toProperCase() + " cannot move due to paralysis."})
+		return;
+	}
 
-			var xmlHttp = new XMLHttpRequest();
-			xmlHttp.onreadystatechange = function() { 
-				if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
-					updateAI(pkmn1, xmlHttp.responseText);
-				}
 
-			var body = JSON.stringify(upd);
-			var url = "update_matrix?json=";
-			url = url.concat(encodeURIComponent(body));
-
-			xmlHttp.open("POST", url, true);
-			xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-			xmlHttp.send(null);
-		}
-	}, "parameters": [pkmn1, pkmn2, move]});
+	var multiplier = computeMultiplier(p1, p2, move);
+	if (move.special) {
+		var attack = p1.special_attack;
+		var defense = p2.special_defense;
+	} else {
+		var attack = p1.attack;
+		var defense = p2.defense;
+	}
+	var damage = 0;
+	if (move.power > 0) {
+		damage = ((((10 / 5 + 2) * (move.power * (attack / defense))) / 50) + 2) * multiplier;
+	}
+	text_stack.push({"text": p1.name.toProperCase() + " used " + move.name.toProperCase() + ".", "effect": dealDamageToPokemon, "parameters": [pkmn1, pkmn2, move, damage, update_matrix]});
 	if (move.power > 0) {
 		var effectiveness = computeEffectiveness(p2, move);
 		if (effectiveness < 1) {
@@ -639,6 +697,9 @@ function performMove(pkmn1, pkmn2, move, update_matrix) {
 		} else if (effectiveness > 1) {
 			text_stack.push({"text":  "It's super effective!"});
 		}
+	}
+	if (pkmn1.status == STATUS_POISON) {
+		text_stack.push({"text": p1.name.toProperCase() + " took damage from poison.", "effect": dealDamageToPokemon, "parameters": [pkmn2, pkmn1, undefined, p1.hp * 0.15, undefined]});
 	}
 }
 
@@ -732,9 +793,16 @@ function selectMove() {
 		p1_goes_first = false;
 	} else {
 		// speed resolution
-		if (pokemons[p2pokemon[active_pokemon_p2].index].speed > pokemons[p1pokemon[active_pokemon_p1].index].speed) {
+		var p1speed = pokemons[p1pokemon[active_pokemon_p1].index].speed
+		var p2speed = pokemons[p2pokemon[active_pokemon_p2].index].speed
+		if (p1pokemon[active_pokemon_p1].status == STATUS_PARALYZED) {
+			p1speed = p1speed / 4
+		}if (p2pokemon[active_pokemon_p2].status == STATUS_PARALYZED) {
+			p2speed = p2speed / 4
+		}
+		if (p2speed > p1speed) {
 			p1_goes_first = false;
-		} else if (pokemons[p2pokemon[active_pokemon_p2].index].speed == pokemons[p1pokemon[active_pokemon_p1].index].speed) {
+		} else if (p1speed == p2speed) {
 			// speed tie, select randomly
 			p1_goes_first = Math.random() < 0.5;
 		}
@@ -759,7 +827,7 @@ function nextText() {
 		interface_state = next_interface;
 		return;
 	}
-	if (typeof(text_stack[0].effect) !== undefined) {
+	if (text_stack[0].hasOwnProperty("effect")) {
 		text_stack[0].effect(text_stack[0].parameters);
 	}
 }
