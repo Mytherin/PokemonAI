@@ -51,7 +51,7 @@ function update_matrix(req, res, next) {
 	console.log('Update with: %s', qtext);
 
 	// test values
-	var team = 'your_mother';
+	var team = update.team;
 	var pokemon = update.pokemon;
 	var attack = update.attack;
 	var opp_state = update.opp_status;
