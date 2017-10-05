@@ -1,7 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>Pokemon AI</title>
+    <!-- stylesheets -->
+    <link rel="stylesheet" href="third_party/Treant.css" type="text/css"/>
+</head>
+<body>
+
+
 
 <canvas id="pokemoncanvas" width="800" height="650" style="margin-left:auto;margin-right:auto;">
 
 </canvas>
+
+<div class="chart" id="decision-tree"></div>
+
+<script src="third_party/raphael.js"></script>
+<script src="third_party/Treant.js"></script>
 
 <script>
 var canvas = document.getElementById("pokemoncanvas");
@@ -24,7 +40,7 @@ backgroundImage.src = 'images/background.png';
 
 var pokemons = [{"id":1,"name":"Bulbasaur","speed":45,"special_defense":65,"special_attack":65,"defense":49,"attack":49,"hp":45,"types":["poison","grass"],"img_front":"images/bulbasaur-front.gif","img_back":"images/bulbasaur-back.gif"},{"id":4,"name":"Charmander","speed":65,"special_defense":50,"special_attack":60,"defense":43,"attack":52,"hp":39,"types":["fire"],"img_front":"images/charmander-front.gif","img_back":"images/charmander-back.gif"},{"id":7,"name":"Squirtle","speed":43,"special_defense":64,"special_attack":50,"defense":65,"attack":48,"hp":44,"types":["water"],"img_front":"images/squirtle-front.gif","img_back":"images/squirtle-back.gif"},{"id":25,"name":"Pikachu","speed":90,"special_defense":50,"special_attack":50,"defense":40,"attack":55,"hp":35,"types":["electric"],"img_front":"images/pikachu-front.gif","img_back":"images/pikachu-back.gif", "attacks": ["thunderbolt", "quick attack", "thunder wave", "thunder shock"]},{"id":39,"name":"Jigglypuff","speed":20,"special_defense":25,"special_attack":45,"defense":20,"attack":45,"hp":115,"types":["fairy","normal"],"img_front":"images/jigglypuff-front.gif","img_back":"images/jigglypuff-back.gif"},{"id":52,"name":"Meowth","speed":90,"special_defense":40,"special_attack":40,"defense":35,"attack":45,"hp":40,"types":["normal"],"img_front":"images/meowth-front.gif","img_back":"images/meowth-back.gif"},{"id":56,"name":"Mankey","speed":70,"special_defense":45,"special_attack":35,"defense":35,"attack":80,"hp":40,"types":["fighting"],"img_front":"images/mankey-front.gif","img_back":"images/mankey-back.gif"},{"id":16,"name":"Pidgey","speed":56,"special_defense":35,"special_attack":35,"defense":40,"attack":45,"hp":40,"types":["flying","normal"],"img_front":"images/pidgey-front.gif","img_back":"images/pidgey-back.gif", "attacks": ["tackle", "air slash", "gust", "steel wing"]},{"id":23,"name":"Ekans","speed":55,"special_defense":54,"special_attack":40,"defense":44,"attack":60,"hp":35,"types":["poison"],"img_front":"images/ekans-front.gif","img_back":"images/ekans-back.gif"},{"id":74,"name":"Geodude","speed":20,"special_defense":30,"special_attack":30,"defense":100,"attack":80,"hp":40,"types":["ground","rock"],"img_front":"images/geodude-front.gif","img_back":"images/geodude-back.gif"},{"id":27,"name":"Sandshrew","speed":40,"special_defense":30,"special_attack":20,"defense":85,"attack":75,"hp":50,"types":["ground"],"img_front":"images/sandshrew-front.gif","img_back":"images/sandshrew-back.gif"},{"id":96,"name":"Drowzee","speed":42,"special_defense":90,"special_attack":43,"defense":45,"attack":48,"hp":60,"types":["psychic"],"img_front":"images/drowzee-front.gif","img_back":"images/drowzee-back.gif"},{"id":92,"name":"Gastly","speed":80,"special_defense":35,"special_attack":100,"defense":30,"attack":35,"hp":30,"types":["poison","ghost"],"img_front":"images/gastly-front.gif","img_back":"images/gastly-back.gif"},{"id":12,"name":"Butterfree","speed":70,"special_defense":80,"special_attack":90,"defense":50,"attack":45,"hp":60,"types":["flying","bug"],"img_front":"images/butterfree-front.gif","img_back":"images/butterfree-back.gif"},{"id":147,"name":"Dratini","speed":50,"special_defense":50,"special_attack":50,"defense":45,"attack":64,"hp":41,"types":["dragon"],"img_front":"images/dratini-front.gif","img_back":"images/dratini-back.gif"}]
 
-var attacks = [{"name": "tackle", "power": 40, "type": "normal", "status": "none", "special": false}, {"name": "air slash", "power": 75, "type": "flying", "status": "none", "special": true}, {"name": "gust", "power": 40, "type": "flying", "status": "none", "special": true}, {"name": "steel wing", "power": 70, "type": "steel", "status": "none", "special": false}, {"name": "thunderbolt", "power": 90, "type": "electric", "status": "none", "special": true}, {"name": "quick attack", "power": 40, "type": "normal", "status": "none", "priority": 1, "special": false}, {"name": "thunder wave", "power": 0, "type": "electric", "status": "paralysis", "special": true}, {"name": "thunder shock", "power": 40, "type": "electric", "status": "none", "special": true}]
+var attacks = [{"name": "tackle", "power": 40, "type": "normal", "status": "none", "special": false}, {"name": "air slash", "power": 75, "type": "flying", "status": "none", "special": true}, {"name": "gust", "power": 40, "type": "flying", "status": "none", "special": true}, {"name": "steel wing", "power": 70, "type": "steel", "status": "none", "special": false}, {"name": "thunderbolt", "power": 90, "type": "electric", "status": "none", "special": true}, {"name": "quick attack", "power": 40, "type": "normal", "status": "none", "priority": 1, "special": false}, {"name": "thunder wave", "power": 0, "type": "electric", "status": "paralyzed", "special": true}, {"name": "thunder shock", "power": 40, "type": "electric", "status": "none", "special": true}]
 
 function getAttackInfo(attackName) {
 	for (var i = 0; i < attacks.length; i++) {
@@ -79,6 +95,8 @@ var p1pokemon = []
 var p2pokemon = []
 var active_pokemon_p1 = 0
 var active_pokemon_p2 = 0
+
+status_array = ["???", "none", "paralyzed", 'sleep', 'poison', 'burn', 'toxic'];
 
 for(var i = 0; i < 3; i++) {
 	p1pokemon.push({'index': 3, 'health': 1, 'display_health': 1, 'status': STATUS_NONE, 'frame': 0})
@@ -194,9 +212,10 @@ function getPokemonImage(pkmn, isFront) {
 	}
 }
 
-function drawPokemonImage(c, pkmn, image, isFront, x, y, RENDER_SCALE=1) {
+function drawPokemonImage(c, pkmn, image, isFront, x, y, RENDER_SCALE=1, ANIMATION_MULTIPLIER=1) {
 	current_frame = Math.round(pkmn.frame);
 	total_frames = Math.round(image.width / image.height);
+	
 	c.drawImage(image,
 		current_frame * image.height,
 		0,
@@ -210,7 +229,7 @@ function drawPokemonImage(c, pkmn, image, isFront, x, y, RENDER_SCALE=1) {
 	if (pkmn.frame + 1 >= total_frames) {
 		pkmn.frame = 0;
 	} else {
-		pkmn.frame += 0.3;
+		pkmn.frame += 0.3 * ANIMATION_MULTIPLIER;
 	}
 }
 
@@ -240,13 +259,17 @@ function drawPokemon(c, pkmn, isFront) {
 INTERFACE_SELECT_MOVE = 1
 INTERFACE_DISPLAY_TEXT = 2
 INTERFACE_SELECT_POKEMON = 3
+INTERFACE_FINISHED_BATTLE_WON = 4
+INTERFACE_FINISHED_BATTLE_LOST = 5
 
 text_stack = []
 
 active_move = 0
+selected_pokemon = 0
 flicker = 0;
 interface_state = INTERFACE_SELECT_MOVE
 next_interface = INTERFACE_SELECT_MOVE;
+
 
 function computeEffectiveness(pkmn, move) {
 	var effectiveness = 1;
@@ -267,7 +290,253 @@ function computeMultiplier(pkmn1, pkmn2, move) {
 	return stab_multiplier * computeEffectiveness(pkmn2, move);
 }
 
-function performMove(pkmn1, pkmn2, move) {
+decision_tree = {};
+
+String.prototype.format = function () {
+	// from https://stackoverflow.com/questions/25227119/javascript-strings-format-is-not-defined
+	var args = [].slice.call(arguments);
+	return this.replace(/(\{\d+\})/g, function (a){
+		return args[+(a.substr(1,a.length-2))||0];
+	});
+};
+
+function isEmpty(obj) {
+	// from https://stackoverflow.com/questions/6072590/how-to-match-an-empty-dictionary-in-javascript
+	return Object.keys(obj).length === 0;
+}
+
+function mkNode(name) {
+	var node = new Object();
+	node.text = new Object();
+	node.text.name = name;
+	node.children = [];
+
+	return node;
+}
+
+function mkAttack(name) {
+	return mkNode(name);
+}
+
+function mkRandAtt() {
+	return mkAttack("random");
+}
+
+function build_tree_prob_attack(tbl) {
+	var res = [];
+
+	var attacks = {};
+	for (var i = 0; i < tbl.length; i++) {
+		attacks[tbl[i].attack] = 'yes';
+	}
+
+	var num_att = Object.keys(attacks).length;
+	if (num_att < 0 || num_att > 4) {
+		console.log("weird number of remaining attacks {0}".format(num_att));
+	}
+
+	if (num_att === 0) {
+		return [mkRandAtt()];
+	}
+
+	var share = 25;
+
+	for (var att in attacks) {
+		var rnd = mkNode("{0}% chance".format(share));
+		rnd.children.push(mkAttack(att));
+		res.push(rnd);
+	}
+
+	if (num_att < 4) {
+		var rem = 100 - tbl.length * share;
+		var rnd = mkNode("{0}% chance".format(rem));
+
+		rnd.children.push(mkRandAtt());
+		res.push(rnd);
+	}
+
+	return res;
+}
+
+function build_tree_branch_nohealth(tbl) {
+	var res = [];
+
+	var opp_status = {};
+	for (var i = 0; i < tbl.length; i++) {
+		opp_status[tbl[i].state] = 'yes';
+	}
+
+	for (var ost in opp_status) {
+		// partition by oppoent status
+		var part = tbl.filter(function(item) { 	
+			return ost == item.state;
+		});
+
+		// filter out status change when opponent's status != NONE
+		if (ost !== STATUS_NONE) {
+			var no_status = status_array[STATUS_NONE];
+
+			part = part.filter(function(item) {
+				var info = getAttackInfo(item.attack);
+				// if we already have a status we only choose attacks that do not change the status
+				return no_status.localeCompare(info.status) !== 0;
+			});
+		}
+
+		var nde = mkNode("opp_status = {0}".format(status_array[ost]));
+		nde.children = build_tree_prob_attack(part);
+		res.push(nde);
+	}
+
+	var els = mkNode("else");
+	els.children.push(mkRandAtt());
+
+	if (res.length === 0) {
+		els = mkNode(mkRandAtt());
+	}
+
+	res.push(els);
+
+	return res;
+}
+
+function build_tree_branch_health(tbl) {
+	var res = [];
+	var damages = {};
+
+	for (var i = 0; i < tbl.length; i++) {
+		damages[tbl[i].damage] = tbl[i].attack;
+	}
+
+	// create sorted list
+	var damagelist = Object.keys(damages).map(function(key) {
+		return [key, damages[key]];
+	});
+	damagelist.sort(function(a, b) {
+    	return a[0] - b[0];
+    });
+
+
+	for (var i = 0; i < damagelist.length; i++) {
+		var row = damagelist[i];
+		var dmg = row[0];
+		var att = row[1];
+
+		var part = tbl.filter(function(item) { 
+			return dmg === item.damage;
+		});
+
+		var prefix = i > 0 ? "{0} < ".format(damagelist[i-1][0]) : "";
+		var name = "{1}opp_health <= {0}".format(dmg.toString(), prefix);
+
+		var n = mkNode(name);
+		n.children.push(mkAttack(damages[dmg]));
+
+		res.push(n);
+	}
+
+	var els = mkNode('else');
+	var else_path = build_tree_branch_nohealth(tbl);
+	els.children = else_path;
+
+	if (res.length === 0) {
+		return else_path;
+	}
+
+	res.push(els);
+
+	return res;
+}
+
+function build_tree(matrix) {
+	var table = [];
+	var types = {};
+
+	var res = [];
+
+	if (isEmpty(matrix)) {
+		return [mkRandAtt()];
+	}
+
+	for (var key in matrix) {
+		keys = key.split('/');
+		var type = keys[0];
+		var attack = keys[1];
+		var state = keys[2];
+
+		var row = {type: type, attack: attack, state: state, damage : matrix[key].damage};
+
+		console.log(JSON.stringify(row));
+
+		table.push(row);
+		types[type] = 'yes';
+	}
+
+
+	var node = mkNode('Root');
+
+	console.log(types);
+
+	for (var tpe in types) {
+		var part = table.filter(function(item) { 
+			return tpe.localeCompare(item.type) === 0;
+		});
+
+		if (part.length < 1) {
+			console.log("Less than one entry? Doesn't make sense");
+		}
+
+		var nde = mkNode("type = {0}".format(tpe));
+		nde.children = build_tree_branch_health(part);
+		res.push(nde);
+	}
+
+	var els = mkNode("else");
+	els.children.push(mkRandAtt());
+
+	if (res.length === 0) {
+		els = mkRandAtt();
+	}
+
+	res.push(els);
+
+	return res;
+}
+
+function updateDecisionTree(responseText) {
+	console.log("dec tree: %s", responseText);
+	matrix = JSON.parse(responseText);
+
+	decision_tree = {
+        chart: {
+            container: "#decision-tree",
+            
+            connectors: {
+                type: 'step'
+            },
+            node: {
+                HTMLclass: 'nodeExample1'
+            }
+        },
+        nodeStructure: {
+        	text: {
+        		name : "Root"
+        	},
+
+        	children : []
+        }
+    };
+
+    decision_tree.nodeStructure.children = build_tree(matrix);
+
+    drawDecisionTree();
+}
+
+function drawDecisionTree() {
+	new Treant( decision_tree );
+}
+
+function performMove(pkmn1, pkmn2, move, update_matrix) {
 	p1 = pokemons[pkmn1.index]
 	p2 = pokemons[pkmn2.index]
 
@@ -291,11 +560,65 @@ function performMove(pkmn1, pkmn2, move) {
 		var new_health = current_health - damage;
 		if (new_health <= 0) {
 			pkmn2.health = 0;
-			next_interface = INTERFACE_SELECT_POKEMON;
+			is_player = false;
+			for(var i = 0; i < 3; i++) {
+				if (pkmn2 == p2pokemon[i]) {
+					is_player = true;
+				}
+			}
 			text_stack = [text_stack[0], {"text": p2.name.toProperCase() + " has fainted!"}];
-			// FIXME: only interface transition if a player loses its pokemon
+			if (is_player) {
+				next_interface = INTERFACE_SELECT_POKEMON;
+				selected_pokemon = -1;
+				for(var i = 0; i < 3; i++) {
+					if (p2pokemon[i].health > 0) {
+						selected_pokemon = i;
+						break;
+					}
+				}
+				if (selected_pokemon < 0) {
+					// player has no Pokémon left
+					next_interface = INTERFACE_FINISHED_BATTLE_LOST;
+				}
+			} else {
+				// AI pokemon has fainted
+				for(var i = 0; i < 3; i++) {
+					if (p1pokemon[i].health > 0) {
+						next_interface = INTERFACE_FINISHED_BATTLE_WON;
+						break;
+					}
+				}
+				if (next_interface != INTERFACE_FINISHED_BATTLE_WON) {
+					// FIXME: switch pokemon for AI
+				}
+			}
 		} else {
 			pkmn2.health = new_health / p2.hp;
+		}
+
+		if (update_matrix) {
+			// update matrix and async draw decision tree
+			var upd = new Object();
+			upd.pokemon = pokemons[pkmn1.index].name;
+			upd.opp_pokemon = pokemons[pkmn2.index].name;
+			upd.attack = move.name;
+			upd.attack_status = move.status;
+			upd.opp_status = pkmn2.status;
+			upd.damage = Math.floor(damage);
+
+			var xmlHttp = new XMLHttpRequest();
+			xmlHttp.onreadystatechange = function() { 
+				if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+					updateDecisionTree(xmlHttp.responseText);
+				}
+
+			var body = JSON.stringify(upd);
+			var url = "update_matrix?json=";
+			url = url.concat(encodeURIComponent(body));
+
+			xmlHttp.open("POST", url, true);
+			xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+			xmlHttp.send(null);
 		}
 	}, "parameters": [pkmn1, pkmn2, move]});
 	if (move.power > 0) {
@@ -443,11 +766,15 @@ function drawInterface() {
 	} else if (interface_state == INTERFACE_SELECT_POKEMON) {
 		for(var i = 0; i < 3; i++) {
 			var pkmn = p2pokemon[i];
-			var image = getPokemonImage(pkmn, true);
-			var x = battle_width / 4 + (i * battle_width / 4) - image.height / 2;
-			var y = battle_height + interface_height / 4 - image.height / 2
-			drawPokemonImage(c, pkmn, image, true, x, y, 0.75)
-			c.fillText(pokemons[pkmn.index].name, x, battle_height + INTERFACE_FONTSIZE)
+			if (pkmn.health > 0) {
+				var image = getPokemonImage(pkmn, true);
+				var x = battle_width / 4 + (i * battle_width / 4) - image.height / 2;
+				var y = battle_height + interface_height / 4 - image.height / 2
+				drawPokemonImage(c, pkmn, image, true, x, y, 0.75, selected_pokemon == i ? 1 : 0)
+				if (selected_pokemon == i) {
+					c.fillText(pokemons[pkmn.index].name, x, battle_height + INTERFACE_FONTSIZE)
+				}
+			}
 
 		}
 	}
@@ -474,6 +801,7 @@ function render() {
 	drawPokemon(c, p2pokemon[active_pokemon_p2], false)
 	drawPokemon(c, p1pokemon[active_pokemon_p1], true)
 	drawInterface();
+	// drawDecisionTree();
 }
 
 function loop(timestamp) {
@@ -520,6 +848,22 @@ document.onkeydown = function(evt) {
 		if (evt.keyCode == 13) {
 			nextText();
 		}
+    } else if (interface_state == INTERFACE_SELECT_POKEMON) {
+    	if (evt.keyCode == 37 || evt.keyCode == 39) {
+    		// left or right arrow
+    		for(var i = 0; i < 3; i++) {
+    			if (p2pokemon[i].health > 0 && i != selected_pokemon) {
+    				selected_pokemon = i;
+    				break;
+    			}
+    		}
+    	} else if (evt.keyCode == 13) {
+			// enter, select pokemon
+			active_pokemon_p2 = selected_pokemon;
+			interface_state = INTERFACE_DISPLAY_TEXT;
+			text_stack = [{'text': 'Go, ' + pokemons[p2pokemon[active_pokemon_p2].index].name.toProperCase() + '!'}];
+			next_interface = INTERFACE_SELECT_MOVE;
+		}
     }
 };
 
@@ -527,3 +871,6 @@ var lastRender = 0
 window.requestAnimationFrame(loop);
 
 </script>
+
+</body>
+</html>
