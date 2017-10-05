@@ -1,5 +1,5 @@
 
-<canvas id="pokemoncanvas" width="800" height="600" style="margin-left:auto;margin-right:auto;">
+<canvas id="pokemoncanvas" width="800" height="650" style="margin-left:auto;margin-right:auto;">
 
 </canvas>
 
@@ -17,7 +17,7 @@ var INTERFACE_FONTSIZE = 15*SCALE
 
 battle_width = 800;
 battle_height = 450;
-interface_height = 150
+interface_height = 200
 
 var backgroundImage = new Image();
 backgroundImage.src = 'images/background.png';
@@ -68,9 +68,6 @@ function getTypeIndex(type) {
 
 var pokemon_images = {}
 
-var active_pokemon_p1 = {};
-var active_pokemon_p2 = {};
-
 STATUS_NONE = 1;
 STATUS_PARALYZED = 2;
 STATUS_SLEEP = 3;
@@ -78,17 +75,19 @@ STATUS_POISON = 4;
 STATUS_BURN = 5;
 STATUS_TOXIC = 6;
 
-active_pokemon_p1.index = 3;
-active_pokemon_p1.health = 1;
-active_pokemon_p1.display_health = 1;
-active_pokemon_p1.status = STATUS_NONE;
-active_pokemon_p1.frame = 0;
+var p1pokemon = []
+var p2pokemon = []
+var active_pokemon_p1 = 0
+var active_pokemon_p2 = 0
 
-active_pokemon_p2.index = 7;
-active_pokemon_p2.health = 1;
-active_pokemon_p2.display_health = 1;
-active_pokemon_p2.status = STATUS_NONE;
-active_pokemon_p2.frame = 0;
+for(var i = 0; i < 3; i++) {
+	p1pokemon.push({'index': 3, 'health': 1, 'display_health': 1, 'status': STATUS_NONE, 'frame': 0})
+	p2pokemon.push({'index': 7, 'health': 1, 'display_health': 1, 'status': STATUS_NONE, 'frame': 0})
+}
+p1pokemon[1].index = 4;
+p1pokemon[2].index = 0
+p2pokemon[1].index = 5
+p2pokemon[2].index = 6
 
 var HEALTH_ANIMATION_SPEED = 0.01;
 
@@ -187,23 +186,15 @@ function drawHealthBar(c, x, y, percentage, name, types) {
 
 }
 
-function drawPokemon(c, pkmn, isFront) {
-	var image;
-	var name = pokemons[pkmn.index].name.toProperCase();
-	var health = pkmn.display_health;
-	var types = pokemons[pkmn.index].types
+function getPokemonImage(pkmn, isFront) {
 	if (isFront) {
-		image = pokemon_images[name.toLowerCase()].front;
+		return pokemon_images[pokemons[pkmn.index].name.toLowerCase()].front;
 	} else {
-		image = pokemon_images[name.toLowerCase()].back;
+		return pokemon_images[pokemons[pkmn.index].name.toLowerCase()].back;
 	}
-	if (isFront) {
-		x = battle_width - 80*SCALE - (image.height*SCALE) / 2;
-		y = 90*SCALE - image.height*SCALE;
-	} else {
-		x = 50*SCALE;
-		y = battle_height - 30*SCALE - image.height*SCALE;
-	}
+}
+
+function drawPokemonImage(c, pkmn, image, isFront, x, y, RENDER_SCALE=1) {
 	current_frame = Math.round(pkmn.frame);
 	total_frames = Math.round(image.width / image.height);
 	c.drawImage(image,
@@ -213,15 +204,32 @@ function drawPokemon(c, pkmn, isFront) {
 		image.height,
 		x,
 		y,
-		image.height*SCALE,
-		image.height*SCALE);
+		image.height*SCALE*RENDER_SCALE,
+		image.height*SCALE*RENDER_SCALE);
 	// move to the next frame
 	if (pkmn.frame + 1 >= total_frames) {
 		pkmn.frame = 0;
 	} else {
 		pkmn.frame += 0.3;
 	}
+}
 
+function drawPokemon(c, pkmn, isFront) {
+	var image;
+	var name = pokemons[pkmn.index].name.toProperCase();
+	var health = pkmn.display_health;
+	var types = pokemons[pkmn.index].types
+	if (health > 0) {
+		image = getPokemonImage(pkmn, isFront)
+		if (isFront) {
+			x = battle_width - 80*SCALE - (image.height*SCALE) / 2;
+			y = 90*SCALE - image.height*SCALE;
+		} else {
+			x = 50*SCALE;
+			y = battle_height - 30*SCALE - image.height*SCALE;
+		}
+		drawPokemonImage(c, pkmn, image, isFront, x, y);
+	}
 	if (isFront) {
 		drawHealthBar(c, 50*SCALE, 30*SCALE, health, name, types);
 	} else {
@@ -238,6 +246,7 @@ text_stack = []
 active_move = 0
 flicker = 0;
 interface_state = INTERFACE_SELECT_MOVE
+next_interface = INTERFACE_SELECT_MOVE;
 
 function computeEffectiveness(pkmn, move) {
 	var effectiveness = 1;
@@ -281,8 +290,10 @@ function performMove(pkmn1, pkmn2, move) {
 		var damage = ((((10 / 5 + 2) * (move.power * (attack / defense))) / 50) + 2) * multiplier;
 		var new_health = current_health - damage;
 		if (new_health <= 0) {
-			// FIXME: pokemon has fainted
-			console.log("Pokemon has fainted!!!");
+			pkmn2.health = 0;
+			next_interface = INTERFACE_SELECT_POKEMON;
+			text_stack = [text_stack[0], {"text": p2.name.toProperCase() + " has fainted!"}];
+			// FIXME: only interface transition if a player loses its pokemon
 		} else {
 			pkmn2.health = new_health / p2.hp;
 		}
@@ -300,8 +311,8 @@ function performMove(pkmn1, pkmn2, move) {
 function selectMove() {
 	if (interface_state != INTERFACE_SELECT_MOVE) return;
 	// FIXME: other pokemon uses AI to select a move
-	var p1_attack = getAttackInfo(pokemons[active_pokemon_p1.index].attacks[0])
-	var p2_attack = getAttackInfo(pokemons[active_pokemon_p2.index].attacks[active_move])
+	var p1_attack = getAttackInfo(pokemons[p1pokemon[active_pokemon_p1].index].attacks[0])
+	var p2_attack = getAttackInfo(pokemons[p2pokemon[active_pokemon_p2].index].attacks[active_move])
 
 	// speed resolution
 	p1_goes_first = true;
@@ -310,23 +321,23 @@ function selectMove() {
 		p1_goes_first = false;
 	} else {
 		// speed resolution
-		if (pokemons[active_pokemon_p2.index].speed > pokemons[active_pokemon_p1.index].speed) {
+		if (pokemons[p2pokemon[active_pokemon_p2].index].speed > pokemons[p1pokemon[active_pokemon_p1].index].speed) {
 			p1_goes_first = false;
-		} else if (pokemons[active_pokemon_p2.index].speed == pokemons[active_pokemon_p1.index].speed) {
+		} else if (pokemons[p2pokemon[active_pokemon_p2].index].speed == pokemons[p1pokemon[active_pokemon_p1].index].speed) {
 			// speed tie, select randomly
 			p1_goes_first = Math.random() < 0.5;
 		}
 	}
 
-
 	interface_state = INTERFACE_DISPLAY_TEXT;
+	next_interface = INTERFACE_SELECT_MOVE;
 	text_stack = [""]
 	if (p1_goes_first) {
-		performMove(active_pokemon_p1, active_pokemon_p2, p1_attack);
-		performMove(active_pokemon_p2, active_pokemon_p1, p2_attack);
+		performMove(p1pokemon[active_pokemon_p1], p2pokemon[active_pokemon_p2], p1_attack);
+		performMove(p2pokemon[active_pokemon_p2], p1pokemon[active_pokemon_p1], p2_attack);
 	} else {
-		performMove(active_pokemon_p2, active_pokemon_p1, p2_attack);
-		performMove(active_pokemon_p1, active_pokemon_p2, p1_attack);
+		performMove(p2pokemon[active_pokemon_p2], p1pokemon[active_pokemon_p1], p2_attack);
+		performMove(p1pokemon[active_pokemon_p1], p2pokemon[active_pokemon_p2], p1_attack);
 	}
 	nextText();
 }
@@ -334,8 +345,7 @@ function selectMove() {
 function nextText() {
 	text_stack.shift();
 	if (text_stack.length == 0) {
-		// FIXME: state transition
-		return;
+		interface_state = next_interface;
 	}
 	if (typeof(text_stack[0].effect) !== undefined) {
 		text_stack[0].effect(text_stack[0].parameters);
@@ -358,7 +368,7 @@ function drawInterface() {
 		var TYPE_OFFSET = 275
 		var TYPE_WIDTH = 100
 
-		var attacks = pokemons[active_pokemon_p2.index].attacks
+		var attacks = pokemons[p2pokemon[active_pokemon_p2].index].attacks
 		c.fillText(attacks[0].toProperCase(), 60, battle_height + 20 + INTERFACE_FONTSIZE);
 		drawType(getAttackInfo(attacks[0]).type, TYPE_OFFSET, battle_height + 35, TYPE_WIDTH, HEALTHBAR_FONTSIZE, HEALTHBAR_FONTSIZE);
 		c.strokeRect(10, battle_height + 20, TYPE_OFFSET + TYPE_WIDTH, 50)
@@ -430,6 +440,16 @@ function drawInterface() {
 		    c.lineTo(x3, y3);
 		    c.fill();
 		}
+	} else if (interface_state == INTERFACE_SELECT_POKEMON) {
+		for(var i = 0; i < 3; i++) {
+			var pkmn = p2pokemon[i];
+			var image = getPokemonImage(pkmn, true);
+			var x = battle_width / 4 + (i * battle_width / 4) - image.height / 2;
+			var y = battle_height + interface_height / 4 - image.height / 2
+			drawPokemonImage(c, pkmn, image, true, x, y, 0.75)
+			c.fillText(pokemons[pkmn.index].name, x, battle_height + INTERFACE_FONTSIZE)
+
+		}
 	}
 }
 
@@ -445,14 +465,14 @@ function update_health(pkmn) {
 
 function update() {
 	updateInterface();
-	update_health(active_pokemon_p1);
-	update_health(active_pokemon_p2);
+	update_health(p1pokemon[active_pokemon_p1]);
+	update_health(p2pokemon[active_pokemon_p2]);
 }
 
 function render() {
 	drawBackground(c, backgroundImage, 0, 0, battle_width, battle_height);
-	drawPokemon(c, active_pokemon_p2, false)
-	drawPokemon(c, active_pokemon_p1, true)
+	drawPokemon(c, p2pokemon[active_pokemon_p2], false)
+	drawPokemon(c, p1pokemon[active_pokemon_p1], true)
 	drawInterface();
 }
 
