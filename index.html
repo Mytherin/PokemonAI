@@ -550,7 +550,9 @@ function updateDecisionTree(pkm) {
         }
     };
 
-    decision_tree.nodeStructure.children = build_tree(pkm.table);
+    if (pkm.table.length > 0) {
+    	decision_tree.nodeStructure.children = build_tree(pkm.table);
+    }
 
     // and draw it
     new Treant(decision_tree);
@@ -625,9 +627,11 @@ function performMove(pkmn1, pkmn2, move, update_matrix) {
 							break;
 						}
 					}
+
+					callWheneverActualPokemonChanges(p1pokemon[active_pokemon_p1]);
 					next_interface = INTERFACE_SELECT_MOVE
 					text_stack.push({"text": "The AI send out " + pokemons[p1pokemon[new_active_pokemon].index].name.toProperCase() + ".", "effect": 
-						function(params) { active_pokemon_p1 = params[0]; callWheneverActualPokemonChanges(p1pokemon[active_pokemon_p1]); }, "parameters": [new_active_pokemon]})
+						function(params) { active_pokemon_p1 = params[0]; }, "parameters": [new_active_pokemon]})
 					console.log(text_stack)
 				}
 			}
