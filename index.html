@@ -1034,6 +1034,14 @@ function nextText() {
 	}
 }
 
+function selectNextPokemon() {
+	// enter, select pokemon
+	active_pokemon_p2 = selected_pokemon;
+	interface_state = INTERFACE_DISPLAY_TEXT;
+	text_stack = [{'text': 'Go, ' + pokemons[p2pokemon[active_pokemon_p2].index].name.toProperCase() + '!'}];
+	next_interface = INTERFACE_SELECT_MOVE;
+}
+
 function updateInterface() {
 	flicker += 1;
 }
@@ -1055,17 +1063,44 @@ function drawInterface() {
 		drawType(getAttackInfo(attacks[0]).type, TYPE_OFFSET, battle_height + 35, TYPE_WIDTH, HEALTHBAR_FONTSIZE, HEALTHBAR_FONTSIZE);
 		c.strokeRect(10, battle_height + 20, TYPE_OFFSET + TYPE_WIDTH, 50)
 
+		if (mousePos.x >= 10 && mousePos.x <= 10 + TYPE_OFFSET + TYPE_WIDTH && mousePos.y >= battle_height + 20 && mousePos.y <= battle_height + 70) {
+			active_move = 0;
+			if (mouseDown) {
+				selectMove();			
+			}
+		}
 		c.fillText(attacks[1].toProperCase(), 60, battle_height + 80 + INTERFACE_FONTSIZE);
 		drawType(getAttackInfo(attacks[1]).type, TYPE_OFFSET, battle_height + 95, TYPE_WIDTH, HEALTHBAR_FONTSIZE, HEALTHBAR_FONTSIZE);
 		c.strokeRect(10, battle_height + 80, TYPE_OFFSET + TYPE_WIDTH, 50)
+
+		if (mousePos.x >= 10 && mousePos.x <= 10 + TYPE_OFFSET + TYPE_WIDTH && mousePos.y >= battle_height + 80 && mousePos.y <= battle_height + 130) {
+			active_move = 1;
+			if (mouseDown) {
+				selectMove();			
+			}
+		}
 
 		c.fillText(attacks[2].toProperCase(), battle_width - 60 - c.measureText(attacks[2].toProperCase()).width, battle_height + 20 + INTERFACE_FONTSIZE);
 		drawType(getAttackInfo(attacks[2]).type, battle_width - TYPE_OFFSET - TYPE_WIDTH, battle_height + 35, TYPE_WIDTH, HEALTHBAR_FONTSIZE, HEALTHBAR_FONTSIZE);
 		c.strokeRect(battle_width - TYPE_WIDTH - TYPE_OFFSET - 10, battle_height + 20, TYPE_OFFSET + TYPE_WIDTH, 50)
 
+		if (mousePos.x >= battle_width - TYPE_WIDTH - TYPE_OFFSET - 10 && mousePos.x <= battle_width - 10 && mousePos.y >= battle_height + 20 && mousePos.y <= battle_height + 70) {
+			active_move = 2;
+			if (mouseDown) {
+				selectMove();			
+			}
+		}
+		
 		c.fillText(attacks[3].toProperCase(), battle_width - 60 - c.measureText(attacks[3].toProperCase()).width, battle_height + 80 + INTERFACE_FONTSIZE);
 		drawType(getAttackInfo(attacks[3]).type, battle_width - TYPE_OFFSET - TYPE_WIDTH, battle_height + 95, TYPE_WIDTH, HEALTHBAR_FONTSIZE, HEALTHBAR_FONTSIZE);
 		c.strokeRect(battle_width - TYPE_WIDTH - TYPE_OFFSET - 10, battle_height + 80, TYPE_OFFSET + TYPE_WIDTH, 50)
+
+		if (mousePos.x >= battle_width - TYPE_WIDTH - TYPE_OFFSET - 10 && mousePos.x <= battle_width - 10 && mousePos.y >= battle_height + 80 && mousePos.y <= battle_height + 130) {
+			active_move = 3;
+			if (mouseDown) {
+				selectMove();			
+			}
+		}
 
 		base_y = battle_height + 25;
 
@@ -1112,6 +1147,10 @@ function drawInterface() {
 	    	return;
 	    }
 
+	    if (mouseDown) {
+	    	nextText();
+	    }
+
 		if ((flicker % 60) < 30) {
 			x1 = battle_width - 60;
 			x2 = battle_width - 20;
@@ -1133,6 +1172,14 @@ function drawInterface() {
 				var image = getPokemonImage(pkmn, true, false);
 				var x = battle_width / 4 + (i * battle_width / 4) - image.height / 2;
 				var y = battle_height + interface_height / 4 - image.height / 2
+
+				if (mousePos.x >= x && mousePos.x <= x + 128 && mousePos.y >= y && mousePos.y <= y + 128) {
+					selected_pokemon = i;
+					if (mouseDown) {
+						selectNextPokemon()
+					}
+				}
+
 				drawPokemonImage(c, pkmn, image, true, x, y, 0.75, selected_pokemon == i ? 1 : 0)
 				if (selected_pokemon == i) {
 					c.fillText(pokemons[pkmn.index].name, x, battle_height + INTERFACE_FONTSIZE)
@@ -1161,6 +1208,7 @@ function update() {
 
 var caret_position = 0;
 var team_name = ""
+var team_name2 = "Player"
 
 function insertLetter(letter) {
 	team_name = team_name.slice(0, caret_position) + letter + team_name.substr(caret_position);
@@ -1213,6 +1261,13 @@ function goNext() {
     }
 }
 
+function drawTeamNames() {
+	c.font = "bold 32px Calibri";
+	c.fillStyle = '#000000'
+	c.fillText(team_name, battle_width - c.measureText(team_name).width - 20, 32);
+	c.fillText(team_name2, 20, battle_height - 32);
+}
+
 function render() {
 	c.fillStyle = '#FFFFFF'
 	c.fillRect(0, 0, canvas.width, canvas.height);
@@ -1227,7 +1282,8 @@ function render() {
 			var y = 265;
 			c.fillRect(x, y, 2, 32);
 		}
-	} else if (global_interface == GLOBAL_INTERFACE_PLAYER_BATTLE) {
+	} else if (global_interface == GLOBAL_INTERFACE_PLAYER_BATTLE ||
+		global_interface == GLOBAL_INTERFACE_TOURNAMENT_MODE) {
 		drawBackground(c, backgroundImage, 0, 0, battle_width, battle_height);
 		drawPokemon(c, p2pokemon[active_pokemon_p2], false)
 		drawPokemon(c, p1pokemon[active_pokemon_p1], true)
@@ -1238,8 +1294,11 @@ function render() {
 			c.globalAlpha = 1;
 			screen_flash--;
 		}
-		drawInterface();
-		// drawDecisionTree();
+		drawTeamNames();
+		if (global_interface == GLOBAL_INTERFACE_PLAYER_BATTLE) {
+			drawInterface();
+			// drawDecisionTree();
+		}
 	} else if (global_interface == GLOBAL_INTERFACE_SELECT_POKEMON_AI || global_interface == GLOBAL_INTERFACE_SELECT_POKEMON_PLAYER) {
 		drawBackground(c, global_interface == GLOBAL_INTERFACE_SELECT_POKEMON_AI ? selectionWallpaperBackground : selectionPlayerBackground, 0, 0, battle_width, battle_height + 50);
 
@@ -1340,7 +1399,6 @@ function render() {
 			c.fillStyle = '#3e5ba3'
 			c.fillText("GO!", battle_width - 150, battle_height + 16);
 		}
-		mouseDown = false;
 	}
 }
 
@@ -1349,6 +1407,8 @@ function loop(timestamp) {
 
 	update();
 	render();
+
+	mouseDown = false;
 
 	lastRender = timestamp
 	window.requestAnimationFrame(loop)
@@ -1360,9 +1420,7 @@ canvas.addEventListener('mousemove', function(evt) {
 
 canvas.addEventListener('click', function(evt) {
 	mousePos = getMousePos(canvas, evt);
-	if (global_interface == GLOBAL_INTERFACE_SELECT_POKEMON_AI || global_interface == GLOBAL_INTERFACE_SELECT_POKEMON_PLAYER) {
-		mouseDown = true;
-	}
+	mouseDown = true;
 }, false);
 
 document.onkeydown = function(evt) {
@@ -1370,6 +1428,10 @@ document.onkeydown = function(evt) {
 
     if (evt.keyCode == 27) {
     	global_interface = GLOBAL_INTERFACE_CREATE_NEW_TEAM;
+    }
+
+    if (global_interface == GLOBAL_INTERFACE_TOURNAMENT_MODE) {
+    	return;
     }
 
     if (global_interface == GLOBAL_INTERFACE_CREATE_NEW_TEAM) {
@@ -1459,11 +1521,7 @@ document.onkeydown = function(evt) {
     			}
     		}
     	} else if (evt.keyCode == 13) {
-			// enter, select pokemon
-			active_pokemon_p2 = selected_pokemon;
-			interface_state = INTERFACE_DISPLAY_TEXT;
-			text_stack = [{'text': 'Go, ' + pokemons[p2pokemon[active_pokemon_p2].index].name.toProperCase() + '!'}];
-			next_interface = INTERFACE_SELECT_MOVE;
+    		selectNextPokemon()
 		}
     }
 };
