@@ -36,6 +36,15 @@ interface_height = 200
 var backgroundImage = new Image();
 backgroundImage.src = 'images/background.png';
 
+var interfaceBackground = new Image();
+interfaceBackground.src = 'images/wallpaper.jpg';
+
+var initialWallpaperBackground = new Image();
+initialWallpaperBackground.src = 'images/wallpaper-initial.png';
+
+var selectionWallpaperBackground = new Image();
+selectionWallpaperBackground.src = 'images/wallpaper-selection.png';
+
 var pokemons = [{"id":1,"name":"Bulbasaur","speed":45,"special_defense":65,"special_attack":65,"defense":49,"attack":49,"hp":45,"types":["poison","grass"],"img_front":"images/bulbasaur-front.gif","img_back":"images/bulbasaur-back.gif", "attacks": ["tackle", "razor leaf", "sludge bomb", "sleep powder"]}, {"id":4,"name":"Charmander","speed":65,"special_defense":50,"special_attack":60,"defense":43,"attack":52,"hp":39,"types":["fire"],"img_front":"images/charmander-front.gif","img_back":"images/charmander-back.gif", "attacks": ["ember", "flamethrower", "slash", "brick break"]},{"id":7,"name":"Squirtle","speed":43,"special_defense":64,"special_attack":50,"defense":65,"attack":48,"hp":44,"types":["water"],"img_front":"images/squirtle-front.gif","img_back":"images/squirtle-back.gif", "attacks": ["aqua tail", "bite", "ice beam", "tackle"]},{"id":25,"name":"Pikachu","speed":90,"special_defense":50,"special_attack":50,"defense":40,"attack":55,"hp":35,"types":["electric"],"img_front":"images/pikachu-front.gif","img_back":"images/pikachu-back.gif", "attacks": ["thunderbolt", "quick attack", "thunder wave", "thunder shock"]},{"id":39,"name":"Jigglypuff","speed":20,"special_defense":25,"special_attack":45,"defense":20,"attack":45,"hp":115,"types":["fairy","normal"],"img_front":"images/jigglypuff-front.gif","img_back":"images/jigglypuff-back.gif", "attacks": ["pound", "sing", "body slam", "psychic"]},{"id":52,"name":"Meowth","speed":90,"special_defense":40,"special_attack":40,"defense":35,"attack":45,"hp":40,"types":["normal"],"img_front":"images/meowth-front.gif","img_back":"images/meowth-back.gif", "attacks": ["bite", "slash", "shadow claw", "scratch"]},{"id":56,"name":"Mankey","speed":70,"special_defense":45,"special_attack":35,"defense":35,"attack":80,"hp":40,"types":["fighting"],"img_front":"images/mankey-front.gif","img_back":"images/mankey-back.gif", "attacks": ["karate chop", "cross chop", "night slash", "scratch"]},{"id":16,"name":"Pidgey","speed":56,"special_defense":45,"special_attack":45,"defense":50,"attack":55,"hp":50,"types":["flying","normal"],"img_front":"images/pidgey-front.gif","img_back":"images/pidgey-back.gif", "attacks": ["tackle", "air slash", "gust", "steel wing"]},{"id":23,"name":"Ekans","speed":55,"special_defense":54,"special_attack":40,"defense":44,"attack":60,"hp":35,"types":["poison"],"img_front":"images/ekans-front.gif","img_back":"images/ekans-back.gif", "attacks": ["toxic", "sludge bomb", "mud bomb", "bite"]},{"id":74,"name":"Geodude","speed":20,"special_defense":30,"special_attack":30,"defense":100,"attack":80,"hp":40,"types":["ground","rock"],"img_front":"images/geodude-front.gif","img_back":"images/geodude-back.gif", "attacks": ["rock throw", "earthquake", "tackle", "double-edge"]},{"id":96,"name":"Drowzee","speed":42,"special_defense":90,"special_attack":43,"defense":45,"attack":48,"hp":60,"types":["psychic"],"img_front":"images/drowzee-front.gif","img_back":"images/drowzee-back.gif", "attacks": ["psychic", "hypnosis", "pound", "headbutt"]},{"id":92,"name":"Gastly","speed":80,"special_defense":35,"special_attack":100,"defense":30,"attack":35,"hp":30,"types":["poison","ghost"],"img_front":"images/gastly-front.gif","img_back":"images/gastly-back.gif", "attacks": ["hypnosis", "sucker punch", "shadow ball", "lick"]},{"id":12,"name":"Butterfree","speed":70,"special_defense":80,"special_attack":90,"defense":50,"attack":45,"hp":60,"types":["flying","bug"],"img_front":"images/butterfree-front.gif","img_back":"images/butterfree-back.gif", "attacks": ["bug buzz", "poison powder", "psybeam", "air slash"]},{"id":147,"name":"Dratini","speed":50,"special_defense":50,"special_attack":50,"defense":45,"attack":64,"hp":41,"types":["dragon"],"img_front":"images/dratini-front.gif","img_back":"images/dratini-back.gif", "attacks": ["twister", "dragon rush", "thunder wave", "aqua tail"]}]
 
 var attacks = [{"name": "tackle", "power": 40, "type": "normal", "status": "none", "special": false}, {"name": "air slash", "power": 75, "type": "flying", "status": "none", "special": true}, {"name": "gust", "power": 40, "type": "flying", "status": "none", "special": true}, {"name": "steel wing", "power": 70, "type": "steel", "status": "none", "special": false}, {"name": "thunderbolt", "power": 90, "type": "electric", "status": "none", "special": true}, {"name": "quick attack", "power": 40, "type": "normal", "status": "none", "priority": 1, "special": false}, {"name": "thunder wave", "power": 0, "type": "electric", "status": "paralyzed", "special": true}, {"name": "thunder shock", "power": 40, "type": "electric", "status": "none", "special": true}, {"name": "razor leaf", "power": 55, "type": "grass", "status": "none", "special": false}, {"name": "sleep powder", "power": 0, "type": "grass", "status": "sleep", "special": true}, {"name": "sludge bomb", "power": 90, "type": "poison", "status": "none", "special": true}, {"name": "ember", "power": 40, "type": "fire", "status": "none", "special": true}, {"name": "flamethrower", "power": 90, "type": "fire", "status": "none", "special": true}, {"name": "slash", "power": 70, "type": "normal", "status": "none", "special": false}, {"name": "brick break", "power": 75, "type": "fighting", "status": "none", "special": false}, {"name": "aqua tail", "power": 90, "type": "water", "status": "none", "special": false}, {"name": "bite", "power": 60, "type": "dark", "status": "none", "special": false}, {"name": "ice beam", "power": 90, "type": "ice", "status": "none", "special": true}, {"name": "pound", "power": 40, "type": "normal", "status": "none", "special": false}, {"name": "sing", "power": 0, "type": "normal", "status": "sleep", "special": false}, {"name": "body slam", "power": 85, "type": "normal", "status": "none", "special": false}, {"name": "psychic", "power": 90, "type": "psychic", "status": "none", "special": true}, {"name": "scratch", "power": 40, "type": "normal", "status": "none", "special": false}, {"name": "shadow claw", "power": 70, "type": "ghost", "status": "none", "special": false}, {"name": "karate chop", "power": 50, "type": "fighting", "status": "none", "special": false}, {"name": "cross chop", "power": 100, "type": "fighting", "status": "none", "special": false},  {"name": "night slash", "power": 70, "type": "dark", "status": "none", "special": false}, {"name": "toxic", "power": 0, "type": "poison", "status": "toxic", "special": true}, {"name": "mud bomb", "power": 65, "type": "ground", "status": "none", "special": true}, {"name": "rock throw", "power": 50, "type": "rock", "status": "none", "special": false}, {"name": "earthquake", "power": 100, "type": "ground", "status": "none", "special": false},  {"name": "double-edge", "power": 120, "type": "normal", "status": "none", "special": false, "recoil": 0.33}, {"name": "hypnosis", "power": 0, "type": "psychic", "status": "sleep", "special": true}, {"name": "pound", "power": 40, "type": "normal", "status": "none", "special": false}, {"name": "headbutt", "power": 70, "type": "normal", "status": "none", "special": false}, {"name": "sucker punch", "power": 70, "type": "dark", "status": "none", "special": false}, {"name": "shadow ball", "power": 80, "type": "ghost", "status": "none", "special": false}, {"name": "lick", "power": 30, "type": "ghost", "status": "none", "special": false}, {"name": "poison powder", "power": 0, "type": "poison", "status": "poison", "special": true}, {"name": "air slash", "power": 75, "type": "flying", "status": "none", "special": true}, {"name": "psybeam", "power": 65, "type": "psychic", "status": "none", "special": true}, {"name": "bug buzz", "power": 90, "type": "bug", "status": "none", "special": true}, {"name": "twister", "power": 40, "type": "dragon", "status": "none", "special": true}, {"name": "dragon rush", "power": 100, "type": "dragon", "status": "none", "special": false}, {"name": "thunder wave", "power": 0, "type": "electric", "status": "paralysis", "special": true},  {"name": "aqua tail", "power": 90, "type": "water", "status": "none", "special": false}]
@@ -263,11 +272,15 @@ function getPokemonImage(pkmn, isFront, isDamaged) {
 	}
 }
 
-function drawPokemonImage(c, pkmn, image, isFront, x, y, RENDER_SCALE=1, ANIMATION_MULTIPLIER=1) {
+function drawPokemonImage(c, pkmn, image, isFront, x, y, RENDER_SCALE=1, ANIMATION_MULTIPLIER=1, MAXIMUM_SIZE=-1) {
 	current_frame = Math.round(pkmn.frame);
 	total_frames = Math.round(image.width / image.height);
+
+	var render_size = image.height*SCALE*RENDER_SCALE;
+	if (MAXIMUM_SIZE > 0 && render_size > MAXIMUM_SIZE) {
+		render_size = MAXIMUM_SIZE;
+	} 
 	
-	// tint image
 	c.drawImage(image,
 		current_frame * image.height,
 		0,
@@ -275,8 +288,8 @@ function drawPokemonImage(c, pkmn, image, isFront, x, y, RENDER_SCALE=1, ANIMATI
 		image.height,
 		x,
 		y,
-		image.height*SCALE*RENDER_SCALE,
-		image.height*SCALE*RENDER_SCALE);
+		render_size,
+		render_size);
 	// move to the next frame
 	if (pkmn.frame + 1 >= total_frames) {
 		pkmn.frame = 0;
@@ -313,8 +326,9 @@ GLOBAL_INTERFACE_CREATE_NEW_TEAM = 1
 GLOBAL_INTERFACE_PLAYER_BATTLE = 2
 GLOBAL_INTERFACE_TOURNAMENT_MODE = 3
 GLOBAL_INTERFACE_RETRY_BATTLE = 4
+GLOBAL_INTERFACE_SELECT_POKEMON = 5
 
-global_interface = GLOBAL_INTERFACE_PLAYER_BATTLE
+global_interface = GLOBAL_INTERFACE_CREATE_NEW_TEAM
 
 INTERFACE_SELECT_MOVE = 1
 INTERFACE_DISPLAY_TEXT = 2
@@ -1075,9 +1089,52 @@ function update() {
 	update_health(p2pokemon[active_pokemon_p2]);
 }
 
+var caret_position = 0;
+var team_name = ""
+
+function insertLetter(letter) {
+	team_name = team_name.slice(0, caret_position) + letter + team_name.substr(caret_position);
+	caret_position++;
+	team_name = team_name.toProperCase();
+}
+
+function deleteLeft() {
+	if (caret_position > 0) {
+		team_name = team_name.slice(0, caret_position - 1) + team_name.substr(caret_position);
+		team_name = team_name.toProperCase();
+		caret_position--;
+	}
+}
+
+var selected_pokemon_list = []
+var pokemon_entries = []
+
+for(var i = 0; i < pokemons.length; i++) {
+	pokemon_entries.push({'index': i, 'frame': 0});
+}
+
+var mousePos = { x: 0, y: 0 }
+
+function getMousePos(canvas, evt) {
+	var rect = canvas.getBoundingClientRect();
+	return {
+		x: evt.clientX - rect.left,
+		y: evt.clientY - rect.top
+	};
+}
+
 function render() {
 	if (global_interface == GLOBAL_INTERFACE_CREATE_NEW_TEAM) {
-
+		drawBackground(c, initialWallpaperBackground, 0, 0, battle_width, battle_height + 50);
+		c.font = "bold 32px Calibri";
+		c.fillStyle = '#000000'
+		c.fillText(team_name, 32, 265 + 26);
+		if ((flicker % 60) < 30) {
+			c.fillStyle = '#000000'
+			var x = 32 + c.measureText(team_name.substr(0, caret_position)).width
+			var y = 265;
+			c.fillRect(x, y, 2, 32);
+		}
 	} else if (global_interface == GLOBAL_INTERFACE_PLAYER_BATTLE) {
 		drawBackground(c, backgroundImage, 0, 0, battle_width, battle_height);
 		drawPokemon(c, p2pokemon[active_pokemon_p2], false)
@@ -1091,6 +1148,53 @@ function render() {
 		}
 		drawInterface();
 		// drawDecisionTree();
+	} else if (global_interface == GLOBAL_INTERFACE_SELECT_POKEMON) {
+		drawBackground(c, selectionWallpaperBackground, 0, 0, battle_width, battle_height + 50);
+		var x = 10;
+		var y = 128;
+		var fontsize = 18
+
+		c.font = "bold " + fontsize + "px Calibri";
+
+
+		for(var i = 0; i < pokemon_entries.length; i++) {
+			var pkmn = pokemon_entries[i];
+			image = getPokemonImage(pkmn, true, false)
+			var pokemon_size = 112
+			if (x + pokemon_size > battle_width) {
+				x = 10;
+				y += pokemon_size + 32;
+			}
+			var hover = false;
+			if (mousePos.x >= x && mousePos.x <= x + pokemon_size &&
+				mousePos.y >= y && mousePos.y <= y + pokemon_size + fontsize) {
+				hover = true;
+			}
+
+			if (hover) {
+				c.globalAlpha = 0.5
+				c.fillStyle = '#feca30'
+				c.fillRect(x, y, pokemon_size, pokemon_size)
+				c.strokeStyle = '#3e5ba3'
+				c.strokeRect(x, y, pokemon_size, pokemon_size)
+				c.globalAlpha = 1
+			}
+			drawPokemonImage(c, pkmn, image, true, x, y, 1, 1, pokemon_size);
+			if (hover) {
+				c.fillStyle = '#feca30'
+			} else {
+				c.fillStyle = '#3e5ba3'
+			}
+			c.fillRect(x + 5, y + pokemon_size - fontsize, pokemon_size - 10, 25)
+			if (hover) {
+				c.fillStyle = '#3e5ba3'
+			} else {
+				c.fillStyle = '#feca30'
+			}
+			var name = pokemons[pkmn.index].name.toProperCase()
+			c.fillText(name, x + (pokemon_size - c.measureText(name).width) / 2, y + pokemon_size);
+			x += pokemon_size
+		}
 	}
 }
 
@@ -1104,8 +1208,51 @@ function loop(timestamp) {
 	window.requestAnimationFrame(loop)
 }
 
+canvas.addEventListener('mousemove', function(evt) {
+	mousePos = getMousePos(canvas, evt);
+}, false);
+
+canvas.addEventListener('click', function(evt) {
+	mousePos = getMousePos(canvas, evt);
+	if (global_interface == GLOBAL_INTERFACE_SELECT_POKEMON) {
+		
+	}
+}, false);
+
 document.onkeydown = function(evt) {
     evt = evt || window.event;
+
+    if (global_interface == GLOBAL_INTERFACE_CREATE_NEW_TEAM) {
+    	if (evt.keyCode == 37) {
+    		// left arrow
+    		caret_position--;
+    		if (caret_position < 0)
+    			caret_position = 0;
+    	}
+    	if (evt.keyCode == 39) {
+    		// right arrow
+    		caret_position++;
+    		if (caret_position > team_name.length) {
+    			caret_position = team_name.length
+    		}
+    	}
+    	if (evt.keyCode == 8) {
+    		deleteLeft()
+    	}
+    	if (evt.keyCode == 32) {
+    		var letter = ' '
+    		insertLetter(letter);
+    	}
+    	if (evt.keyCode >= 65 && evt.keyCode <= 90) {
+    		var letters = "abcdefghijklmnopqrstuvwxyz"
+    		var letter = letters[evt.keyCode - 65];
+    		insertLetter(letter);
+    	}
+    	if (evt.keyCode == 13) {
+    		global_interface = GLOBAL_INTERFACE_SELECT_POKEMON
+    	}
+    	return;
+    }
 
     if (p1pokemon[active_pokemon_p1].display_health != p1pokemon[active_pokemon_p1].health || p2pokemon[active_pokemon_p2].display_health != p2pokemon[active_pokemon_p2].health) {
     	return;
