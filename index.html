@@ -702,15 +702,7 @@ function dealDamageToPokemon(params) {
 			}
 			if (no_pokemon_left) {
 				next_interface = INTERFACE_BATTLE_OVER;
-				text_stack = [text_stack[0], {"text": "Your opponent is out of Pokemon! You win!", "effect": 
-					function(params) {
-						for(var i = 0; i < 3; i++) {
-							p1pokemon[i].health = 1;
-							p1pokemon[i].display_health = 1;
-						}
-						global_interface = GLOBAL_INTERFACE_SELECT_POKEMON_PLAYER;
-					}
-				}]
+				text_stack = [text_stack[0], {"text": "Your opponent is out of Pokemon! You win!"}]
 			} else {
 				// FIXME: switch pokemon for AI based on max damage against current pokemon
 				new_active_pokemon = -1;
@@ -1027,6 +1019,14 @@ function nextText() {
 	text_stack.shift();
 	if (text_stack.length == 0) {
 		interface_state = next_interface;
+		if (next_interface == INTERFACE_BATTLE_OVER) {
+			interface_state = INTERFACE_SELECT_MOVE;
+			for(var i = 0; i < 3; i++) {
+				p1pokemon[i].health = 1;
+				p1pokemon[i].display_health = 1;
+			}
+			global_interface = GLOBAL_INTERFACE_SELECT_POKEMON_PLAYER;
+		}
 		return;
 	}
 	if (text_stack[0].hasOwnProperty("effect")) {
@@ -1427,6 +1427,7 @@ document.onkeydown = function(evt) {
     evt = evt || window.event;
 
     if (evt.keyCode == 27) {
+    	team_name = "";
     	global_interface = GLOBAL_INTERFACE_CREATE_NEW_TEAM;
     }
 
