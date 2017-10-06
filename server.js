@@ -170,8 +170,8 @@ function get_teams(req, res, next) {
 
 	var teams = [];	
 
-	fs.readdirSync(dir).forEach(filename => {
-		if (filename.startsWith("team_")) {
+	fs.readdirSync(dir).forEach(function(filename) {
+		if (filename.lastIndexOf("team_", 0) === 0) {
 			console.log(filename);
 			var tdef = JSON.parse(fs.readFileSync(vsprintf("%s%s", [dir, filename])));
 
