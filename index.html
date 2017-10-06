@@ -424,7 +424,7 @@ function build_tree_prob_attack(tbl) {
 		return [mkRandAtt()];
 	}
 
-	var prob = 50;
+	var prob = getExploitPercent(tbl);
 	var rnd = mkNode("{0}% chance".format(prob));
 	rnd.children.push(mkAttack(max_attack));
 	res.push(rnd);
@@ -788,6 +788,38 @@ function str_eq(a, b) {
 	return a.toUpperCase().localeCompare(b.toUpperCase()) === 0;
 }
 
+function getExploitPercent(tbl) {
+	var dist_attacks = {};
+
+	tbl.forEach(function(row) {
+		dist_attacks[row.attack] = 'exists';
+	});
+
+	return 25 * Object.keys(dist_attacks).length;
+}
+
+function aiEploitOrExplore(tbl, opp_status) {
+	// figure out whether to exploit or to explore
+	var dist_attacks = {};
+
+	console.log("aiEploitOrExplore opp_status={0}={1}".format(opp_status, status_array[opp_status]));
+
+	var exploit_percent = getExploitPercent(tbl.filter(function(row) {
+		return row.state == opp_status;
+	}));
+
+	if (exploit_percent > 100) {
+		console.log("aiEploitOrExplore: seen more than 4 attacks against opponing pokemon's state and type");
+		exploit_percent = 100;
+	}
+
+	var rand = randBetween(0, 100);
+	var exploit = rand <= exploit_percent;
+	console.log("aiEploitOrExplore: num_known={0} >= rand={1}".format(exploit_percent, rand));
+
+	return exploit;
+}
+
 function aiChooseAttack(thisPkm, oppPkm) {
 	// FIXME: Thanks to async updates this has a race condition.
 	// But since our AI is kinda randomized, this shouldn't be a
@@ -852,9 +884,7 @@ function aiChooseAttack(thisPkm, oppPkm) {
 	}
 
 	// no short-cut by killing our dear opponent
-
-	var good_attack = randBetween(0, 10);
-	var exploit = good_attack >= 3;
+	var exploit = aiEploitOrExplore(tbl, opp_status);
 
 	// does he have a status?
 	if (opp_status != STATUS_NONE) {
