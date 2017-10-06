@@ -795,7 +795,13 @@ function getExploitPercent(tbl) {
 		dist_attacks[row.attack] = 'exists';
 	});
 
-	return 25 * Object.keys(dist_attacks).length;
+	var num = Object.keys(dist_attacks).length;
+	if (num > 4) {
+		console.log("getExploitPercent: seen more than 4 attacks against opponent's pokemon's state and type");
+		num = 4;
+	}
+
+	return 25 * num;
 }
 
 function aiEploitOrExplore(tbl, opp_status) {
@@ -807,11 +813,6 @@ function aiEploitOrExplore(tbl, opp_status) {
 	var exploit_percent = getExploitPercent(tbl.filter(function(row) {
 		return row.state == opp_status;
 	}));
-
-	if (exploit_percent > 100) {
-		console.log("aiEploitOrExplore: seen more than 4 attacks against opponing pokemon's state and type");
-		exploit_percent = 100;
-	}
 
 	var rand = randBetween(0, 100);
 	var exploit = rand <= exploit_percent;
