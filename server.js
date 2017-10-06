@@ -12,7 +12,8 @@ app.listen(app.get('port'), function(){
 	});
 app.post('/update_matrix', update_matrix);
 app.post('/set_team', set_team);
-app.post('/create_team', create_team);
+
+app.post('/get_teams', get_teams);
 
 
 
@@ -43,6 +44,12 @@ function figure_out_type(poke_entry) {
 	var types = poke_entry.types;
 	types.sort();
 	return types.join("");
+}
+
+function get_train_data(team, pokemon) {
+	var vsprintf = require('sprintf-js').vsprintf;
+	var sanitize = require("sanitize-filename");
+	return vsprintf('training/train_%s_%d.json', [sanitize(pokemon), team]);
 }
 
 function update_matrix(req, res, next) {
@@ -80,13 +87,12 @@ function update_matrix(req, res, next) {
 
 	var fs = require('fs');
 	var vsprintf = require('sprintf-js').vsprintf;
-	var sanitize = require("sanitize-filename");
 
 	var matrix = {}
 
-	if (team) {
+	if (team >= 0) {
 		// update our matrix
-		var filename = vsprintf('training/train_%s_%s.json', [sanitize(pokemon), sanitize(team)]);
+		var filename = get_train_data(team, pokemon);
 
 		if (fs.existsSync(filename)) {
 			matrix = JSON.parse(fs.readFileSync(filename));
@@ -120,44 +126,11 @@ function update_matrix(req, res, next) {
 				fs.writeFileSync(filename, JSON.stringify(matrix));
 			}
 		}
-	} else {
-		console.log("Empty team name");
 	}
 
 	res.setHeader('Content-Type', 'application/json');
 	console.log(JSON.stringify(matrix));
     res.send(JSON.stringify(matrix));
-
-	// build tree
-	// tree = build_tree(matrix);
-
-}
-
-function create_team(req, res, next) {
-	var qtext = decodeURIComponent(req.query.json);
-	var update = JSON.parse(qtext);
-
-	console.log('Create team with: %s', qtext);
-
-	// test values
-	var team = update.team;
-
-	var fs = require('fs');
-	var vsprintf = require('sprintf-js').vsprintf;
-	var sanitize = require("sanitize-filename");
-
-	var filename = vsprintf('training/team_%s.json', [sanitize(team)]);
-
-	res.setHeader('Content-Type', 'application/json');
-	if (fs.existsSync(filename)) {
-		console.log("Team %s already exists ", team);
-		res.send(JSON.stringify(false));
-
-		return;
-	} else {
-		fs.writeFileSync(filename, "");	
-		res.send(JSON.stringify(true));
-	}
 }
 
 function set_team(req, res, next) {
@@ -169,20 +142,67 @@ function set_team(req, res, next) {
 	// test values
 	var team = update.team;
 	var pokemon = update.pokemon;
+	var teamname = update.descr;
 
 	var fs = require('fs');
 	var vsprintf = require('sprintf-js').vsprintf;
-	var sanitize = require("sanitize-filename");
 
-	var filename = vsprintf('training/team_%s.json', [sanitize(team)]);
+	var filename = vsprintf('training/team_%s.json', [team]);
 
 	res.setHeader('Content-Type', 'application/json');
-	if (!fs.existsSync(filename)) {
-		res.send(JSON.stringify(false));
-	}
 
 	// update with pokemon
-	fs.writeFileSync(filename, JSON.stringify(pokemon));	
+	fs.writeFileSync(filename, JSON.stringify(update));	
 
 	res.send(JSON.stringify(true));
 }
+
+
+
+function get_teams(req, res, next) {
+	var qtext = decodeURIComponent(req.query.json);
+
+	console.log('Get teams');
+
+	const dir = 'training/';
+	const fs = require('fs');
+	var vsprintf = require('sprintf-js').vsprintf;
+
+	var teams = [];	
+
+	fs.readdirSync(dir).forEach(filename => {
+		if (filename.startsWith("team_")) {
+			console.log(filename);
+			var tdef = JSON.parse(fs.readFileSync(vsprintf("%s%s", [dir, filename])));
+
+			var rteam = new Object();
+			rteam.team_name = tdef.descr;
+			rteam.team_id = tdef.team;
+			rteam.pokemon = [];
+
+			tdef.pokemons.forEach(function(pkmn) {
+				var obj = new Object();
+				obj.name = pkmn;
+				var filename = get_train_data(tdef.team, pkmn);
+				
+				
+				if (fs.existsSync(filename)) {
+					obj.matrix = JSON.parse(fs.readFileSync(filename));
+				} else {
+					console.log(filename);
+					obj.matrix = {};
+				}
+
+				rteam.pokemon.push(obj);
+			});
+
+			teams.push(rteam);
+		}
+	})
+	
+	res.setHeader('Content-Type', 'application/json');
+	res.send(JSON.stringify(teams));
+
+	console.log(JSON.stringify(teams));
+}
+

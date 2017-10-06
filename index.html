@@ -18,6 +18,11 @@
 <script src="third_party/Treant.js"></script>
 
 <script>
+
+// 0 for ciomputer A, 100 for computer B
+var base_team_id = 0
+
+
 var canvas = document.getElementById("pokemoncanvas");
 var c = canvas.getContext("2d");
 
@@ -134,7 +139,7 @@ p2pokemon[2].index = 6
 
 var team_list = [{"team_name": "test1", "pokemon": [{"name": "charmander", "matrix": []}, {"name": "bulbasaur", "matrix": []}, {"name": "squirtle", "matrix": []}]}, {"team_name": "test2", "pokemon": [{"name": "charmander", "matrix": []}, {"name": "bulbasaur", "matrix": []}, {"name": "squirtle", "matrix": []}]}, {"team_name": "test3", "pokemon": [{"name": "charmander", "matrix": []}, {"name": "bulbasaur", "matrix": []}, {"name": "squirtle", "matrix": []}]}, {"team_name": "test4", "pokemon": [{"name": "charmander", "matrix": []}, {"name": "bulbasaur", "matrix": []}, {"name": "squirtle", "matrix": []}]}, {"team_name": "test5", "pokemon": [{"name": "charmander", "matrix": []}, {"name": "bulbasaur", "matrix": []}, {"name": "squirtle", "matrix": []}]}]
 
-callWheneverActualPokemonChanges(p1pokemon[active_pokemon_p1], team_name);
+callWheneverActualPokemonChanges(p1pokemon[active_pokemon_p1], team_id);
 
 var HEALTH_ANIMATION_SPEED = 0.01;
 
@@ -802,7 +807,9 @@ function updateDecisionTree(pkm) {
     }
 
     // and draw it
-    new Treant(decision_tree);
+    if (global_interface != GLOBAL_INTERFACE_TOURNAMENT_MODE) {
+    	new Treant(decision_tree);
+    }
 }
 
 var screen_flash = 0;
@@ -948,7 +955,7 @@ function dealDamageToPokemon(params) {
 						function(params) { active_pokemon_p2 = params[0]; callWheneverActualPokemonChanges(p2pokemon[active_pokemon_p2], team_name2); }, "parameters": [new_active_pokemon]})
 				} else {
 					text_stack.push({"text": "The AI send out " + pokemons[p1pokemon[new_active_pokemon].index].name.toProperCase() + ".", "effect": 
-						function(params) { active_pokemon_p1 = params[0]; callWheneverActualPokemonChanges(p1pokemon[active_pokemon_p1], team_name); }, "parameters": [new_active_pokemon]})
+						function(params) { active_pokemon_p1 = params[0]; callWheneverActualPokemonChanges(p1pokemon[active_pokemon_p1], team_id); }, "parameters": [new_active_pokemon]})
 				}
 			}
 		}
@@ -957,7 +964,7 @@ function dealDamageToPokemon(params) {
 	}
 
 	if (move !== undefined && update_matrix) {
-		updateMatrixGetNewMatrixAsync(pkmn1, pkmn2, move, damage, team_name);
+		updateMatrixGetNewMatrixAsync(pkmn1, pkmn2, move, damage, team_id);
 	}
 }
 
@@ -1452,6 +1459,7 @@ function update() {
 
 var caret_position = 0;
 var team_name = ""
+var team_id = -1;
 var team_name2 = "Player"
 
 function insertLetter(letter) {
@@ -1500,8 +1508,9 @@ function goNext() {
 			p2pokemon.push({'index': selected_pokemon_list[i], 'health': 1, 'display_health': 1, 'status': STATUS_NONE, 'frame': 0, 'table': []})
 		}
 		selected_pokemon_list = []
-		global_interface = GLOBAL_INTERFACE_PLAYER_BATTLE;
-		callWheneverActualPokemonChanges(p1pokemon[active_pokemon_p1], team_name);
+		setTeam(team_name, p2pokemon);
+		global_interface = GLOBAL_INTERFACE_PLAYER_BATTLE;		
+		callWheneverActualPokemonChanges(p1pokemon[active_pokemon_p1], team_id);			
     }
 }
 
@@ -1667,26 +1676,63 @@ function loop(timestamp) {
 	window.requestAnimationFrame(loop)
 }
 
-function createTeam(name) {
+function setTeam(nam, pkmns) {
 	// update matrix and async draw decision tree
 	var upd = new Object();
-	upd.team = name;
+
+	team_id = base_team_id;
+	upd.team = base_team_id;
+	upd.descr = name;
+
+	upd.pokemons = [];
+	pkmns.forEach(function(p) {
+		upd.pokemons.push(pokemons[p.index].name);
+		console.log(pokemons[p.index].name);
+	});
+
+	console.log(JSON.stringify(upd.pokemons));
 
 	var xmlHttp = new XMLHttpRequest();
 	var body = JSON.stringify(upd);
-	var url = "create_team?json=";
+	var url = "set_team?json=";
 	url = url.concat(encodeURIComponent(body));
 
-	xmlHttp.open("POST", url, false); // synch
+	xmlHttp.onreadystatechange = function() {
+		if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+			JSON.parse(xmlHttp.responseText);
+		} else {
+			console.log("setTeam: not ready");
+		}
+	};
+
+	xmlHttp.open("POST", url, true);
 	xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	xmlHttp.send(null);
 
-	if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
-		return JSON.parse(xmlHttp.responseText);
-	} else {
-		console.log("createTeam: not ready");
-		return false;
-	}
+	// FIXME: save current team id 
+
+	base_team_id = base_team_id + 1;
+
+	return true;
+}
+
+function getAllTeams() {
+	var xmlHttp = new XMLHttpRequest();
+	var url = "get_teams";
+
+	xmlHttp.onreadystatechange = function() {
+		if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+			// FIXME: do tournament shit here
+		} else {
+			console.log("getAllTeams: not ready");
+		}
+	};
+
+	xmlHttp.open("POST", url, true);
+	xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xmlHttp.send(null);
+
+	// FIXME: save current team id 
 }
 
 canvas.addEventListener('mousemove', function(evt) {
@@ -1741,12 +1787,7 @@ document.onkeydown = function(evt) {
     		insertLetter(letter);
     	}
     	if (evt.keyCode == 13) {
-    		// try to commit team name
-			if (createTeam(team_name)) {
-				global_interface = GLOBAL_INTERFACE_SELECT_POKEMON_AI	
-			} else {
-				alert("Team {0} already exists".format(team_name));
-			}    		
+			global_interface = GLOBAL_INTERFACE_SELECT_POKEMON_AI	
     	}
     	return;
     } else if (global_interface == GLOBAL_INTERFACE_SELECT_POKEMON_AI) {
@@ -1814,6 +1855,8 @@ document.onkeydown = function(evt) {
 var lastRender = 0
 window.requestAnimationFrame(loop);
 
+
+getAllTeams();
 </script>
 
 </body>
