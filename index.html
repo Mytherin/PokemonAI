@@ -427,7 +427,9 @@ function build_tree_branch_nohealth(tbl) {
 				return true;
 			}
 
-			if (ost == STATUS_NONE) {
+			console.log("attack: {0}, status: {1}".format(item.attack, info.status));
+
+			if (ost === STATUS_NONE) {
 				// try to change status
 				return !str_eq(no_status, info.status);	
 			} else {
@@ -438,6 +440,7 @@ function build_tree_branch_nohealth(tbl) {
 		});
 
 		var nde = mkNode("opp_status = {0}".format(status_array[ost]));
+		console.log("opp_status = {0} with {1}".format(status_array[ost], JSON.stringify(part)));
 		nde.children = build_tree_prob_attack(part);
 		res.push(nde);
 	}
@@ -728,7 +731,7 @@ function performMove(pkmn1, pkmn2, move, update_matrix) {
 		}
 	}
 	if (pkmn1.status == STATUS_POISON) {
-		text_stack.push({"text": p1.name.toProperCase() + " took damage from poison.", "effect": dealDamageToPokemon, "parameters": [pkmn2, pkmn1, undefined, p1.hp * 0.08, undefined]});
+		text_stack.push({"text": p1.name.toProperCase() + " took damage from poison.", "effect": dealDamageToPokemon, "parameters": [pkmn2, pkmn1, undefined, p1.hp * 0.1, undefined]});
 	}
 }
 
