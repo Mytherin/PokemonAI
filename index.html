@@ -48,6 +48,9 @@ selectionWallpaperBackground.src = 'images/wallpaper-selection.png';
 var selectionPlayerBackground = new Image();
 selectionPlayerBackground.src = 'images/wallpaper-selection-player.png';
 
+var rankingBackground = new Image();
+rankingBackground.src = 'images/wallpaper-ranking.png';
+
 var pokemons = [{"id":1,"name":"Bulbasaur","speed":45,"special_defense":65,"special_attack":65,"defense":49,"attack":49,"hp":45,"types":["poison","grass"],"img_front":"images/bulbasaur-front.gif","img_back":"images/bulbasaur-back.gif", "attacks": ["tackle", "razor leaf", "sludge bomb", "sleep powder"]}, {"id":4,"name":"Charmander","speed":65,"special_defense":50,"special_attack":60,"defense":43,"attack":52,"hp":39,"types":["fire"],"img_front":"images/charmander-front.gif","img_back":"images/charmander-back.gif", "attacks": ["ember", "flamethrower", "slash", "brick break"]},{"id":7,"name":"Squirtle","speed":43,"special_defense":64,"special_attack":50,"defense":65,"attack":48,"hp":44,"types":["water"],"img_front":"images/squirtle-front.gif","img_back":"images/squirtle-back.gif", "attacks": ["aqua tail", "bite", "ice beam", "tackle"]},{"id":25,"name":"Pikachu","speed":90,"special_defense":50,"special_attack":50,"defense":40,"attack":55,"hp":35,"types":["electric"],"img_front":"images/pikachu-front.gif","img_back":"images/pikachu-back.gif", "attacks": ["thunderbolt", "quick attack", "thunder wave", "thunder shock"]},{"id":39,"name":"Jigglypuff","speed":20,"special_defense":25,"special_attack":45,"defense":20,"attack":45,"hp":115,"types":["fairy","normal"],"img_front":"images/jigglypuff-front.gif","img_back":"images/jigglypuff-back.gif", "attacks": ["pound", "sing", "body slam", "psychic"]},{"id":52,"name":"Meowth","speed":90,"special_defense":40,"special_attack":40,"defense":35,"attack":45,"hp":40,"types":["normal"],"img_front":"images/meowth-front.gif","img_back":"images/meowth-back.gif", "attacks": ["bite", "slash", "shadow claw", "scratch"]},{"id":56,"name":"Mankey","speed":70,"special_defense":45,"special_attack":35,"defense":35,"attack":80,"hp":40,"types":["fighting"],"img_front":"images/mankey-front.gif","img_back":"images/mankey-back.gif", "attacks": ["karate chop", "cross chop", "night slash", "scratch"]},{"id":16,"name":"Pidgey","speed":56,"special_defense":45,"special_attack":45,"defense":50,"attack":55,"hp":50,"types":["flying","normal"],"img_front":"images/pidgey-front.gif","img_back":"images/pidgey-back.gif", "attacks": ["tackle", "air slash", "gust", "steel wing"]},{"id":23,"name":"Ekans","speed":55,"special_defense":54,"special_attack":40,"defense":44,"attack":60,"hp":35,"types":["poison"],"img_front":"images/ekans-front.gif","img_back":"images/ekans-back.gif", "attacks": ["toxic", "sludge bomb", "mud bomb", "bite"]},{"id":74,"name":"Geodude","speed":20,"special_defense":30,"special_attack":30,"defense":100,"attack":80,"hp":40,"types":["ground","rock"],"img_front":"images/geodude-front.gif","img_back":"images/geodude-back.gif", "attacks": ["rock throw", "earthquake", "tackle", "double-edge"]},{"id":96,"name":"Drowzee","speed":42,"special_defense":90,"special_attack":43,"defense":45,"attack":48,"hp":60,"types":["psychic"],"img_front":"images/drowzee-front.gif","img_back":"images/drowzee-back.gif", "attacks": ["psychic", "hypnosis", "pound", "headbutt"]},{"id":92,"name":"Gastly","speed":80,"special_defense":35,"special_attack":100,"defense":40,"attack":35,"hp":30,"types":["poison","ghost"],"img_front":"images/gastly-front.gif","img_back":"images/gastly-back.gif", "attacks": ["hypnosis", "sucker punch", "shadow ball", "lick"]},{"id":12,"name":"Butterfree","speed":70,"special_defense":70,"special_attack":80,"defense":40,"attack":35,"hp":60,"types":["flying","bug"],"img_front":"images/butterfree-front.gif","img_back":"images/butterfree-back.gif", "attacks": ["bug buzz", "poison powder", "psybeam", "air slash"]},{"id":147,"name":"Dratini","speed":50,"special_defense":50,"special_attack":50,"defense":45,"attack":64,"hp":41,"types":["dragon"],"img_front":"images/dratini-front.gif","img_back":"images/dratini-back.gif", "attacks": ["twister", "dragon rush", "thunder wave", "aqua tail"]}]
 
 var attacks = [{"name": "tackle", "power": 40, "type": "normal", "status": "none", "special": false}, {"name": "air slash", "power": 75, "type": "flying", "status": "none", "special": true}, {"name": "gust", "power": 40, "type": "flying", "status": "none", "special": true}, {"name": "steel wing", "power": 70, "type": "steel", "status": "none", "special": false}, {"name": "thunderbolt", "power": 90, "type": "electric", "status": "none", "special": true}, {"name": "quick attack", "power": 40, "type": "normal", "status": "none", "priority": 1, "special": false}, {"name": "thunder wave", "power": 0, "type": "electric", "status": "paralyzed", "special": true}, {"name": "thunder shock", "power": 40, "type": "electric", "status": "none", "special": true}, {"name": "razor leaf", "power": 55, "type": "grass", "status": "none", "special": false}, {"name": "sleep powder", "power": 0, "type": "grass", "status": "sleep", "special": true}, {"name": "sludge bomb", "power": 90, "type": "poison", "status": "none", "special": true}, {"name": "ember", "power": 40, "type": "fire", "status": "none", "special": true}, {"name": "flamethrower", "power": 90, "type": "fire", "status": "none", "special": true}, {"name": "slash", "power": 70, "type": "normal", "status": "none", "special": false}, {"name": "brick break", "power": 75, "type": "fighting", "status": "none", "special": false}, {"name": "aqua tail", "power": 90, "type": "water", "status": "none", "special": false}, {"name": "bite", "power": 60, "type": "dark", "status": "none", "special": false}, {"name": "ice beam", "power": 90, "type": "ice", "status": "none", "special": true}, {"name": "pound", "power": 40, "type": "normal", "status": "none", "special": false}, {"name": "sing", "power": 0, "type": "normal", "status": "sleep", "special": false}, {"name": "body slam", "power": 85, "type": "normal", "status": "none", "special": false}, {"name": "psychic", "power": 90, "type": "psychic", "status": "none", "special": true}, {"name": "scratch", "power": 40, "type": "normal", "status": "none", "special": false}, {"name": "shadow claw", "power": 70, "type": "ghost", "status": "none", "special": false}, {"name": "karate chop", "power": 50, "type": "fighting", "status": "none", "special": false}, {"name": "cross chop", "power": 100, "type": "fighting", "status": "none", "special": false},  {"name": "night slash", "power": 70, "type": "dark", "status": "none", "special": false}, {"name": "toxic", "power": 0, "type": "poison", "status": "toxic", "special": true}, {"name": "mud bomb", "power": 65, "type": "ground", "status": "none", "special": true}, {"name": "rock throw", "power": 50, "type": "rock", "status": "none", "special": false}, {"name": "earthquake", "power": 100, "type": "ground", "status": "none", "special": false},  {"name": "double-edge", "power": 120, "type": "normal", "status": "none", "special": false, "recoil": 0.33}, {"name": "hypnosis", "power": 0, "type": "psychic", "status": "sleep", "special": true}, {"name": "pound", "power": 40, "type": "normal", "status": "none", "special": false}, {"name": "headbutt", "power": 70, "type": "normal", "status": "none", "special": false}, {"name": "sucker punch", "power": 70, "type": "dark", "status": "none", "special": false}, {"name": "shadow ball", "power": 80, "type": "ghost", "status": "none", "special": false}, {"name": "lick", "power": 30, "type": "ghost", "status": "none", "special": false}, {"name": "poison powder", "power": 0, "type": "poison", "status": "poison", "special": true}, {"name": "air slash", "power": 75, "type": "flying", "status": "none", "special": true}, {"name": "psybeam", "power": 65, "type": "psychic", "status": "none", "special": true}, {"name": "bug buzz", "power": 90, "type": "bug", "status": "none", "special": true}, {"name": "twister", "power": 40, "type": "dragon", "status": "none", "special": true}, {"name": "dragon rush", "power": 100, "type": "dragon", "status": "none", "special": false}, {"name": "thunder wave", "power": 0, "type": "electric", "status": "paralysis", "special": true},  {"name": "aqua tail", "power": 90, "type": "water", "status": "none", "special": false}]
@@ -86,6 +89,15 @@ type_colors["ground"] = "#F4A460"
 type_array = ["Normal", "Fighting", "Flying", "Poison", "Ground", "Rock", "Bug", "Ghost", "Steel", "Fire", "Water", "Grass", "Electric", "Psychic", "Ice", "Dragon", "Dark", "Fairy"]
 weaknesses = [[1, 1, 1, 1, 1, 0.5, 1, 0, 0.5, 1, 1, 1, 1, 1, 1, 1, 1, 1], [2, 1, 0.5, 0.5, 1, 2, 0.5, 0, 2, 1, 1, 1, 1, 0.5, 2, 1, 2, 0.5], [1, 2, 1, 1, 1, 0.5, 2, 1, 0.5, 1, 1, 2, 0.5, 1, 1, 1, 1, 1], [1, 1, 1, 0.5, 0.5, 0.5, 1, 0.5, 0, 1, 1, 2, 1, 1, 1, 1, 1, 2], [1, 1, 0, 2, 1, 2, 0.5, 1, 2, 2, 1, 0.5, 2, 1, 1, 1, 1, 1], [1, 0.5, 2, 1, 0.5, 1, 2, 1, 0.5, 2, 1, 1, 1, 1, 2, 1, 1, 1], [1, 0.5, 0.5, 0.5, 1, 1, 1, 0.5, 0.5, 0.5, 1, 2, 1, 2, 1, 1, 2, 0.5], [0, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 0.5, 1], [1, 1, 1, 1, 1, 2, 1, 1, 0.5, 0.5, 0.5, 1, 0.5, 1, 2, 1, 1, 2], [1, 1, 1, 1, 1, 0.5, 2, 1, 2, 0.5, 0.5, 2, 1, 1, 2, 0.5, 1, 1], [1, 1, 1, 1, 2, 2, 1, 1, 1, 2, 0.5, 0.5, 1, 1, 1, 0.5, 1, 1], [1, 1, 0.5, 0.5, 2, 2, 0.5, 1, 0.5, 0.5, 2, 0.5, 1, 1, 1, 0.5, 1, 1], [1, 1, 2, 1, 0, 1, 1, 1, 1, 1, 2, 0.5, 0.5, 1, 1, 0.5, 1, 1], [1, 2, 1, 2, 1, 1, 1, 1, 0.5, 1, 1, 1, 1, 0.5, 1, 1, 0, 1], [1, 1, 2, 1, 2, 1, 1, 1, 0.5, 0.5, 0.5, 2, 1, 1, 0.5, 2, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 0.5, 1, 1, 1, 1, 1, 1, 2, 1, 0], [1, 0.5, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 0.5, 0.5], [1, 2, 1, 0.5, 1, 1, 1, 1, 0.5, 0.5, 1, 1, 1, 1, 1, 2, 2, 1]]
 
+function getPokemonIndex(pname) {
+	for (var i = 0; i < pokemons.length; i++) {
+		if (pokemons[i].name.toLowerCase() == pname.toLowerCase()) {
+			return i
+		}
+	}
+	return 0
+}
+
 function getTypeIndex(type) {
 	for (var i = 0; i < type_array.length; i++) {
 		if (type_array[i].toLowerCase() == type.toLowerCase()) {
@@ -120,6 +132,8 @@ p1pokemon[2].index = 0
 p2pokemon[1].index = 5
 p2pokemon[2].index = 6
 
+var team_list = [{"team_name": "test1", "pokemon": [{"name": "charmander", "matrix": []}, {"name": "bulbasaur", "matrix": []}, {"name": "squirtle", "matrix": []}]}, {"team_name": "test2", "pokemon": [{"name": "charmander", "matrix": []}, {"name": "bulbasaur", "matrix": []}, {"name": "squirtle", "matrix": []}]}, {"team_name": "test3", "pokemon": [{"name": "charmander", "matrix": []}, {"name": "bulbasaur", "matrix": []}, {"name": "squirtle", "matrix": []}]}, {"team_name": "test4", "pokemon": [{"name": "charmander", "matrix": []}, {"name": "bulbasaur", "matrix": []}, {"name": "squirtle", "matrix": []}]}, {"team_name": "test5", "pokemon": [{"name": "charmander", "matrix": []}, {"name": "bulbasaur", "matrix": []}, {"name": "squirtle", "matrix": []}]}]
+
 callWheneverActualPokemonChanges(p1pokemon[active_pokemon_p1], team_name);
 
 var HEALTH_ANIMATION_SPEED = 0.01;
@@ -148,6 +162,184 @@ var pokeball_image = new Image();
 pokeball_image.src = 'images/pokeball.png'
 var pokeball_empty_image = new Image();
 pokeball_empty_image.src = 'images/pokeball-empty.png'
+
+
+function nextPowerOf2(n){
+  return Math.pow(2, Math.ceil(Math.log(n) / Math.log(2))); 
+}
+
+var bracket_size = 0
+var tournament_bracket = {}
+
+function generateTournamentNodes(l) {
+	newList = []
+	for(var i = 0; i < l.length; i += 2) {
+		if (i + 1 >= l.length) {
+			newList.push(l[i])
+			continue;
+		}
+		if (l[i].hasOwnProperty('text') && l[i].text.name == "BYE") {
+			if (l[i + 1].hasOwnProperty('text') && l[i + 1].text.name === "BYE") {
+				continue;
+			} else {
+				newList.push(l[i + 1])
+			}
+		} else if (l[i + 1].hasOwnProperty('text') && l[i + 1].text.name === "BYE") {
+			newList.push(l[i])
+		} else {
+			newList.push({
+				children: [
+					l[i], l[i + 1]
+				]
+			})
+		}
+	}
+	if (newList.length > 1) {
+		return generateTournamentNodes(newList)
+	}
+	return newList[0];
+}
+
+function initializeTournament(team_list) {
+	nodeList = []
+	for(var i = 0; i < team_list.length; i++) {
+		nodeList.push({
+	    	text: {
+	    		name : team_list[i].team_name
+	    	},
+			children: []
+		})
+	}
+	return generateTournamentNodes(nodeList);
+}
+
+function getMinimumTreeDepth(node, current=0) {
+	if (node.children.length > 0) {
+		min = 100000;
+		for(var i = 0; i < node.children.length; i++) {
+			depth = getMinimumTreeDepth(node.children[i], current + 1);
+			if (depth < min) {
+				min = depth;
+			}
+		}
+		return min;
+	} else {
+		return current;
+	}
+}
+
+function getDeepestNode(node, current=0) {
+	if (node.children.length > 0) {
+		retval = node
+		retdepth = current
+		for(var i = 0; i < node.children.length; i++) {
+			ret = getDeepestNode(node.children[i], current + 1);
+			if (ret[0] >= 0 && ret[0] > retdepth) {
+				retdepth = ret[0]
+				retval = ret[1]
+			}
+		}
+		return [retdepth, retval]
+	}
+	return [-1, undefined];
+}
+
+function shuffleArray(array) {
+    for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+    return array;
+}
+
+var tournament_tree = undefined
+var current_match = undefined
+var team1 = undefined
+var team2 = undefined
+
+function getTeam(name) {
+	for(var i = 0; i < team_list.length; i++) {
+		if (team_list[i].team_name == name) {
+			return team_list[i];
+		}
+	}
+	return undefined;
+}
+
+ranking = []
+
+function playMatch() {
+	// select the deepest node in the tree
+	current_match = getDeepestNode(tournament_tree.nodeStructure)[1]
+	if (current_match === undefined) {
+		global_interface = GLOBAL_INTERFACE_DISPLAY_RANKING;
+		ranking.push(tournament_tree.nodeStructure.text.name);
+		ranking = ranking.reverse();
+		return;
+	}
+
+	team_name = current_match.children[0].text.name
+	team_name2 = current_match.children[1].text.name
+	team1 = getTeam(team_name)
+	team2 = getTeam(team_name2)
+
+	current_match.children[0].text['red-style'] = true
+	current_match.children[1].text['red-style'] = true
+
+	for(var i = 0; i < 3; i++) {
+		p1pokemon[i].index = getPokemonIndex(team1.pokemon[i].name)
+		p1pokemon[i].display_health = 1;
+		p1pokemon[i].health = 1;
+
+		p2pokemon[i].index = getPokemonIndex(team2.pokemon[i].name)
+		p2pokemon[i].display_health = 1;
+		p2pokemon[i].health = 1;
+	}
+	active_pokemon_p1 = 0;
+	active_pokemon_p2 = 0;
+	interface_state = INTERFACE_SELECT_MOVE
+	next_interface = INTERFACE_SELECT_MOVE
+    new Treant(tournament_tree);
+}
+
+function startTournamentMode() {
+	ranking = []
+	global_interface = GLOBAL_INTERFACE_TOURNAMENT_MODE;
+	// FIXME: load teams
+	// load the brackets
+	bracket_size = nextPowerOf2(team_list.length);
+	while(team_list.length < bracket_size) {
+		team_list.push({'team_name': "BYE", "pokemon": []})
+	}
+	team_list = shuffleArray(team_list);
+	tournament_bracket = initializeTournament(team_list);
+	// try 100 different random configurations
+	// and pick the best one
+	for(var i = 0; i < 100; i++) {
+		team_list = shuffleArray(team_list);
+		new_bracket = initializeTournament(team_list);
+		if (getMinimumTreeDepth(new_bracket) > getMinimumTreeDepth(tournament_bracket)) {
+			tournament_bracket = new_bracket;
+		}
+	}
+
+	tournament_tree = {
+        chart: {
+            container: "#decision-tree",
+            
+            connectors: {
+                type: 'step'
+            },
+            node: {
+                HTMLclass: 'nodeExample1'
+            }
+        },
+        nodeStructure: tournament_bracket
+    };
+    playMatch();
+}
 
 function drawBackground(c, backgroundImage, x, y, width, height) {
 	c.drawImage(backgroundImage, x, y, width, height);
@@ -333,6 +525,7 @@ GLOBAL_INTERFACE_TOURNAMENT_MODE = 3
 GLOBAL_INTERFACE_RETRY_BATTLE = 4
 GLOBAL_INTERFACE_SELECT_POKEMON_AI = 5
 GLOBAL_INTERFACE_SELECT_POKEMON_PLAYER = 6
+GLOBAL_INTERFACE_DISPLAY_RANKING = 7
 
 global_interface = GLOBAL_INTERFACE_CREATE_NEW_TEAM
 
@@ -704,7 +897,7 @@ function dealDamageToPokemon(params) {
 			}
 		}
 		text_stack = [text_stack[0], {"text": p2.name.toProperCase() + " has fainted!"}];
-		if (is_player) {
+		if (is_player && global_interface != GLOBAL_INTERFACE_TOURNAMENT_MODE) {
 			next_interface = INTERFACE_SELECT_POKEMON;
 			selected_pokemon = -1;
 			for(var i = 0; i < 3; i++) {
@@ -719,29 +912,44 @@ function dealDamageToPokemon(params) {
 				text_stack = [text_stack[0], {"text": "You have no Pokemon left! You have lost the battle!"}]
 			}
 		} else {
+			var arr = p1pokemon;
+			if (is_player) arr = p2pokemon;
 			// AI pokemon has fainted
 			var no_pokemon_left = true;
 			for(var i = 0; i < 3; i++) {
-				if (p1pokemon[i].health > 0) {
+				if (arr[i].health > 0) {
 					no_pokemon_left = false;
 					break;
 				}
 			}
 			if (no_pokemon_left) {
-				next_interface = INTERFACE_BATTLE_OVER;
-				text_stack = [text_stack[0], {"text": "Your opponent is out of Pokemon! You win!"}]
+				if (global_interface == GLOBAL_INTERFACE_TOURNAMENT_MODE) {
+					next_interface = INTERFACE_BATTLE_OVER;
+					text_stack = [text_stack[0], {"text": "Team " + (is_player ? team_name2 : team_name) + " is out of Pokemon. The winner is " + (is_player ? team_name : team_name2) + "!"}]
+					current_match.children = []
+					ranking.push(is_player ? team_name2 : team_name)
+					current_match.text = {'name': (is_player ? team_name : team_name2)}
+				} else {
+					next_interface = INTERFACE_BATTLE_OVER;
+					text_stack = [text_stack[0], {"text": "Your opponent is out of Pokemon! You win!"}]
+				}
 			} else {
 				// FIXME: switch pokemon for AI based on max damage against current pokemon
 				new_active_pokemon = -1;
 				for(var i = 0; i < 3; i++) {
-					if (p1pokemon[i].health > 0) {
+					if (arr[i].health > 0) {
 						new_active_pokemon = i
 						break;
 					}
 				}
 				next_interface = INTERFACE_SELECT_MOVE
-				text_stack.push({"text": "The AI send out " + pokemons[p1pokemon[new_active_pokemon].index].name.toProperCase() + ".", "effect": 
-					function(params) { active_pokemon_p1 = params[0]; callWheneverActualPokemonChanges(p1pokemon[active_pokemon_p1], team_name); }, "parameters": [new_active_pokemon]})
+				if (is_player) {
+					text_stack.push({"text": "The AI send out " + pokemons[p2pokemon[new_active_pokemon].index].name.toProperCase() + ".", "effect": 
+						function(params) { active_pokemon_p2 = params[0]; callWheneverActualPokemonChanges(p2pokemon[active_pokemon_p2], team_name2); }, "parameters": [new_active_pokemon]})
+				} else {
+					text_stack.push({"text": "The AI send out " + pokemons[p1pokemon[new_active_pokemon].index].name.toProperCase() + ".", "effect": 
+						function(params) { active_pokemon_p1 = params[0]; callWheneverActualPokemonChanges(p1pokemon[active_pokemon_p1], team_name); }, "parameters": [new_active_pokemon]})
+				}
 			}
 		}
 	} else {
@@ -983,7 +1191,13 @@ function selectMove() {
 		aiChooseAttack(p1pokemon[active_pokemon_p1], p2pokemon[active_pokemon_p2])
 		// randBetween(0,4)
 		]);
-	var p2_attack = getAttackInfo(pokemons[p2pokemon[active_pokemon_p2].index].attacks[active_move])
+	if (global_interface == GLOBAL_INTERFACE_TOURNAMENT_MODE) {
+		var p2_attack = getAttackInfo(pokemons[p2pokemon[active_pokemon_p2].index].attacks[
+				aiChooseAttack(p2pokemon[active_pokemon_p2], p1pokemon[active_pokemon_p1])
+				]);
+	} else {
+		var p2_attack = getAttackInfo(pokemons[p2pokemon[active_pokemon_p2].index].attacks[active_move])
+	}
 
 	// speed resolution
 	p1_goes_first = true;
@@ -1020,19 +1234,29 @@ function selectMove() {
 	nextText();
 }
 
+next_text_timer = 0;
+
 function nextText() {
 	text_stack.shift();
+
 	if (text_stack.length == 0) {
 		interface_state = next_interface;
 		if (next_interface == INTERFACE_BATTLE_OVER) {
-			interface_state = INTERFACE_SELECT_MOVE;
-			for(var i = 0; i < 3; i++) {
-				p1pokemon[i].health = 1;
-				p1pokemon[i].display_health = 1;
+			if (global_interface == GLOBAL_INTERFACE_TOURNAMENT_MODE) {
+				playMatch();
+			} else {
+				interface_state = INTERFACE_SELECT_MOVE;
+				for(var i = 0; i < 3; i++) {
+					p1pokemon[i].health = 1;
+					p1pokemon[i].display_health = 1;
+				}
+				global_interface = GLOBAL_INTERFACE_SELECT_POKEMON_PLAYER;
 			}
-			global_interface = GLOBAL_INTERFACE_SELECT_POKEMON_PLAYER;
 		}
 		return;
+	}
+	if (global_interface == GLOBAL_INTERFACE_TOURNAMENT_MODE) {
+		next_text_timer = 10;
 	}
 	if (text_stack[0].hasOwnProperty("effect")) {
 		text_stack[0].effect(text_stack[0].parameters);
@@ -1056,6 +1280,13 @@ function drawInterface() {
 	c.fillRect(0, battle_height, battle_width, interface_height);
 	c.strokeStyle = "#000000";
 	c.strokeRect(0, battle_height, battle_width, interface_height);
+
+
+	if (interface_state == INTERFACE_SELECT_MOVE &&
+		global_interface == GLOBAL_INTERFACE_TOURNAMENT_MODE) {
+		selectMove();
+		return;
+	}
 
 	c.font = "bold " + INTERFACE_FONTSIZE + "px Calibri";
 	c.fillStyle = "#000000";
@@ -1151,6 +1382,14 @@ function drawInterface() {
 	    if (p1pokemon[active_pokemon_p1].display_health != p1pokemon[active_pokemon_p1].health || p2pokemon[active_pokemon_p2].display_health != p2pokemon[active_pokemon_p2].health) {
 	    	return;
 	    }
+
+	   	if (global_interface == GLOBAL_INTERFACE_TOURNAMENT_MODE) {
+		    next_text_timer--;
+		    if (next_text_timer <= 0) {
+		    	nextText();
+		    }
+		    return;
+	   	}
 
 	    if (mouseDown) {
 	    	nextText();
@@ -1300,10 +1539,7 @@ function render() {
 			screen_flash--;
 		}
 		drawTeamNames();
-		if (global_interface == GLOBAL_INTERFACE_PLAYER_BATTLE) {
-			drawInterface();
-			// drawDecisionTree();
-		}
+		drawInterface();
 	} else if (global_interface == GLOBAL_INTERFACE_SELECT_POKEMON_AI || global_interface == GLOBAL_INTERFACE_SELECT_POKEMON_PLAYER) {
 		drawBackground(c, global_interface == GLOBAL_INTERFACE_SELECT_POKEMON_AI ? selectionWallpaperBackground : selectionPlayerBackground, 0, 0, battle_width, battle_height + 50);
 
@@ -1404,6 +1640,18 @@ function render() {
 			c.fillStyle = '#3e5ba3'
 			c.fillText("GO!", battle_width - 150, battle_height + 16);
 		}
+	} else if (global_interface == GLOBAL_INTERFACE_DISPLAY_RANKING) {
+		drawBackground(c, rankingBackground, 0, 0, battle_width, battle_height + 50);
+		c.fillStyle = '#000000'
+		c.font = "bold 48px Calibri";
+		c.fillText(ranking[0], 70, 88);
+		c.fillText(ranking[1], 70, 163)
+		c.font = "bold 20px Calibri";
+		for(i = 0; i < ranking.length; i++) {
+			if (i <= 2 || i % 2 == 0)
+			c.fillText(i + 1, 510, 76 + 20 * i);
+			c.fillText(ranking[i], 540, 76 + 20 * i);
+		}
 	}
 }
 
@@ -1456,6 +1704,10 @@ document.onkeydown = function(evt) {
     if (evt.keyCode == 27) {
     	team_name = "";
     	global_interface = GLOBAL_INTERFACE_CREATE_NEW_TEAM;
+    }
+
+    if (evt.keyCode == 112) {
+    	startTournamentMode()
     }
 
     if (global_interface == GLOBAL_INTERFACE_TOURNAMENT_MODE) {

@@ -1843,14 +1843,23 @@
 
         // TEXT
         if (this.text) {
+        	var red_style = false;
+    		if (this.text.hasOwnProperty('red-style')) {
+    			red_style = true;
+    		}
             for (var key in this.text) {
                 // adding DATA Attributes to the node
                 if (key.startsWith("data-")) {
                     node.setAttribute(key, this.text[key]);
                 }
+                if (key.startsWith("red-style")) {
+                	continue;
+                }
 
                 var textElement = document.createElement(this.text[key].href ? 'a' : 'p');
-
+                if (red_style) {
+                	textElement.style = 'color:red';
+                }
                 // make an <a> element if required
                 if (this.text[key].href) {
                     textElement.href = this.text[key].href;
