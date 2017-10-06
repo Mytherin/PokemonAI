@@ -293,6 +293,9 @@ function playMatch() {
 	team1 = getTeam(team_name)
 	team2 = getTeam(team_name2)
 
+	team_id = team1.team_id;
+	team_id2 = team2.team_id;
+
 	current_match.children[0].text['red-style'] = true
 	current_match.children[1].text['red-style'] = true
 
@@ -823,6 +826,7 @@ var screen_flash = 0;
 
 
 function callWheneverActualPokemonChanges(pkmn1, team) {
+	/*
 	// update matrix and async draw decision tree
 	var upd = new Object();
 	upd.pokemon = pokemons[pkmn1.index].name;
@@ -847,6 +851,7 @@ function callWheneverActualPokemonChanges(pkmn1, team) {
 	xmlHttp.open("POST", url, true);
 	xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	xmlHttp.send(null);
+	*/
 }
 
 function updateMatrixGetNewMatrixAsync(thisPkm, oppPkm, move, damage, team) {
@@ -881,6 +886,7 @@ function dealDamageToPokemon(params) {
 	var move = params[2];
 	var damage = params[3];
 	var update_matrix = params[4];
+	var teamid = params[5];
 	var p1 = pokemons[pkmn1.index]
 	var p2 = pokemons[pkmn2.index]
 	if (move !== undefined && move.status != "none") {
@@ -959,7 +965,7 @@ function dealDamageToPokemon(params) {
 				next_interface = INTERFACE_SELECT_MOVE
 				if (is_player) {
 					text_stack.push({"text": "The AI send out " + pokemons[p2pokemon[new_active_pokemon].index].name.toProperCase() + ".", "effect": 
-						function(params) { active_pokemon_p2 = params[0]; callWheneverActualPokemonChanges(p2pokemon[active_pokemon_p2], team_name2); }, "parameters": [new_active_pokemon]})
+						function(params) { active_pokemon_p2 = params[0]; callWheneverActualPokemonChanges(p2pokemon[active_pokemon_p2], team_id2); }, "parameters": [new_active_pokemon]})
 				} else {
 					text_stack.push({"text": "The AI send out " + pokemons[p1pokemon[new_active_pokemon].index].name.toProperCase() + ".", "effect": 
 						function(params) { active_pokemon_p1 = params[0]; callWheneverActualPokemonChanges(p1pokemon[active_pokemon_p1], team_id); }, "parameters": [new_active_pokemon]})
@@ -970,12 +976,12 @@ function dealDamageToPokemon(params) {
 		pkmn2.health = new_health / p2.hp;
 	}
 
-	if (move !== undefined && update_matrix) {
-		updateMatrixGetNewMatrixAsync(pkmn1, pkmn2, move, damage, team_id);
+	if (move !== undefined && (update_matrix || global_interface == GLOBAL_INTERFACE_TOURNAMENT_MODE)) {
+		updateMatrixGetNewMatrixAsync(pkmn1, pkmn2, move, damage, teamid);
 	}
 }
 
-function performMove(pkmn1, pkmn2, move, update_matrix) {
+function performMove(pkmn1, pkmn2, move, update_matrix, teamid) {
 	p1 = pokemons[pkmn1.index]
 	p2 = pokemons[pkmn2.index]
 
@@ -1006,7 +1012,7 @@ function performMove(pkmn1, pkmn2, move, update_matrix) {
 	if (move.power > 0) {
 		damage = ((((10 / 5 + 2) * (move.power * (attack / defense))) / 50) + 2) * multiplier;
 	}
-	text_stack.push({"text": p1.name.toProperCase() + " used " + move.name.toProperCase() + ".", "effect": dealDamageToPokemon, "parameters": [pkmn1, pkmn2, move, damage, update_matrix]});
+	text_stack.push({"text": p1.name.toProperCase() + " used " + move.name.toProperCase() + ".", "effect": dealDamageToPokemon, "parameters": [pkmn1, pkmn2, move, damage, update_matrix, teamid]});
 	if (move.power > 0) {
 		var effectiveness = computeEffectiveness(p2, move);
 		if (effectiveness < 1) {
@@ -1239,11 +1245,11 @@ function selectMove() {
 	next_interface = INTERFACE_SELECT_MOVE;
 	text_stack = [""]
 	if (p1_goes_first) {
-		performMove(p1pokemon[active_pokemon_p1], p2pokemon[active_pokemon_p2], p1_attack, true);
-		performMove(p2pokemon[active_pokemon_p2], p1pokemon[active_pokemon_p1], p2_attack, false);
+		performMove(p1pokemon[active_pokemon_p1], p2pokemon[active_pokemon_p2], p1_attack, true, team_id);
+		performMove(p2pokemon[active_pokemon_p2], p1pokemon[active_pokemon_p1], p2_attack, false, team_id2);
 	} else {
-		performMove(p2pokemon[active_pokemon_p2], p1pokemon[active_pokemon_p1], p2_attack, false);
-		performMove(p1pokemon[active_pokemon_p1], p2pokemon[active_pokemon_p2], p1_attack, true);
+		performMove(p2pokemon[active_pokemon_p2], p1pokemon[active_pokemon_p1], p2_attack, false, team_id2);
+		performMove(p1pokemon[active_pokemon_p1], p2pokemon[active_pokemon_p2], p1_attack, true, team_id);
 	}
 	nextText();
 }
@@ -1468,6 +1474,7 @@ var caret_position = 0;
 var team_name = ""
 var team_id = -1;
 var team_name2 = "Player"
+var team_id2 = -1;
 
 function insertLetter(letter) {
 	team_name = team_name.slice(0, caret_position) + letter + team_name.substr(caret_position);
