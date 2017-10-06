@@ -381,7 +381,7 @@ function callWheneverActualPokemonChanges(pkmn1) {
 	upd.attack_status = 0;
 	upd.opp_status = 0;
 	upd.damage = 0;
-	upd.team = 'your/mother@bla.xyz';
+	upd.team = team_name;
 
 	var xmlHttp = new XMLHttpRequest();
 	xmlHttp.onreadystatechange = function() { 
@@ -724,7 +724,7 @@ function dealDamageToPokemon(params) {
 		upd.attack_status = move.status;
 		upd.opp_status = pkmn2.status;
 		upd.damage = Math.floor(damage);
-		upd.team = 'your/mother@bla.xyz';
+		upd.team = team_name;
 
 		var xmlHttp = new XMLHttpRequest();
 		xmlHttp.onreadystatechange = function() { 
