@@ -429,10 +429,10 @@ function build_tree_branch_nohealth(tbl) {
 
 			if (ost == STATUS_NONE) {
 				// try to change status
-				return no_status.localeCompare(info.status) !== 0;	
+				return !str_eq(no_status, info.status);	
 			} else {
 				// if we already have a status we only choose attacks that do not change the status
-				return no_status.localeCompare(info.status) === 0;
+				return str_eq(no_status, info.status);
 			}
 			
 		});
@@ -506,7 +506,7 @@ function build_tree(tbl) {
 
 	for (var tpe in types) {
 		var part = tbl.filter(function(item) { 
-			return tpe.localeCompare(item.type) === 0;
+			return str_eq(tpe, item.type);
 		});
 
 		if (part.length < 1) {
@@ -660,8 +660,7 @@ function dealDamageToPokemon(params) {
 		pkmn2.health = new_health / p2.hp;
 	}
 
-	if (move !== undefined && update_matrix !== undefined) {
-		return;
+	if (move !== undefined && update_matrix) {
 		// update matrix and async draw decision tree
 		var upd = new Object();
 		upd.pokemon = pokemons[pkmn1.index].name;
@@ -729,7 +728,7 @@ function performMove(pkmn1, pkmn2, move, update_matrix) {
 		}
 	}
 	if (pkmn1.status == STATUS_POISON) {
-		text_stack.push({"text": p1.name.toProperCase() + " took damage from poison.", "effect": dealDamageToPokemon, "parameters": [pkmn2, pkmn1, undefined, p1.hp * 0.15, undefined]});
+		text_stack.push({"text": p1.name.toProperCase() + " took damage from poison.", "effect": dealDamageToPokemon, "parameters": [pkmn2, pkmn1, undefined, p1.hp * 0.08, undefined]});
 	}
 }
 
@@ -774,8 +773,12 @@ function aiChooseAttack(thisPkm, oppPkm) {
 
 	// 1. Have we encountered the opponent's type before?
 	var tbl = tbl.filter(function(row) {
-		console.log("aiChooseAttack: comapre types {0} with {1}".format(opp_type, row.type));
-		return str_eq(opp_type, row.type);
+		console.log("aiChooseAttack: compare types {0} with {1}".format(opp_type, row.type));
+		r = str_eq(opp_type, row.type);
+		if (r) {
+			console.log("aiChooseAttack: equal");
+		}
+		return r;
 	});
 
 	if (tbl.length === 0) {
@@ -810,10 +813,12 @@ function aiChooseAttack(thisPkm, oppPkm) {
 	// no short-cut by killing our dear opponent
 
 	var good_attack = randBetween(0, 10);
+	var exploit = good_attack >= 3;
 
 	// does he have a status?
 	if (opp_status != STATUS_NONE) {
-		if (strongest_move && good_attack >= 4) {
+		if (strongest_move && exploit) {
+			console.log("aiChooseAttack: opponent has status, strongest move without status {0}".format(strongest_move));
 			// match this strongest move
 			for (var i = 0; i < attacks.length; i++) {
 				if (str_eq(attacks[i], strongest_move)) {
@@ -821,11 +826,15 @@ function aiChooseAttack(thisPkm, oppPkm) {
 				}
 			}
 		}
+
+		if (!strongest_move) {
+			console.log("aiChooseAttack: NO strongest move");
+		}		
 	} else {
 		// try to get some status on opponent
-		if (good_attack >= 4) {
-			strongest_move = null;
-			max_damage = null;
+		if (exploit) {
+			var status_strongest_move = null;
+			var status_max_damage = null;
 
 			var no_status = status_array[STATUS_NONE];
 
@@ -836,17 +845,30 @@ function aiChooseAttack(thisPkm, oppPkm) {
 					console.log("aiChooseAttack: attack info not found for attack {0}".format(row.attack));
 				}
 
-				if (no_status.localeCompare(info.status) !== 0 && !max_damage || row.damage >= max_damage) {
-					max_damage = row.damage;
-					strongest_move = row.attack;
+				if (!str_eq(no_status, info.status) && !status_max_damage || row.damage >= status_max_damage) {
+					status_max_damage = row.damage;
+					status_strongest_move = row.attack;
 				}
 			});
 
-			if (strongest_move) {
+			if (status_strongest_move) {
+				console.log("aiChooseAttack: strongest move with status {0}".format(status_strongest_move));
 				for (var i = 0; i < attacks.length; i++) {
-					if (str_eq(attacks[i], strongest_move)) {
+					if (str_eq(attacks[i], status_strongest_move)) {
 						return i;
 					}
+				}
+			} else {
+				console.log("aiChooseAttack: NO strongest move with status");
+				if (strongest_move) {
+					console.log("aiChooseAttack: strongest move without status {0}".format(strongest_move));
+					for (var i = 0; i < attacks.length; i++) {
+						if (str_eq(attacks[i], strongest_move)) {
+							return i;
+						}
+					}
+				} else {
+					console.log("aiChooseAttack: NO strongest move");
 				}
 			}
 		}	
