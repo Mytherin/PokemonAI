@@ -1000,8 +1000,8 @@ function selectMove() {
 	next_interface = INTERFACE_SELECT_MOVE;
 	text_stack = [""]
 	if (p1_goes_first) {
-		performMove(p1pokemon[active_pokemon_p1], p2pokemon[active_pokemon_p2], p1_attack, false);
-		performMove(p2pokemon[active_pokemon_p2], p1pokemon[active_pokemon_p1], p2_attack, true);
+		performMove(p1pokemon[active_pokemon_p1], p2pokemon[active_pokemon_p2], p1_attack, true);
+		performMove(p2pokemon[active_pokemon_p2], p1pokemon[active_pokemon_p1], p2_attack, false);
 	} else {
 		performMove(p2pokemon[active_pokemon_p2], p1pokemon[active_pokemon_p1], p2_attack, false);
 		performMove(p1pokemon[active_pokemon_p1], p2pokemon[active_pokemon_p2], p1_attack, true);
