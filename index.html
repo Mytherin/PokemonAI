@@ -1748,8 +1748,6 @@ function getAllTeams(callback) {
 	xmlHttp.open("POST", url, true);
 	xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	xmlHttp.send(null);
-
-	// FIXME: save current team id 
 }
 
 canvas.addEventListener('mousemove', function(evt) {
@@ -1871,6 +1869,26 @@ document.onkeydown = function(evt) {
 
 var lastRender = 0
 window.requestAnimationFrame(loop);
+
+getAllTeams(function(team_list_param) {
+	if (team_list_param.length == 0) {
+		return;
+	}
+	// figure out base id, if some user presses F5
+	var max_id = base_team_id;
+
+	team_list_param.forEach(function(t) {
+		if (t.team_id >= max_id) {
+			max_id = t.team_id;
+		}
+	});
+
+	max_id = max_id + 1;
+
+	console.log("base id={0} to {1}".format(base_team_id, max_id));
+
+	base_team_id = max_id;
+});
 
 </script>
 
