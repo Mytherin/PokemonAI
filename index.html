@@ -45,6 +45,9 @@ initialWallpaperBackground.src = 'images/wallpaper-initial.png';
 var selectionWallpaperBackground = new Image();
 selectionWallpaperBackground.src = 'images/wallpaper-selection.png';
 
+var selectionPlayerBackground = new Image();
+selectionPlayerBackground.src = 'images/wallpaper-selection-player.png';
+
 var pokemons = [{"id":1,"name":"Bulbasaur","speed":45,"special_defense":65,"special_attack":65,"defense":49,"attack":49,"hp":45,"types":["poison","grass"],"img_front":"images/bulbasaur-front.gif","img_back":"images/bulbasaur-back.gif", "attacks": ["tackle", "razor leaf", "sludge bomb", "sleep powder"]}, {"id":4,"name":"Charmander","speed":65,"special_defense":50,"special_attack":60,"defense":43,"attack":52,"hp":39,"types":["fire"],"img_front":"images/charmander-front.gif","img_back":"images/charmander-back.gif", "attacks": ["ember", "flamethrower", "slash", "brick break"]},{"id":7,"name":"Squirtle","speed":43,"special_defense":64,"special_attack":50,"defense":65,"attack":48,"hp":44,"types":["water"],"img_front":"images/squirtle-front.gif","img_back":"images/squirtle-back.gif", "attacks": ["aqua tail", "bite", "ice beam", "tackle"]},{"id":25,"name":"Pikachu","speed":90,"special_defense":50,"special_attack":50,"defense":40,"attack":55,"hp":35,"types":["electric"],"img_front":"images/pikachu-front.gif","img_back":"images/pikachu-back.gif", "attacks": ["thunderbolt", "quick attack", "thunder wave", "thunder shock"]},{"id":39,"name":"Jigglypuff","speed":20,"special_defense":25,"special_attack":45,"defense":20,"attack":45,"hp":115,"types":["fairy","normal"],"img_front":"images/jigglypuff-front.gif","img_back":"images/jigglypuff-back.gif", "attacks": ["pound", "sing", "body slam", "psychic"]},{"id":52,"name":"Meowth","speed":90,"special_defense":40,"special_attack":40,"defense":35,"attack":45,"hp":40,"types":["normal"],"img_front":"images/meowth-front.gif","img_back":"images/meowth-back.gif", "attacks": ["bite", "slash", "shadow claw", "scratch"]},{"id":56,"name":"Mankey","speed":70,"special_defense":45,"special_attack":35,"defense":35,"attack":80,"hp":40,"types":["fighting"],"img_front":"images/mankey-front.gif","img_back":"images/mankey-back.gif", "attacks": ["karate chop", "cross chop", "night slash", "scratch"]},{"id":16,"name":"Pidgey","speed":56,"special_defense":45,"special_attack":45,"defense":50,"attack":55,"hp":50,"types":["flying","normal"],"img_front":"images/pidgey-front.gif","img_back":"images/pidgey-back.gif", "attacks": ["tackle", "air slash", "gust", "steel wing"]},{"id":23,"name":"Ekans","speed":55,"special_defense":54,"special_attack":40,"defense":44,"attack":60,"hp":35,"types":["poison"],"img_front":"images/ekans-front.gif","img_back":"images/ekans-back.gif", "attacks": ["toxic", "sludge bomb", "mud bomb", "bite"]},{"id":74,"name":"Geodude","speed":20,"special_defense":30,"special_attack":30,"defense":100,"attack":80,"hp":40,"types":["ground","rock"],"img_front":"images/geodude-front.gif","img_back":"images/geodude-back.gif", "attacks": ["rock throw", "earthquake", "tackle", "double-edge"]},{"id":96,"name":"Drowzee","speed":42,"special_defense":90,"special_attack":43,"defense":45,"attack":48,"hp":60,"types":["psychic"],"img_front":"images/drowzee-front.gif","img_back":"images/drowzee-back.gif", "attacks": ["psychic", "hypnosis", "pound", "headbutt"]},{"id":92,"name":"Gastly","speed":80,"special_defense":35,"special_attack":100,"defense":30,"attack":35,"hp":30,"types":["poison","ghost"],"img_front":"images/gastly-front.gif","img_back":"images/gastly-back.gif", "attacks": ["hypnosis", "sucker punch", "shadow ball", "lick"]},{"id":12,"name":"Butterfree","speed":70,"special_defense":80,"special_attack":90,"defense":50,"attack":45,"hp":60,"types":["flying","bug"],"img_front":"images/butterfree-front.gif","img_back":"images/butterfree-back.gif", "attacks": ["bug buzz", "poison powder", "psybeam", "air slash"]},{"id":147,"name":"Dratini","speed":50,"special_defense":50,"special_attack":50,"defense":45,"attack":64,"hp":41,"types":["dragon"],"img_front":"images/dratini-front.gif","img_back":"images/dratini-back.gif", "attacks": ["twister", "dragon rush", "thunder wave", "aqua tail"]}]
 
 var attacks = [{"name": "tackle", "power": 40, "type": "normal", "status": "none", "special": false}, {"name": "air slash", "power": 75, "type": "flying", "status": "none", "special": true}, {"name": "gust", "power": 40, "type": "flying", "status": "none", "special": true}, {"name": "steel wing", "power": 70, "type": "steel", "status": "none", "special": false}, {"name": "thunderbolt", "power": 90, "type": "electric", "status": "none", "special": true}, {"name": "quick attack", "power": 40, "type": "normal", "status": "none", "priority": 1, "special": false}, {"name": "thunder wave", "power": 0, "type": "electric", "status": "paralyzed", "special": true}, {"name": "thunder shock", "power": 40, "type": "electric", "status": "none", "special": true}, {"name": "razor leaf", "power": 55, "type": "grass", "status": "none", "special": false}, {"name": "sleep powder", "power": 0, "type": "grass", "status": "sleep", "special": true}, {"name": "sludge bomb", "power": 90, "type": "poison", "status": "none", "special": true}, {"name": "ember", "power": 40, "type": "fire", "status": "none", "special": true}, {"name": "flamethrower", "power": 90, "type": "fire", "status": "none", "special": true}, {"name": "slash", "power": 70, "type": "normal", "status": "none", "special": false}, {"name": "brick break", "power": 75, "type": "fighting", "status": "none", "special": false}, {"name": "aqua tail", "power": 90, "type": "water", "status": "none", "special": false}, {"name": "bite", "power": 60, "type": "dark", "status": "none", "special": false}, {"name": "ice beam", "power": 90, "type": "ice", "status": "none", "special": true}, {"name": "pound", "power": 40, "type": "normal", "status": "none", "special": false}, {"name": "sing", "power": 0, "type": "normal", "status": "sleep", "special": false}, {"name": "body slam", "power": 85, "type": "normal", "status": "none", "special": false}, {"name": "psychic", "power": 90, "type": "psychic", "status": "none", "special": true}, {"name": "scratch", "power": 40, "type": "normal", "status": "none", "special": false}, {"name": "shadow claw", "power": 70, "type": "ghost", "status": "none", "special": false}, {"name": "karate chop", "power": 50, "type": "fighting", "status": "none", "special": false}, {"name": "cross chop", "power": 100, "type": "fighting", "status": "none", "special": false},  {"name": "night slash", "power": 70, "type": "dark", "status": "none", "special": false}, {"name": "toxic", "power": 0, "type": "poison", "status": "toxic", "special": true}, {"name": "mud bomb", "power": 65, "type": "ground", "status": "none", "special": true}, {"name": "rock throw", "power": 50, "type": "rock", "status": "none", "special": false}, {"name": "earthquake", "power": 100, "type": "ground", "status": "none", "special": false},  {"name": "double-edge", "power": 120, "type": "normal", "status": "none", "special": false, "recoil": 0.33}, {"name": "hypnosis", "power": 0, "type": "psychic", "status": "sleep", "special": true}, {"name": "pound", "power": 40, "type": "normal", "status": "none", "special": false}, {"name": "headbutt", "power": 70, "type": "normal", "status": "none", "special": false}, {"name": "sucker punch", "power": 70, "type": "dark", "status": "none", "special": false}, {"name": "shadow ball", "power": 80, "type": "ghost", "status": "none", "special": false}, {"name": "lick", "power": 30, "type": "ghost", "status": "none", "special": false}, {"name": "poison powder", "power": 0, "type": "poison", "status": "poison", "special": true}, {"name": "air slash", "power": 75, "type": "flying", "status": "none", "special": true}, {"name": "psybeam", "power": 65, "type": "psychic", "status": "none", "special": true}, {"name": "bug buzz", "power": 90, "type": "bug", "status": "none", "special": true}, {"name": "twister", "power": 40, "type": "dragon", "status": "none", "special": true}, {"name": "dragon rush", "power": 100, "type": "dragon", "status": "none", "special": false}, {"name": "thunder wave", "power": 0, "type": "electric", "status": "paralysis", "special": true},  {"name": "aqua tail", "power": 90, "type": "water", "status": "none", "special": false}]
@@ -59,7 +62,7 @@ function getAttackInfo(attackName) {
 }
 
 var type_colors = {}
-type_colors["water"] = "63B8FF"
+type_colors["water"] = "#63B8FF"
 type_colors["electric"] = "#CDCD00"
 type_colors["fire"] = "#B22222"
 type_colors["grass"] = "#228B22"
@@ -77,6 +80,8 @@ type_colors["psychic"] = "#f85888"
 type_colors["ice"] = "#98d8d8"
 type_colors["steel"] = "#b8b8d0"
 type_colors["fairy"] = "#CD1076"
+type_colors["rock"] = "#8B4513"
+type_colors["ground"] = "#F4A460"
 
 type_array = ["Normal", "Fighting", "Flying", "Poison", "Ground", "Rock", "Bug", "Ghost", "Steel", "Fire", "Water", "Grass", "Electric", "Psychic", "Ice", "Dragon", "Dark", "Fairy"]
 weaknesses = [[1, 1, 1, 1, 1, 0.5, 1, 0, 0.5, 1, 1, 1, 1, 1, 1, 1, 1, 1], [2, 1, 0.5, 0.5, 1, 2, 0.5, 0, 2, 1, 1, 1, 1, 0.5, 2, 1, 2, 0.5], [1, 2, 1, 1, 1, 0.5, 2, 1, 0.5, 1, 1, 2, 0.5, 1, 1, 1, 1, 1], [1, 1, 1, 0.5, 0.5, 0.5, 1, 0.5, 0, 1, 1, 2, 1, 1, 1, 1, 1, 2], [1, 1, 0, 2, 1, 2, 0.5, 1, 2, 2, 1, 0.5, 2, 1, 1, 1, 1, 1], [1, 0.5, 2, 1, 0.5, 1, 2, 1, 0.5, 2, 1, 1, 1, 1, 2, 1, 1, 1], [1, 0.5, 0.5, 0.5, 1, 1, 1, 0.5, 0.5, 0.5, 1, 2, 1, 2, 1, 1, 2, 0.5], [0, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 0.5, 1], [1, 1, 1, 1, 1, 2, 1, 1, 0.5, 0.5, 0.5, 1, 0.5, 1, 2, 1, 1, 2], [1, 1, 1, 1, 1, 0.5, 2, 1, 2, 0.5, 0.5, 2, 1, 1, 2, 0.5, 1, 1], [1, 1, 1, 1, 2, 2, 1, 1, 1, 2, 0.5, 0.5, 1, 1, 1, 0.5, 1, 1], [1, 1, 0.5, 0.5, 2, 2, 0.5, 1, 0.5, 0.5, 2, 0.5, 1, 1, 1, 0.5, 1, 1], [1, 1, 2, 1, 0, 1, 1, 1, 1, 1, 2, 0.5, 0.5, 1, 1, 0.5, 1, 1], [1, 2, 1, 2, 1, 1, 1, 1, 0.5, 1, 1, 1, 1, 0.5, 1, 1, 0, 1], [1, 1, 2, 1, 2, 1, 1, 1, 0.5, 0.5, 0.5, 2, 1, 1, 0.5, 2, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 0.5, 1, 1, 1, 1, 1, 1, 2, 1, 0], [1, 0.5, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 0.5, 0.5], [1, 2, 1, 0.5, 1, 1, 1, 1, 0.5, 0.5, 1, 1, 1, 1, 1, 2, 2, 1]]
@@ -326,7 +331,8 @@ GLOBAL_INTERFACE_CREATE_NEW_TEAM = 1
 GLOBAL_INTERFACE_PLAYER_BATTLE = 2
 GLOBAL_INTERFACE_TOURNAMENT_MODE = 3
 GLOBAL_INTERFACE_RETRY_BATTLE = 4
-GLOBAL_INTERFACE_SELECT_POKEMON = 5
+GLOBAL_INTERFACE_SELECT_POKEMON_AI = 5
+GLOBAL_INTERFACE_SELECT_POKEMON_PLAYER = 6
 
 global_interface = GLOBAL_INTERFACE_CREATE_NEW_TEAM
 
@@ -696,7 +702,15 @@ function dealDamageToPokemon(params) {
 			}
 			if (no_pokemon_left) {
 				next_interface = INTERFACE_BATTLE_OVER;
-				text_stack = [text_stack[0], {"text": "Your opponent is out of Pokemon! You win!"}]
+				text_stack = [text_stack[0], {"text": "Your opponent is out of Pokemon! You win!", "effect": 
+					function(params) {
+						for(var i = 0; i < 3; i++) {
+							p1pokemon[i].health = 1;
+							p1pokemon[i].display_health = 1;
+						}
+						global_interface = GLOBAL_INTERFACE_SELECT_POKEMON_PLAYER;
+					}
+				}]
 			} else {
 				// FIXME: switch pokemon for AI based on max damage against current pokemon
 				new_active_pokemon = -1;
@@ -1169,6 +1183,7 @@ for(var i = 0; i < pokemons.length; i++) {
 }
 
 var mousePos = { x: 0, y: 0 }
+var mouseDown = false;
 
 function getMousePos(canvas, evt) {
 	var rect = canvas.getBoundingClientRect();
@@ -1178,7 +1193,27 @@ function getMousePos(canvas, evt) {
 	};
 }
 
+function goNext() {
+	if (global_interface == GLOBAL_INTERFACE_SELECT_POKEMON_AI) {
+		p1pokemon = []
+		for(var i = 0; i < selected_pokemon_list.length; i++) {
+			p1pokemon.push({'index': selected_pokemon_list[i], 'health': 1, 'display_health': 1, 'status': STATUS_NONE, 'frame': 0, 'table': []})
+		}
+		selected_pokemon_list = []
+		global_interface = GLOBAL_INTERFACE_SELECT_POKEMON_PLAYER;
+    } else if (global_interface == GLOBAL_INTERFACE_SELECT_POKEMON_PLAYER) {
+		p2pokemon = []
+		for(var i = 0; i < selected_pokemon_list.length; i++) {
+			p2pokemon.push({'index': selected_pokemon_list[i], 'health': 1, 'display_health': 1, 'status': STATUS_NONE, 'frame': 0, 'table': []})
+		}
+		selected_pokemon_list = []
+		global_interface = GLOBAL_INTERFACE_PLAYER_BATTLE;
+    }
+}
+
 function render() {
+	c.fillStyle = '#FFFFFF'
+	c.fillRect(0, 0, canvas.width, canvas.height);
 	if (global_interface == GLOBAL_INTERFACE_CREATE_NEW_TEAM) {
 		drawBackground(c, initialWallpaperBackground, 0, 0, battle_width, battle_height + 50);
 		c.font = "bold 32px Calibri";
@@ -1203,53 +1238,107 @@ function render() {
 		}
 		drawInterface();
 		// drawDecisionTree();
-	} else if (global_interface == GLOBAL_INTERFACE_SELECT_POKEMON) {
-		drawBackground(c, selectionWallpaperBackground, 0, 0, battle_width, battle_height + 50);
+	} else if (global_interface == GLOBAL_INTERFACE_SELECT_POKEMON_AI || global_interface == GLOBAL_INTERFACE_SELECT_POKEMON_PLAYER) {
+		drawBackground(c, global_interface == GLOBAL_INTERFACE_SELECT_POKEMON_AI ? selectionWallpaperBackground : selectionPlayerBackground, 0, 0, battle_width, battle_height + 50);
+
+		if (global_interface == GLOBAL_INTERFACE_SELECT_POKEMON_PLAYER) {
+			var x = 60;
+			var y = 50;
+			var pokemon_size = 65;
+			for(var i = 0; i < p1pokemon.length; i++) {
+				var pkmn = p1pokemon[i];
+				image = getPokemonImage(pkmn, true, false)
+				drawPokemonImage(c, pkmn, image, true, x + i * (10 + pokemon_size), y, 1, 1, pokemon_size);
+			}
+
+		}
+
 		var x = 10;
 		var y = 128;
 		var fontsize = 18
+		var pokemon_size = 112
 
 		c.font = "bold " + fontsize + "px Calibri";
-
-
 		for(var i = 0; i < pokemon_entries.length; i++) {
 			var pkmn = pokemon_entries[i];
 			image = getPokemonImage(pkmn, true, false)
-			var pokemon_size = 112
 			if (x + pokemon_size > battle_width) {
 				x = 10;
 				y += pokemon_size + 32;
 			}
+			var selected = false;
+			for(var j = 0; j < selected_pokemon_list.length; j++) {
+				if (selected_pokemon_list[j] == i) {
+					selected = true;
+					break;
+				}
+			}
 			var hover = false;
 			if (mousePos.x >= x && mousePos.x <= x + pokemon_size &&
 				mousePos.y >= y && mousePos.y <= y + pokemon_size + fontsize) {
-				hover = true;
+				if (mouseDown) {
+					if (!selected) {
+						selected_pokemon_list.push(i);
+						if (selected_pokemon_list.length > 3) {
+							selected_pokemon_list.shift();
+						}
+						selected = true;
+					} else {
+						var index = selected_pokemon_list.indexOf(i);
+						selected_pokemon_list.splice(index, 1);
+						selected = false;
+						hover = true;
+					}
+				} else {
+					hover = true;
+				}
 			}
 
-			if (hover) {
-				c.globalAlpha = 0.5
-				c.fillStyle = '#feca30'
+			if (selected) {
+				drawPokemonImage(c, pkmn, image, true, x, y, 1, 0, pokemon_size);
+			}
+			if (selected || hover) {
+				c.globalAlpha = selected ? 0.7 : 0.5
+				c.fillStyle = selected ? '#422222' : '#feca30'
 				c.fillRect(x, y, pokemon_size, pokemon_size)
 				c.strokeStyle = '#3e5ba3'
 				c.strokeRect(x, y, pokemon_size, pokemon_size)
 				c.globalAlpha = 1
 			}
-			drawPokemonImage(c, pkmn, image, true, x, y, 1, 1, pokemon_size);
-			if (hover) {
-				c.fillStyle = '#feca30'
-			} else {
-				c.fillStyle = '#3e5ba3'
+
+			if (!selected) {
+				drawPokemonImage(c, pkmn, image, true, x, y, 1, 1, pokemon_size);
 			}
+			c.fillStyle = hover ? '#feca30' : '#3e5ba3';
 			c.fillRect(x + 5, y + pokemon_size - fontsize, pokemon_size - 10, 25)
-			if (hover) {
-				c.fillStyle = '#3e5ba3'
-			} else {
-				c.fillStyle = '#feca30'
-			}
+			c.fillStyle = hover ? '#3e5ba3' : '#feca30';
 			var name = pokemons[pkmn.index].name.toProperCase()
 			c.fillText(name, x + (pokemon_size - c.measureText(name).width) / 2, y + pokemon_size);
 			x += pokemon_size
 		}
+		for(var i = 0; i < selected_pokemon_list.length; i++) {
+			var pkmn = pokemon_entries[selected_pokemon_list[i]];
+			var x = 260 + 100 * i;
+			var y = 405;
+			image = getPokemonImage(pkmn, true, false)
+			drawPokemonImage(c, pkmn, image, true, x, y, 1, 1, 88);
+		}
+
+		if (selected_pokemon_list.length == 3) {
+			if (mouseDown && mousePos.x >= battle_width - 170 && mousePos.x <= battle_width - 42 && mousePos.y >= battle_height - 32 && mousePos.y <= battle_height + 32) {
+				// go next
+				goNext();
+			}
+			c.fillStyle = '#feca30'
+			c.fillRect(battle_width - 170, battle_height - 32, 128, 64);
+			c.strokeStyle = '#3e5ba3'
+			c.strokeRect(battle_width - 170, battle_height - 32, 128, 64);
+
+			c.font = "bold 48px Calibri";
+			c.fillStyle = '#3e5ba3'
+			c.fillText("GO!", battle_width - 150, battle_height + 16);
+		}
+		mouseDown = false;
 	}
 }
 
@@ -1269,13 +1358,17 @@ canvas.addEventListener('mousemove', function(evt) {
 
 canvas.addEventListener('click', function(evt) {
 	mousePos = getMousePos(canvas, evt);
-	if (global_interface == GLOBAL_INTERFACE_SELECT_POKEMON) {
-		
+	if (global_interface == GLOBAL_INTERFACE_SELECT_POKEMON_AI || global_interface == GLOBAL_INTERFACE_SELECT_POKEMON_PLAYER) {
+		mouseDown = true;
 	}
 }, false);
 
 document.onkeydown = function(evt) {
     evt = evt || window.event;
+
+    if (evt.keyCode == 27) {
+    	global_interface = GLOBAL_INTERFACE_CREATE_NEW_TEAM;
+    }
 
     if (global_interface == GLOBAL_INTERFACE_CREATE_NEW_TEAM) {
     	if (evt.keyCode == 37) {
@@ -1304,7 +1397,17 @@ document.onkeydown = function(evt) {
     		insertLetter(letter);
     	}
     	if (evt.keyCode == 13) {
-    		global_interface = GLOBAL_INTERFACE_SELECT_POKEMON
+    		global_interface = GLOBAL_INTERFACE_SELECT_POKEMON_AI
+    	}
+    	return;
+    } else if (global_interface == GLOBAL_INTERFACE_SELECT_POKEMON_AI) {
+    	if (evt.keyCode == 13 && selected_pokemon_list.length == 3) {
+    		goNext();
+    	}
+    	return;
+    } else if (global_interface == GLOBAL_INTERFACE_SELECT_POKEMON_PLAYER) {
+    	if (evt.keyCode == 13 && selected_pokemon_list.length == 3) {
+    		goNext();
     	}
     	return;
     }
