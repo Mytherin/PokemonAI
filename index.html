@@ -120,7 +120,7 @@ p1pokemon[2].index = 0
 p2pokemon[1].index = 5
 p2pokemon[2].index = 6
 
-callWheneverActualPokemonChanges(p1pokemon[active_pokemon_p1]);
+callWheneverActualPokemonChanges(p1pokemon[active_pokemon_p1], team_name);
 
 var HEALTH_ANIMATION_SPEED = 0.01;
 
@@ -377,33 +377,6 @@ String.prototype.format = function () {
 	});
 };
 
-function callWheneverActualPokemonChanges(pkmn1) {
-	// update matrix and async draw decision tree
-	var upd = new Object();
-	upd.pokemon = pokemons[pkmn1.index].name;
-	console.log(upd.pokemon);
-	upd.opp_pokemon = "Pikachu";
-	upd.attack = null;
-	upd.attack_status = 0;
-	upd.opp_status = 0;
-	upd.damage = 0;
-	upd.team = team_name;
-
-	var xmlHttp = new XMLHttpRequest();
-	xmlHttp.onreadystatechange = function() { 
-		if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
-			updateAI(pkmn1, xmlHttp.responseText);
-		}
-
-	var body = JSON.stringify(upd);
-	var url = "update_matrix?json=";
-	url = url.concat(encodeURIComponent(body));
-
-	xmlHttp.open("POST", url, true);
-	xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	xmlHttp.send(null);
-}
-
 function isEmpty(obj) {
 	// from https://stackoverflow.com/questions/6072590/how-to-match-an-empty-dictionary-in-javascript
 	return Object.keys(obj).length === 0;
@@ -641,6 +614,60 @@ function updateDecisionTree(pkm) {
 
 var screen_flash = 0;
 
+
+function callWheneverActualPokemonChanges(pkmn1, team) {
+	// update matrix and async draw decision tree
+	var upd = new Object();
+	upd.pokemon = pokemons[pkmn1.index].name;
+	console.log(upd.pokemon);
+	upd.opp_pokemon = "Pikachu"; // some existing pokemon
+	upd.attack = null;
+	upd.attack_status = 0;
+	upd.opp_status = 0;
+	upd.damage = 0;
+	upd.team = team;
+
+	var xmlHttp = new XMLHttpRequest();
+	xmlHttp.onreadystatechange = function() { 
+		if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+			updateAI(pkmn1, xmlHttp.responseText);
+		}
+
+	var body = JSON.stringify(upd);
+	var url = "update_matrix?json=";
+	url = url.concat(encodeURIComponent(body));
+
+	xmlHttp.open("POST", url, true);
+	xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xmlHttp.send(null);
+}
+
+function updateMatrixGetNewMatrixAsync(thisPkm, oppPkm, move, damage, team) {
+	// update matrix and async draw decision tree
+	var upd = new Object();
+	upd.pokemon = pokemons[thisPkm.index].name;
+	upd.opp_pokemon = pokemons[oppPkm.index].name;
+	upd.attack = move.name;
+	upd.attack_status = move.status;
+	upd.opp_status = oppPkm.status;
+	upd.damage = Math.floor(damage);
+	upd.team = team;
+
+	var xmlHttp = new XMLHttpRequest();
+	xmlHttp.onreadystatechange = function() { 
+		if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+			updateAI(thisPkm, xmlHttp.responseText);
+		}
+
+	var body = JSON.stringify(upd);
+	var url = "update_matrix?json=";
+	url = url.concat(encodeURIComponent(body));
+
+	xmlHttp.open("POST", url, true);
+	xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xmlHttp.send(null);
+}
+
 function dealDamageToPokemon(params) { 
 	var pkmn1 = params[0];
 	var pkmn2 = params[1];
@@ -722,7 +749,7 @@ function dealDamageToPokemon(params) {
 				}
 				next_interface = INTERFACE_SELECT_MOVE
 				text_stack.push({"text": "The AI send out " + pokemons[p1pokemon[new_active_pokemon].index].name.toProperCase() + ".", "effect": 
-					function(params) { active_pokemon_p1 = params[0]; callWheneverActualPokemonChanges(p1pokemon[active_pokemon_p1]); }, "parameters": [new_active_pokemon]})
+					function(params) { active_pokemon_p1 = params[0]; callWheneverActualPokemonChanges(p1pokemon[active_pokemon_p1], team_name); }, "parameters": [new_active_pokemon]})
 			}
 		}
 	} else {
@@ -730,29 +757,7 @@ function dealDamageToPokemon(params) {
 	}
 
 	if (move !== undefined && update_matrix) {
-		// update matrix and async draw decision tree
-		var upd = new Object();
-		upd.pokemon = pokemons[pkmn1.index].name;
-		upd.opp_pokemon = pokemons[pkmn2.index].name;
-		upd.attack = move.name;
-		upd.attack_status = move.status;
-		upd.opp_status = pkmn2.status;
-		upd.damage = Math.floor(damage);
-		upd.team = team_name;
-
-		var xmlHttp = new XMLHttpRequest();
-		xmlHttp.onreadystatechange = function() { 
-			if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
-				updateAI(pkmn1, xmlHttp.responseText);
-			}
-
-		var body = JSON.stringify(upd);
-		var url = "update_matrix?json=";
-		url = url.concat(encodeURIComponent(body));
-
-		xmlHttp.open("POST", url, true);
-		xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-		xmlHttp.send(null);
+		updateMatrixGetNewMatrixAsync(pkmn1, pkmn2, move, damage, team_name);
 	}
 }
 
@@ -1209,7 +1214,7 @@ function goNext() {
 		}
 		selected_pokemon_list = []
 		global_interface = GLOBAL_INTERFACE_PLAYER_BATTLE;
-		callWheneverActualPokemonChanges(p1pokemon[active_pokemon_p1]);
+		callWheneverActualPokemonChanges(p1pokemon[active_pokemon_p1], team_name);
     }
 }
 
