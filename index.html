@@ -387,7 +387,7 @@ function callWheneverActualPokemonChanges(pkmn1) {
 	upd.attack_status = 0;
 	upd.opp_status = 0;
 	upd.damage = 0;
-	upd.team = 'your/mother@bla.xyz';
+	upd.team = team_name;
 
 	var xmlHttp = new XMLHttpRequest();
 	xmlHttp.onreadystatechange = function() { 
@@ -738,7 +738,7 @@ function dealDamageToPokemon(params) {
 		upd.attack_status = move.status;
 		upd.opp_status = pkmn2.status;
 		upd.damage = Math.floor(damage);
-		upd.team = 'your/mother@bla.xyz';
+		upd.team = team_name;
 
 		var xmlHttp = new XMLHttpRequest();
 		xmlHttp.onreadystatechange = function() { 
@@ -823,7 +823,13 @@ function getExploitPercent(tbl) {
 		dist_attacks[row.attack] = 'exists';
 	});
 
-	return 25 * Object.keys(dist_attacks).length;
+	var num = Object.keys(dist_attacks).length;
+	if (num > 4) {
+		console.log("getExploitPercent: seen more than 4 attacks against opponent's pokemon's state and type");
+		num = 4;
+	}
+
+	return 25 * num;
 }
 
 function aiEploitOrExplore(tbl, opp_status) {
@@ -835,11 +841,6 @@ function aiEploitOrExplore(tbl, opp_status) {
 	var exploit_percent = getExploitPercent(tbl.filter(function(row) {
 		return row.state == opp_status;
 	}));
-
-	if (exploit_percent > 100) {
-		console.log("aiEploitOrExplore: seen more than 4 attacks against opponing pokemon's state and type");
-		exploit_percent = 100;
-	}
 
 	var rand = randBetween(0, 100);
 	var exploit = rand <= exploit_percent;
@@ -1013,8 +1014,8 @@ function selectMove() {
 	next_interface = INTERFACE_SELECT_MOVE;
 	text_stack = [""]
 	if (p1_goes_first) {
-		performMove(p1pokemon[active_pokemon_p1], p2pokemon[active_pokemon_p2], p1_attack, false);
-		performMove(p2pokemon[active_pokemon_p2], p1pokemon[active_pokemon_p1], p2_attack, true);
+		performMove(p1pokemon[active_pokemon_p1], p2pokemon[active_pokemon_p2], p1_attack, true);
+		performMove(p2pokemon[active_pokemon_p2], p1pokemon[active_pokemon_p1], p2_attack, false);
 	} else {
 		performMove(p2pokemon[active_pokemon_p2], p1pokemon[active_pokemon_p1], p2_attack, false);
 		performMove(p1pokemon[active_pokemon_p1], p2pokemon[active_pokemon_p2], p1_attack, true);
