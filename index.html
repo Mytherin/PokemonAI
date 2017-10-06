@@ -8,8 +8,6 @@
 </head>
 <body>
 
-
-
 <canvas id="pokemoncanvas" width="800" height="650" style="margin-left:auto;margin-right:auto;">
 
 </canvas>
@@ -132,6 +130,10 @@ for (var i = 0; i < pokemons.length; i++) {
 	image.src = 'images/' + pkmn + '-back-damaged.png'
 	pokemon_images[pkmn].back_damaged = image;
 }
+var pokeball_image = new Image();
+pokeball_image.src = 'images/pokeball.png'
+var pokeball_empty_image = new Image();
+pokeball_empty_image.src = 'images/pokeball-empty.png'
 
 function drawBackground(c, backgroundImage, x, y, width, height) {
 	c.drawImage(backgroundImage, x, y, width, height);
@@ -155,7 +157,7 @@ function drawType(type, x, y, width, fontsize) {
 	c.font = old_font;
 }
 
-function drawHealthBar(c, x, y, percentage, name, types, pkmn) {
+function drawHealthBar(c, x, y, percentage, name, types, pkmn, isFront) {
 	c.font = "bold " + HEALTHBAR_FONTSIZE + "px Calibri";
 
 	var size = c.measureText("HP");
@@ -235,6 +237,21 @@ function drawHealthBar(c, x, y, percentage, name, types, pkmn) {
 		c.fillText(name, x + HEALTHBAR_WIDTH + size.width / 4, y + 4*SCALE + (HEALTHBAR_FONTSIZE - 2*SCALE) / 2)
 	}
 
+	if (isFront) {
+		// p1
+		arr = p1pokemon
+	} else {
+		// p2
+		arr = p2pokemon
+	}
+	for(var i = 0; i < 3; i++) {
+		if (arr[i].health > 0) {
+			img = pokeball_image;
+		} else {
+			img = pokeball_empty_image;
+		}
+		c.drawImage(img, x + i * 28, y + HEALTHBAR_HEIGHT + HEALTHBAR_FONTSIZE + 4, 24, 24);
+	}
 }
 
 function getPokemonImage(pkmn, isFront, isDamaged) {
@@ -285,11 +302,19 @@ function drawPokemon(c, pkmn, isFront) {
 		drawPokemonImage(c, pkmn, image, isFront, x, y);
 	}
 	if (isFront) {
-		drawHealthBar(c, 50*SCALE, 30*SCALE, health, name, types, pkmn);
+		drawHealthBar(c, 50*SCALE, 30*SCALE, health, name, types, pkmn, isFront);
 	} else {
-		drawHealthBar(c, battle_width - 40*SCALE - HEALTHBAR_WIDTH, battle_height - 40*SCALE, health, name, types, pkmn);
+		drawHealthBar(c, battle_width - 40*SCALE - HEALTHBAR_WIDTH, battle_height - 40*SCALE, health, name, types, pkmn, isFront);
 	}
 }
+
+
+GLOBAL_INTERFACE_CREATE_NEW_TEAM = 1
+GLOBAL_INTERFACE_PLAYER_BATTLE = 2
+GLOBAL_INTERFACE_TOURNAMENT_MODE = 3
+GLOBAL_INTERFACE_RETRY_BATTLE = 4
+
+global_interface = GLOBAL_INTERFACE_PLAYER_BATTLE
 
 INTERFACE_SELECT_MOVE = 1
 INTERFACE_DISPLAY_TEXT = 2
@@ -641,7 +666,7 @@ function dealDamageToPokemon(params) {
 			if (selected_pokemon < 0) {
 				// player has no Pokémon left
 				next_interface = INTERFACE_BATTLE_OVER;
-				text_stack = [{"text": "You have no Pokemon left! You have lost the battle!"}]
+				text_stack = [text_stack[0], {"text": "You have no Pokemon left! You have lost the battle!"}]
 			}
 		} else {
 			// AI pokemon has fainted
@@ -654,7 +679,7 @@ function dealDamageToPokemon(params) {
 			}
 			if (no_pokemon_left) {
 				next_interface = INTERFACE_BATTLE_OVER;
-				text_stack = [{"text": "Your opponent is out of Pokemon! You win!"}]
+				text_stack = [text_stack[0], {"text": "Your opponent is out of Pokemon! You win!"}]
 			} else {
 				// FIXME: switch pokemon for AI based on max damage against current pokemon
 				new_active_pokemon = -1;
@@ -1051,18 +1076,22 @@ function update() {
 }
 
 function render() {
-	drawBackground(c, backgroundImage, 0, 0, battle_width, battle_height);
-	drawPokemon(c, p2pokemon[active_pokemon_p2], false)
-	drawPokemon(c, p1pokemon[active_pokemon_p1], true)
-	if (screen_flash > 0) {
-		c.fillStyle = '#B22222';
-		c.globalAlpha = 0.2;
-		c.fillRect(0, 0, battle_width, battle_height);
-		c.globalAlpha = 1;
-		screen_flash--;
+	if (global_interface == GLOBAL_INTERFACE_CREATE_NEW_TEAM) {
+
+	} else if (global_interface == GLOBAL_INTERFACE_PLAYER_BATTLE) {
+		drawBackground(c, backgroundImage, 0, 0, battle_width, battle_height);
+		drawPokemon(c, p2pokemon[active_pokemon_p2], false)
+		drawPokemon(c, p1pokemon[active_pokemon_p1], true)
+		if (screen_flash > 0) {
+			c.fillStyle = '#B22222';
+			c.globalAlpha = 0.2;
+			c.fillRect(0, 0, battle_width, battle_height);
+			c.globalAlpha = 1;
+			screen_flash--;
+		}
+		drawInterface();
+		// drawDecisionTree();
 	}
-	drawInterface();
-	// drawDecisionTree();
 }
 
 function loop(timestamp) {
