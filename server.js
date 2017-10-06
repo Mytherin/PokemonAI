@@ -58,16 +58,22 @@ function update_matrix(req, res, next) {
 	var qtext = decodeURIComponent(req.query.json);
 	var update = JSON.parse(qtext);
 
-	console.log('Update with: %s', qtext);
+	
 
 	// test values
 	var team = update.team;
 	var pokemon = update.pokemon;
 	var attack = update.attack;
+
 	var opp_state = update.opp_status;
 	var attack_damage = update.damage;
 	var attack_cond = Condition.None;
 	var opp_pokemon = update.opp_pokemon;
+
+
+	if (attack) {
+		console.log('Update with: %s', qtext);
+	}
 
 	// figure out pokemon type
 	var poke_entry = lookup_pokemon(pokemon);

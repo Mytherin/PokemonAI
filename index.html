@@ -137,7 +137,10 @@ p1pokemon[2].index = 0
 p2pokemon[1].index = 5
 p2pokemon[2].index = 6
 
-var team_list = [{"team_name": "test1", "pokemon": [{"name": "charmander", "matrix": []}, {"name": "bulbasaur", "matrix": []}, {"name": "squirtle", "matrix": []}]}, {"team_name": "test2", "pokemon": [{"name": "charmander", "matrix": []}, {"name": "bulbasaur", "matrix": []}, {"name": "squirtle", "matrix": []}]}, {"team_name": "test3", "pokemon": [{"name": "charmander", "matrix": []}, {"name": "bulbasaur", "matrix": []}, {"name": "squirtle", "matrix": []}]}, {"team_name": "test4", "pokemon": [{"name": "charmander", "matrix": []}, {"name": "bulbasaur", "matrix": []}, {"name": "squirtle", "matrix": []}]}, {"team_name": "test5", "pokemon": [{"name": "charmander", "matrix": []}, {"name": "bulbasaur", "matrix": []}, {"name": "squirtle", "matrix": []}]}]
+var team_list = []
+/* was
+{"team_name": "test1", "pokemon": [{"name": "charmander", "matrix": []}, {"name": "bulbasaur", "matrix": []}, {"name": "squirtle", "matrix": []}]}, {"team_name": "test2", "pokemon": [{"name": "charmander", "matrix": []}, {"name": "bulbasaur", "matrix": []}, {"name": "squirtle", "matrix": []}]}, {"team_name": "test3", "pokemon": [{"name": "charmander", "matrix": []}, {"name": "bulbasaur", "matrix": []}, {"name": "squirtle", "matrix": []}]}, {"team_name": "test4", "pokemon": [{"name": "charmander", "matrix": []}, {"name": "bulbasaur", "matrix": []}, {"name": "squirtle", "matrix": []}]}, {"team_name": "test5", "pokemon": [{"name": "charmander", "matrix": []}, {"name": "bulbasaur", "matrix": []}, {"name": "squirtle", "matrix": []}]}
+*/
 
 callWheneverActualPokemonChanges(p1pokemon[active_pokemon_p1], team_id);
 
@@ -312,38 +315,42 @@ function playMatch() {
 function startTournamentMode() {
 	ranking = []
 	global_interface = GLOBAL_INTERFACE_TOURNAMENT_MODE;
-	// FIXME: load teams
-	// load the brackets
-	bracket_size = nextPowerOf2(team_list.length);
-	while(team_list.length < bracket_size) {
-		team_list.push({'team_name': "BYE", "pokemon": []})
-	}
-	team_list = shuffleArray(team_list);
-	tournament_bracket = initializeTournament(team_list);
-	// try 100 different random configurations
-	// and pick the best one
-	for(var i = 0; i < 100; i++) {
-		team_list = shuffleArray(team_list);
-		new_bracket = initializeTournament(team_list);
-		if (getMinimumTreeDepth(new_bracket) > getMinimumTreeDepth(tournament_bracket)) {
-			tournament_bracket = new_bracket;
-		}
-	}
 
-	tournament_tree = {
-        chart: {
-            container: "#decision-tree",
-            
-            connectors: {
-                type: 'step'
-            },
-            node: {
-                HTMLclass: 'nodeExample1'
-            }
-        },
-        nodeStructure: tournament_bracket
-    };
-    playMatch();
+	getAllTeams(function(team_list_param) {
+		team_list = team_list_param;
+		// FIXME: load teams
+		// load the brackets
+		bracket_size = nextPowerOf2(team_list.length);
+		while(team_list.length < bracket_size) {
+			team_list.push({'team_name': "BYE", "pokemon": []})
+		}
+		team_list = shuffleArray(team_list);
+		tournament_bracket = initializeTournament(team_list);
+		// try 100 different random configurations
+		// and pick the best one
+		for(var i = 0; i < 100; i++) {
+			team_list = shuffleArray(team_list);
+			new_bracket = initializeTournament(team_list);
+			if (getMinimumTreeDepth(new_bracket) > getMinimumTreeDepth(tournament_bracket)) {
+				tournament_bracket = new_bracket;
+			}
+		}
+
+		tournament_tree = {
+	        chart: {
+	            container: "#decision-tree",
+	            
+	            connectors: {
+	                type: 'step'
+	            },
+	            node: {
+	                HTMLclass: 'nodeExample1'
+	            }
+	        },
+	        nodeStructure: tournament_bracket
+	    };
+	    playMatch();
+	});
 }
 
 function drawBackground(c, backgroundImage, x, y, width, height) {
@@ -1682,7 +1689,7 @@ function setTeam(nam, pkmns) {
 
 	team_id = base_team_id;
 	upd.team = base_team_id;
-	upd.descr = name;
+	upd.descr = nam;
 
 	upd.pokemons = [];
 	pkmns.forEach(function(p) {
@@ -1709,20 +1716,18 @@ function setTeam(nam, pkmns) {
 	xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	xmlHttp.send(null);
 
-	// FIXME: save current team id 
-
 	base_team_id = base_team_id + 1;
 
 	return true;
 }
 
-function getAllTeams() {
+function getAllTeams(callback) {
 	var xmlHttp = new XMLHttpRequest();
 	var url = "get_teams";
 
 	xmlHttp.onreadystatechange = function() {
 		if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
-			// FIXME: do tournament shit here
+			callback(JSON.parse(xmlHttp.responseText));
 		} else {
 			console.log("getAllTeams: not ready");
 		}
@@ -1855,8 +1860,6 @@ document.onkeydown = function(evt) {
 var lastRender = 0
 window.requestAnimationFrame(loop);
 
-
-getAllTeams();
 </script>
 
 </body>
