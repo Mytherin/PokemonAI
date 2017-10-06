@@ -79,40 +79,46 @@ function update_matrix(req, res, next) {
 	var vsprintf = require('sprintf-js').vsprintf;
 	var sanitize = require("sanitize-filename");
 
-	// update our matrix
-	var filename = vsprintf('training/train_%s_%s.json', [sanitize(pokemon), sanitize(team)]);
+	var matrix = {}
 
-	var matrix = fs.existsSync(filename) ?
-		JSON.parse(fs.readFileSync(filename)) :
-		{};
+	if (team) {
+		// update our matrix
+		var filename = vsprintf('training/train_%s_%s.json', [sanitize(pokemon), sanitize(team)]);
 
-	if (attack) { // hack for initial loading
-		var mkey = poke_type + '/' + attack + '/' + opp_state;
-		console.log(mkey);
+		if (fs.existsSync(filename)) {
+			matrix = JSON.parse(fs.readFileSync(filename));
+		}
 
-		var mval = matrix[mkey];
-		var newval = new Object();
-		newval.damage = attack_damage;
-		newval.cond = attack_cond;
+		if (attack) { // hack for initial loading
+			var mkey = poke_type + '/' + attack + '/' + opp_state;
+			console.log(mkey);
 
-		var write_back = true;
-		if (!mval) {
-			mval = newval;
-		} else {
-			if (mval.damage > attack_damage) {
+			var mval = matrix[mkey];
+			var newval = new Object();
+			newval.damage = attack_damage;
+			newval.cond = attack_cond;
+
+			var write_back = true;
+			if (!mval) {
 				mval = newval;
 			} else {
-				write_back = false;
+				if (mval.damage > attack_damage) {
+					mval = newval;
+				} else {
+					write_back = false;
+				}
+			}
+
+			matrix[mkey] = mval;
+
+			if (write_back) {
+				// hopefully saves me SSD cycles :)
+				console.log("write matrix to %s", filename);
+				fs.writeFileSync(filename, JSON.stringify(matrix));
 			}
 		}
-
-		matrix[mkey] = mval;
-
-		if (write_back) {
-			// hopefully saves me SSD cycles :)
-			console.log("write matrix to %s", filename);
-			fs.writeFileSync(filename, JSON.stringify(matrix));
-		}
+	} else {
+		console.log("Empty team name");
 	}
 
 	res.setHeader('Content-Type', 'application/json');
