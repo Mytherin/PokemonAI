@@ -10,7 +10,10 @@ app.listen(app.get('port'), function(){
 
 	    console.log('Server running on http://localhost:8080...');
 	});
-app.post('/update_matrix', update_matrix); // OR post?
+app.post('/update_matrix', update_matrix);
+app.post('/set_team', set_team);
+app.post('/create_team', create_team);
+
 
 
 var Condition = {
@@ -128,4 +131,58 @@ function update_matrix(req, res, next) {
 	// build tree
 	// tree = build_tree(matrix);
 
+}
+
+function create_team(req, res, next) {
+	var qtext = decodeURIComponent(req.query.json);
+	var update = JSON.parse(qtext);
+
+	console.log('Create team with: %s', qtext);
+
+	// test values
+	var team = update.team;
+
+	var fs = require('fs');
+	var vsprintf = require('sprintf-js').vsprintf;
+	var sanitize = require("sanitize-filename");
+
+	var filename = vsprintf('training/team_%s.json', [sanitize(team)]);
+
+	res.setHeader('Content-Type', 'application/json');
+	if (fs.existsSync(filename)) {
+		console.log("Team %s already exists ", team);
+		res.send(JSON.stringify(false));
+
+		return;
+	} else {
+		fs.writeFileSync(filename, "");	
+		res.send(JSON.stringify(true));
+	}
+}
+
+function set_team(req, res, next) {
+	var qtext = decodeURIComponent(req.query.json);
+	var update = JSON.parse(qtext);
+
+	console.log('Set team with: %s', qtext);
+
+	// test values
+	var team = update.team;
+	var pokemon = update.pokemon;
+
+	var fs = require('fs');
+	var vsprintf = require('sprintf-js').vsprintf;
+	var sanitize = require("sanitize-filename");
+
+	var filename = vsprintf('training/team_%s.json', [sanitize(team)]);
+
+	res.setHeader('Content-Type', 'application/json');
+	if (!fs.existsSync(filename)) {
+		res.send(JSON.stringify(false));
+	}
+
+	// update with pokemon
+	fs.writeFileSync(filename, JSON.stringify(pokemon));	
+
+	res.send(JSON.stringify(true));
 }

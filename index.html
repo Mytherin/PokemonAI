@@ -1354,6 +1354,28 @@ function loop(timestamp) {
 	window.requestAnimationFrame(loop)
 }
 
+function createTeam(name) {
+	// update matrix and async draw decision tree
+	var upd = new Object();
+	upd.team = name;
+
+	var xmlHttp = new XMLHttpRequest();
+	var body = JSON.stringify(upd);
+	var url = "create_team?json=";
+	url = url.concat(encodeURIComponent(body));
+
+	xmlHttp.open("POST", url, false); // synch
+	xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xmlHttp.send(null);
+
+	if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+		return JSON.parse(xmlHttp.responseText);
+	} else {
+		console.log("createTeam: not ready");
+		return false;
+	}
+}
+
 canvas.addEventListener('mousemove', function(evt) {
 	mousePos = getMousePos(canvas, evt);
 }, false);
@@ -1399,7 +1421,12 @@ document.onkeydown = function(evt) {
     		insertLetter(letter);
     	}
     	if (evt.keyCode == 13) {
-    		global_interface = GLOBAL_INTERFACE_SELECT_POKEMON_AI
+    		// try to commit team name
+			if (createTeam(team_name)) {
+				global_interface = GLOBAL_INTERFACE_SELECT_POKEMON_AI	
+			} else {
+				alert("Team {0} already exists".format(team_name));
+			}    		
     	}
     	return;
     } else if (global_interface == GLOBAL_INTERFACE_SELECT_POKEMON_AI) {
