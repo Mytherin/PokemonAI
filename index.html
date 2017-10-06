@@ -304,10 +304,17 @@ function playMatch() {
 		p1pokemon[i].display_health = 1;
 		p1pokemon[i].health = 1;
 
+		callWheneverActualPokemonChanges(p1pokemon[i], team_id);
+
 		p2pokemon[i].index = getPokemonIndex(team2.pokemon[i].name)
 		p2pokemon[i].display_health = 1;
 		p2pokemon[i].health = 1;
+
+		callWheneverActualPokemonChanges(p2pokemon[i], team_id2);
 	}
+
+	callWheneverActualPokemonChanges(p1pokemon[0], team_id);
+	callWheneverActualPokemonChanges(p2pokemon[0], team_id2);
 	active_pokemon_p1 = 0;
 	active_pokemon_p2 = 0;
 	interface_state = INTERFACE_SELECT_MOVE
@@ -826,7 +833,6 @@ var screen_flash = 0;
 
 
 function callWheneverActualPokemonChanges(pkmn1, team) {
-	/*
 	// update matrix and async draw decision tree
 	var upd = new Object();
 	upd.pokemon = pokemons[pkmn1.index].name;
@@ -851,7 +857,6 @@ function callWheneverActualPokemonChanges(pkmn1, team) {
 	xmlHttp.open("POST", url, true);
 	xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	xmlHttp.send(null);
-	*/
 }
 
 function updateMatrixGetNewMatrixAsync(thisPkm, oppPkm, move, damage, team) {
