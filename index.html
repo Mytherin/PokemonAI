@@ -38,7 +38,7 @@ interface_height = 200
 var backgroundImage = new Image();
 backgroundImage.src = 'images/background.png';
 
-var pokemons = [{"id":1,"name":"Bulbasaur","speed":45,"special_defense":65,"special_attack":65,"defense":49,"attack":49,"hp":45,"types":["poison","grass"],"img_front":"images/bulbasaur-front.gif","img_back":"images/bulbasaur-back.gif", "attacks": ["tackle", "razor leaf", "sludge bomb", "sleep powder"]}, {"id":4,"name":"Charmander","speed":65,"special_defense":50,"special_attack":60,"defense":43,"attack":52,"hp":39,"types":["fire"],"img_front":"images/charmander-front.gif","img_back":"images/charmander-back.gif", "attacks": ["ember", "flamethrower", "slash", "brick break"]},{"id":7,"name":"Squirtle","speed":43,"special_defense":64,"special_attack":50,"defense":65,"attack":48,"hp":44,"types":["water"],"img_front":"images/squirtle-front.gif","img_back":"images/squirtle-back.gif", "attacks": ["aqua tail", "bite", "ice beam", "tackle"]},{"id":25,"name":"Pikachu","speed":90,"special_defense":50,"special_attack":50,"defense":40,"attack":55,"hp":35,"types":["electric"],"img_front":"images/pikachu-front.gif","img_back":"images/pikachu-back.gif", "attacks": ["thunderbolt", "quick attack", "thunder wave", "thunder shock"]},{"id":39,"name":"Jigglypuff","speed":20,"special_defense":25,"special_attack":45,"defense":20,"attack":45,"hp":115,"types":["fairy","normal"],"img_front":"images/jigglypuff-front.gif","img_back":"images/jigglypuff-back.gif", "attacks": ["pound", "sing", "body slam", "psychic"]},{"id":52,"name":"Meowth","speed":90,"special_defense":40,"special_attack":40,"defense":35,"attack":45,"hp":40,"types":["normal"],"img_front":"images/meowth-front.gif","img_back":"images/meowth-back.gif", "attacks": ["bite", "slash", "shadow claw", "scratch"]},{"id":56,"name":"Mankey","speed":70,"special_defense":45,"special_attack":35,"defense":35,"attack":80,"hp":40,"types":["fighting"],"img_front":"images/mankey-front.gif","img_back":"images/mankey-back.gif", "attacks": ["karate chop", "cross chop", "night slash", "scratch"]},{"id":16,"name":"Pidgey","speed":56,"special_defense":35,"special_attack":35,"defense":40,"attack":45,"hp":40,"types":["flying","normal"],"img_front":"images/pidgey-front.gif","img_back":"images/pidgey-back.gif", "attacks": ["tackle", "air slash", "gust", "steel wing"]},{"id":23,"name":"Ekans","speed":55,"special_defense":54,"special_attack":40,"defense":44,"attack":60,"hp":35,"types":["poison"],"img_front":"images/ekans-front.gif","img_back":"images/ekans-back.gif", "attacks": ["toxic", "sludge bomb", "mud bomb", "bite"]},{"id":74,"name":"Geodude","speed":20,"special_defense":30,"special_attack":30,"defense":100,"attack":80,"hp":40,"types":["ground","rock"],"img_front":"images/geodude-front.gif","img_back":"images/geodude-back.gif", "attacks": ["rock throw", "earthquake", "tackle", "double-edge"]},{"id":96,"name":"Drowzee","speed":42,"special_defense":90,"special_attack":43,"defense":45,"attack":48,"hp":60,"types":["psychic"],"img_front":"images/drowzee-front.gif","img_back":"images/drowzee-back.gif", "attacks": ["psychic", "hypnosis", "pound", "headbutt"]},{"id":92,"name":"Gastly","speed":80,"special_defense":35,"special_attack":100,"defense":30,"attack":35,"hp":30,"types":["poison","ghost"],"img_front":"images/gastly-front.gif","img_back":"images/gastly-back.gif", "attacks": ["hypnosis", "sucker punch", "shadow ball", "lick"]},{"id":12,"name":"Butterfree","speed":70,"special_defense":80,"special_attack":90,"defense":50,"attack":45,"hp":60,"types":["flying","bug"],"img_front":"images/butterfree-front.gif","img_back":"images/butterfree-back.gif", "attacks": ["bug buzz", "poison powder", "psybeam", "air slash"]},{"id":147,"name":"Dratini","speed":50,"special_defense":50,"special_attack":50,"defense":45,"attack":64,"hp":41,"types":["dragon"],"img_front":"images/dratini-front.gif","img_back":"images/dratini-back.gif", "attacks": ["twister", "dragon rush", "thunder wave", "aqua tail"]}]
+var pokemons = [{"id":1,"name":"Bulbasaur","speed":45,"special_defense":65,"special_attack":65,"defense":49,"attack":49,"hp":45,"types":["poison","grass"],"img_front":"images/bulbasaur-front.gif","img_back":"images/bulbasaur-back.gif", "attacks": ["tackle", "razor leaf", "sludge bomb", "sleep powder"]}, {"id":4,"name":"Charmander","speed":65,"special_defense":50,"special_attack":60,"defense":43,"attack":52,"hp":39,"types":["fire"],"img_front":"images/charmander-front.gif","img_back":"images/charmander-back.gif", "attacks": ["ember", "flamethrower", "slash", "brick break"]},{"id":7,"name":"Squirtle","speed":43,"special_defense":64,"special_attack":50,"defense":65,"attack":48,"hp":44,"types":["water"],"img_front":"images/squirtle-front.gif","img_back":"images/squirtle-back.gif", "attacks": ["aqua tail", "bite", "ice beam", "tackle"]},{"id":25,"name":"Pikachu","speed":90,"special_defense":50,"special_attack":50,"defense":40,"attack":55,"hp":35,"types":["electric"],"img_front":"images/pikachu-front.gif","img_back":"images/pikachu-back.gif", "attacks": ["thunderbolt", "quick attack", "thunder wave", "thunder shock"]},{"id":39,"name":"Jigglypuff","speed":20,"special_defense":25,"special_attack":45,"defense":20,"attack":45,"hp":115,"types":["fairy","normal"],"img_front":"images/jigglypuff-front.gif","img_back":"images/jigglypuff-back.gif", "attacks": ["pound", "sing", "body slam", "psychic"]},{"id":52,"name":"Meowth","speed":90,"special_defense":40,"special_attack":40,"defense":35,"attack":45,"hp":40,"types":["normal"],"img_front":"images/meowth-front.gif","img_back":"images/meowth-back.gif", "attacks": ["bite", "slash", "shadow claw", "scratch"]},{"id":56,"name":"Mankey","speed":70,"special_defense":45,"special_attack":35,"defense":35,"attack":80,"hp":40,"types":["fighting"],"img_front":"images/mankey-front.gif","img_back":"images/mankey-back.gif", "attacks": ["karate chop", "cross chop", "night slash", "scratch"]},{"id":16,"name":"Pidgey","speed":56,"special_defense":45,"special_attack":45,"defense":50,"attack":55,"hp":50,"types":["flying","normal"],"img_front":"images/pidgey-front.gif","img_back":"images/pidgey-back.gif", "attacks": ["tackle", "air slash", "gust", "steel wing"]},{"id":23,"name":"Ekans","speed":55,"special_defense":54,"special_attack":40,"defense":44,"attack":60,"hp":35,"types":["poison"],"img_front":"images/ekans-front.gif","img_back":"images/ekans-back.gif", "attacks": ["toxic", "sludge bomb", "mud bomb", "bite"]},{"id":74,"name":"Geodude","speed":20,"special_defense":30,"special_attack":30,"defense":100,"attack":80,"hp":40,"types":["ground","rock"],"img_front":"images/geodude-front.gif","img_back":"images/geodude-back.gif", "attacks": ["rock throw", "earthquake", "tackle", "double-edge"]},{"id":96,"name":"Drowzee","speed":42,"special_defense":90,"special_attack":43,"defense":45,"attack":48,"hp":60,"types":["psychic"],"img_front":"images/drowzee-front.gif","img_back":"images/drowzee-back.gif", "attacks": ["psychic", "hypnosis", "pound", "headbutt"]},{"id":92,"name":"Gastly","speed":80,"special_defense":35,"special_attack":100,"defense":30,"attack":35,"hp":30,"types":["poison","ghost"],"img_front":"images/gastly-front.gif","img_back":"images/gastly-back.gif", "attacks": ["hypnosis", "sucker punch", "shadow ball", "lick"]},{"id":12,"name":"Butterfree","speed":70,"special_defense":80,"special_attack":90,"defense":50,"attack":45,"hp":60,"types":["flying","bug"],"img_front":"images/butterfree-front.gif","img_back":"images/butterfree-back.gif", "attacks": ["bug buzz", "poison powder", "psybeam", "air slash"]},{"id":147,"name":"Dratini","speed":50,"special_defense":50,"special_attack":50,"defense":45,"attack":64,"hp":41,"types":["dragon"],"img_front":"images/dratini-front.gif","img_back":"images/dratini-back.gif", "attacks": ["twister", "dragon rush", "thunder wave", "aqua tail"]}]
 
 var attacks = [{"name": "tackle", "power": 40, "type": "normal", "status": "none", "special": false}, {"name": "air slash", "power": 75, "type": "flying", "status": "none", "special": true}, {"name": "gust", "power": 40, "type": "flying", "status": "none", "special": true}, {"name": "steel wing", "power": 70, "type": "steel", "status": "none", "special": false}, {"name": "thunderbolt", "power": 90, "type": "electric", "status": "none", "special": true}, {"name": "quick attack", "power": 40, "type": "normal", "status": "none", "priority": 1, "special": false}, {"name": "thunder wave", "power": 0, "type": "electric", "status": "paralyzed", "special": true}, {"name": "thunder shock", "power": 40, "type": "electric", "status": "none", "special": true}, {"name": "razor leaf", "power": 55, "type": "grass", "status": "none", "special": false}, {"name": "sleep powder", "power": 0, "type": "grass", "status": "sleep", "special": true}, {"name": "sludge bomb", "power": 90, "type": "poison", "status": "none", "special": true}, {"name": "ember", "power": 40, "type": "fire", "status": "none", "special": true}, {"name": "flamethrower", "power": 90, "type": "fire", "status": "none", "special": true}, {"name": "slash", "power": 70, "type": "normal", "status": "none", "special": false}, {"name": "brick break", "power": 75, "type": "fighting", "status": "none", "special": false}, {"name": "aqua tail", "power": 90, "type": "water", "status": "none", "special": false}, {"name": "bite", "power": 60, "type": "dark", "status": "none", "special": false}, {"name": "ice beam", "power": 90, "type": "ice", "status": "none", "special": true}, {"name": "pound", "power": 40, "type": "normal", "status": "none", "special": false}, {"name": "sing", "power": 0, "type": "normal", "status": "sleep", "special": false}, {"name": "body slam", "power": 85, "type": "normal", "status": "none", "special": false}, {"name": "psychic", "power": 90, "type": "psychic", "status": "none", "special": true}, {"name": "scratch", "power": 40, "type": "normal", "status": "none", "special": false}, {"name": "shadow claw", "power": 70, "type": "ghost", "status": "none", "special": false}, {"name": "karate chop", "power": 50, "type": "fighting", "status": "none", "special": false}, {"name": "cross chop", "power": 100, "type": "fighting", "status": "none", "special": false},  {"name": "night slash", "power": 70, "type": "dark", "status": "none", "special": false}, {"name": "toxic", "power": 0, "type": "poison", "status": "toxic", "special": true}, {"name": "mud bomb", "power": 65, "type": "ground", "status": "none", "special": true}, {"name": "rock throw", "power": 50, "type": "rock", "status": "none", "special": false}, {"name": "earthquake", "power": 100, "type": "ground", "status": "none", "special": false},  {"name": "double-edge", "power": 120, "type": "normal", "status": "none", "special": false, "recoil": 0.33}, {"name": "hypnosis", "power": 0, "type": "psychic", "status": "sleep", "special": true}, {"name": "pound", "power": 40, "type": "normal", "status": "none", "special": false}, {"name": "headbutt", "power": 70, "type": "normal", "status": "none", "special": false}, {"name": "sucker punch", "power": 70, "type": "dark", "status": "none", "special": false}, {"name": "shadow ball", "power": 80, "type": "ghost", "status": "none", "special": false}, {"name": "lick", "power": 30, "type": "ghost", "status": "none", "special": false}, {"name": "poison powder", "power": 0, "type": "poison", "status": "poison", "special": true}, {"name": "air slash", "power": 75, "type": "flying", "status": "none", "special": true}, {"name": "psybeam", "power": 65, "type": "psychic", "status": "none", "special": true}, {"name": "bug buzz", "power": 90, "type": "bug", "status": "none", "special": true}, {"name": "twister", "power": 40, "type": "dragon", "status": "none", "special": true}, {"name": "dragon rush", "power": 100, "type": "dragon", "status": "none", "special": false}, {"name": "thunder wave", "power": 0, "type": "electric", "status": "paralysis", "special": true},  {"name": "aqua tail", "power": 90, "type": "water", "status": "none", "special": false}]
 
@@ -125,6 +125,12 @@ for (var i = 0; i < pokemons.length; i++) {
 	var image = new Image();
 	image.src = 'images/' + pkmn + '-back.png'
 	pokemon_images[pkmn].back = image;
+	var image = new Image();
+	image.src = 'images/' + pkmn + '-front-damaged.png'
+	pokemon_images[pkmn].front_damaged = image;
+	var image = new Image();
+	image.src = 'images/' + pkmn + '-back-damaged.png'
+	pokemon_images[pkmn].back_damaged = image;
 }
 
 function drawBackground(c, backgroundImage, x, y, width, height) {
@@ -231,11 +237,12 @@ function drawHealthBar(c, x, y, percentage, name, types, pkmn) {
 
 }
 
-function getPokemonImage(pkmn, isFront) {
+function getPokemonImage(pkmn, isFront, isDamaged) {
+	var index = pokemon_images[pokemons[pkmn.index].name.toLowerCase()];
 	if (isFront) {
-		return pokemon_images[pokemons[pkmn.index].name.toLowerCase()].front;
+		return isDamaged ? index.front_damaged : index.front;
 	} else {
-		return pokemon_images[pokemons[pkmn.index].name.toLowerCase()].back;
+		return isDamaged ? index.back_damaged : index.back;
 	}
 }
 
@@ -243,6 +250,7 @@ function drawPokemonImage(c, pkmn, image, isFront, x, y, RENDER_SCALE=1, ANIMATI
 	current_frame = Math.round(pkmn.frame);
 	total_frames = Math.round(image.width / image.height);
 	
+	// tint image
 	c.drawImage(image,
 		current_frame * image.height,
 		0,
@@ -266,7 +274,7 @@ function drawPokemon(c, pkmn, isFront) {
 	var health = pkmn.display_health;
 	var types = pokemons[pkmn.index].types
 	if (health > 0) {
-		image = getPokemonImage(pkmn, isFront)
+		image = getPokemonImage(pkmn, isFront, pkmn.display_health != pkmn.health)
 		if (isFront) {
 			x = battle_width - 80*SCALE - (image.height*SCALE) / 2;
 			y = 90*SCALE - image.height*SCALE;
@@ -586,6 +594,8 @@ function updateDecisionTree(pkm) {
     new Treant(decision_tree);
 }
 
+var screen_flash = 0;
+
 function dealDamageToPokemon(params) { 
 	var pkmn1 = params[0];
 	var pkmn2 = params[1];
@@ -607,6 +617,9 @@ function dealDamageToPokemon(params) {
 			pkmn2.status = STATUS_POISON;
 			text_stack.splice(1, 0, {"text": p2.name + " is poisoned!"});
 		}
+	}
+	if (damage > 0) {
+		screen_flash = 5;
 	}
 	var current_health = pkmn2.health * p2.hp;
 	var new_health = current_health - damage;
@@ -1011,6 +1024,10 @@ function drawInterface() {
 	} else if (interface_state == INTERFACE_DISPLAY_TEXT) {
 		c.fillText(text_stack[0].text, 60, battle_height + 20 + INTERFACE_FONTSIZE);
 
+	    if (p1pokemon[active_pokemon_p1].display_health != p1pokemon[active_pokemon_p1].health || p2pokemon[active_pokemon_p2].display_health != p2pokemon[active_pokemon_p2].health) {
+	    	return;
+	    }
+
 		if ((flicker % 60) < 30) {
 			x1 = battle_width - 60;
 			x2 = battle_width - 20;
@@ -1029,7 +1046,7 @@ function drawInterface() {
 		for(var i = 0; i < 3; i++) {
 			var pkmn = p2pokemon[i];
 			if (pkmn.health > 0) {
-				var image = getPokemonImage(pkmn, true);
+				var image = getPokemonImage(pkmn, true, false);
 				var x = battle_width / 4 + (i * battle_width / 4) - image.height / 2;
 				var y = battle_height + interface_height / 4 - image.height / 2
 				drawPokemonImage(c, pkmn, image, true, x, y, 0.75, selected_pokemon == i ? 1 : 0)
@@ -1062,6 +1079,13 @@ function render() {
 	drawBackground(c, backgroundImage, 0, 0, battle_width, battle_height);
 	drawPokemon(c, p2pokemon[active_pokemon_p2], false)
 	drawPokemon(c, p1pokemon[active_pokemon_p1], true)
+	if (screen_flash > 0) {
+		c.fillStyle = '#B22222';
+		c.globalAlpha = 0.2;
+		c.fillRect(0, 0, battle_width, battle_height);
+		c.globalAlpha = 1;
+		screen_flash--;
+	}
 	drawInterface();
 	// drawDecisionTree();
 }
@@ -1078,6 +1102,10 @@ function loop(timestamp) {
 
 document.onkeydown = function(evt) {
     evt = evt || window.event;
+
+    if (p1pokemon[active_pokemon_p1].display_health != p1pokemon[active_pokemon_p1].health || p2pokemon[active_pokemon_p2].display_health != p2pokemon[active_pokemon_p2].health) {
+    	return;
+    }
 
     if (interface_state == INTERFACE_SELECT_MOVE) {
 		if (evt.keyCode == 40 || evt.keyCode == 38) {
