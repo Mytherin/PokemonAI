@@ -277,10 +277,13 @@ function getTeam(name) {
 }
 
 ranking = []
+tournament_depth = undefined;
 
 function playMatch() {
 	// select the deepest node in the tree
-	current_match = getDeepestNode(tournament_tree.nodeStructure)[1]
+	var deepest_node = getDeepestNode(tournament_tree.nodeStructure);
+	current_match = deepest_node[1];
+	tournament_depth = deepest_node[0];
 	if (current_match === undefined) {
 		global_interface = GLOBAL_INTERFACE_DISPLAY_RANKING;
 		ranking.push(tournament_tree.nodeStructure.text.name);
@@ -1282,6 +1285,13 @@ function nextText() {
 	}
 	if (global_interface == GLOBAL_INTERFACE_TOURNAMENT_MODE) {
 		next_text_timer = 10;
+		if (tournament_depth < 2) {
+			next_text_timer = 2 * next_text_timer;
+		}
+		if (tournament_depth < 1) {
+			next_text_timer = 2 * next_text_timer;
+		}
+		
 	}
 	if (text_stack[0].hasOwnProperty("effect")) {
 		text_stack[0].effect(text_stack[0].parameters);
