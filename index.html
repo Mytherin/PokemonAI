@@ -897,6 +897,11 @@ function dealDamageToPokemon(params) {
 	var teamid = params[5];
 	var p1 = pokemons[pkmn1.index]
 	var p2 = pokemons[pkmn2.index]
+
+	if (move !== undefined && (update_matrix || global_interface == GLOBAL_INTERFACE_TOURNAMENT_MODE)) {
+		updateMatrixGetNewMatrixAsync(pkmn1, pkmn2, move, damage, teamid);
+	}
+
 	if (move !== undefined && move.status != "none") {
 		if (move.status == "paralyzed") {
 			pkmn2.status = STATUS_PARALYZED;
@@ -982,10 +987,6 @@ function dealDamageToPokemon(params) {
 		}
 	} else {
 		pkmn2.health = new_health / p2.hp;
-	}
-
-	if (move !== undefined && (update_matrix || global_interface == GLOBAL_INTERFACE_TOURNAMENT_MODE)) {
-		updateMatrixGetNewMatrixAsync(pkmn1, pkmn2, move, damage, teamid);
 	}
 }
 
