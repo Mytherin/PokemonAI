@@ -622,16 +622,18 @@ function mkRandAtt() {
 function build_tree_prob_attack(tbl) {
 	var res = [];
 	var max_damage = null;
-	var max_attack = null
+	var max_attack = null;
+	var found = false;
 
 	for (var i = 0; i < tbl.length; i++) {
-		if (!max_damage || tbl[i].damage >= max_damage) {
+		if (!found || tbl[i].damage >= max_damage) {
 			max_damage = tbl[i].damage;
 			max_attack = tbl[i].attack;
+			found = true;
 		}
 	}
 
-	if (!max_damage) {
+	if (!found) {
 		return [mkRandAtt()];
 	}
 
@@ -663,7 +665,7 @@ function build_tree_branch_nohealth(tbl) {
 			return ost == item.state;
 		});
 
-		part = part.filter(function(item) {
+		var npart = part.filter(function(item) {
 			var info = getAttackInfo(item.attack);
 			if (!info.status) {
 				console.log("build_tree_branch_nohealth: attack info not found for attack {0}".format(item.attack));
@@ -673,15 +675,23 @@ function build_tree_branch_nohealth(tbl) {
 
 			console.log("attack: {0}, status: {1}".format(item.attack, info.status));
 
-			if (ost === STATUS_NONE) {
+			if (ost == STATUS_NONE) {
+				if (!str_eq(no_status, info.status)) {
+					console.log("build_tree_branch_nohealth: deteckted status attack {0} {1}".format(no_status, info.status));
+					return true;
+				}
+
+				return false;
+
 				// try to change status
-				return !str_eq(no_status, info.status);	
+				// return !str_eq(no_status, info.status);	
 			} else {
 				// if we already have a status we only choose attacks that do not change the status
 				return str_eq(no_status, info.status);
 			}
-			
 		});
+
+		part = npart;
 
 		var nde = mkNode("opp_status = {0}".format(status_array[ost]));
 		console.log("opp_status = {0} with {1}".format(status_array[ost], JSON.stringify(part)));
@@ -1093,6 +1103,8 @@ function aiChooseAttack(thisPkm, oppPkm) {
 	var opp_type = figure_out_type(opp_info);
 	var opp_status = oppPkm.status;
 
+	console.log(opp_status)
+
 	var randAttack = () => { return randBetween(0, 4); };
 
 	console.log(opp_type);
@@ -1179,7 +1191,11 @@ function aiChooseAttack(thisPkm, oppPkm) {
 					console.log("aiChooseAttack: attack info not found for attack {0}".format(row.attack));
 				}
 
-				if (!str_eq(no_status, info.status) && !status_max_damage || row.damage >= status_max_damage) {
+				if (!str_eq(no_status, info.status)) {
+					console.log("aiChooseAttack: deteckted status attack {0} {1}".format(no_status, info.status));
+				}
+
+				if (!str_eq(no_status, info.status) && (!status_max_damage || row.damage >= status_max_damage)) {
 					status_max_damage = row.damage;
 					status_strongest_move = row.attack;
 				}
